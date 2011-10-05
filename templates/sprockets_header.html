@@ -1,0 +1,14 @@
+<{if $sprockets_display_breadcrumb}>
+	<div class="sprockets_headertable">
+		<{if $sprockets_module_home}>
+			<span class="sprockets_modulename"><{$sprockets_module_home}></span>
+		<{/if}>
+		<{if $sprockets_category_path}>
+			<span class="sprockets_breadcrumb">
+			<{if $sprockets_module_home}>
+				&gt;
+			<{/if}>
+			<{$sprockets_category_path}></span>
+		<{/if}>
+	</div>
+<{/if}>

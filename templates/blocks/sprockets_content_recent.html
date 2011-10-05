@@ -1,0 +1,14 @@
+<{if $block.sprockets_recent_content_spotlight_title}>
+	<div><h2><{$block.sprockets_recent_content_spotlight_title}></h2></div>
+	<div><p><{$block.sprockets_recent_content_spotlight_description}></p></div>
+	<{if $block.sprockets_recent_content}>
+		<h3><{$block.sprockets_recent_content_title}></h3>
+	<{/if}>
+<{/if}>
+<div>
+	<ul>
+		<{foreach item=recent_content from=$block.sprockets_recent_content}>
+			<li><{$recent_content.itemLink}> (<{$recent_content.date}>)</li>
+		<{/foreach}>
+	</ul>
+</div>
