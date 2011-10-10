@@ -283,29 +283,71 @@ class SprocketsTagHandler extends IcmsPersistableObjectHandler {
 	 */
 	
 	public function getTagSelectBox($action, $selected = null, $zero_option_message = '---',
-			$navigation_elements_only = true) {
-		
+			$navigation_elements_only = true, $module_id = null, $item = null) {
+
 		$form = $criteria = '';
-		$tagList = array();
-
+		$tagList = $tag_ids = array();
+		
 		if ($navigation_elements_only) {
-			$criteria = icms_buildCriteria(array('navigation_element' => true));
+			$criteria = icms_buildCriteria(array('navigation_element' => TRUE));
 		}
-
+		
 		$tagList = array(0 => $zero_option_message) + $this->getList($criteria);
-
-		$form = '<div><form name="tag_selection_form" action="' . $action . '" method="get">';
-		$form .= '<select name="tag_id" id="tag_id" onchange="this.form.submit()">';
-		foreach ($tagList as $key => $value) {
-			if ($key == $selected) {
-			$form .= '<option value="' . $key . '" selected="selected">' . $value . '</option>';
-			} else {
-				$form .= '<option value="' . $key . '">' . $value . '</option>';
+		
+		if ($module_id) {
+			// Only display tags that contain content relevant to this module. Note: Tags
+			// containing offline content will still be displayed. This can change later if
+			// there is agreement on standardising existing module fields with Sprockets
+			$sprockets_taglink_handler = icms_getModuleHandler('taglink', 
+					basename(dirname(dirname(__FILE__))), 'sprockets');
+			
+			global $xoopsDB;
+			$query = $rows = $tag_ids = '';
+			$query = "SELECT DISTINCT `tid` FROM " . $sprockets_taglink_handler->table
+					. " WHERE `mid` = '" . $module_id . "'";
+			if ($item) {
+					$query .= " AND `item` = '" . $item . "'";
 			}
-		}
-		$form .= '</select></form></div>';
+			$result = $xoopsDB->query($query);
+			if (!$result) {
+				echo 'Error';
+				exit;
 
-		return $form;
+			} else {
+
+				$rows = $sprockets_taglink_handler->convertResultSet($result);
+				foreach ($rows as $key => $row) {
+					$tag_ids[] = $row->getVar('tid');
+				}
+				// remove empty tags
+				if (empty($tag_ids)) {
+					$tagList = '';
+							
+				} else {
+					$tagList = array_intersect($tagList, $tag_ids);
+				}
+			}
+			
+		}		
+
+		if (!empty($tagList)) {
+			$form = '<div><form name="tag_selection_form" action="' . $action . '" method="get">';
+			$form .= '<select name="tag_id" id="tag_id" onchange="this.form.submit()">';
+			foreach ($tagList as $key => $value) {
+				if ($key == $selected) {
+				$form .= '<option value="' . $key . '" selected="selected">' . $value . '</option>';
+				} else {
+					$form .= '<option value="' . $key . '">' . $value . '</option>';
+				}
+			}
+			$form .= '</select></form></div>';
+
+			return $form;
+			
+		} else {
+			
+			return false;
+		}
 	}
 
 	/**

@@ -74,7 +74,7 @@ class SprocketsTaglink extends IcmsPersistableObject {
 	}
 
 	/**
-	 * Returns the item name associated with this taglink
+	 * Returns the item (object) name associated with this taglink, eg 'article'
 	 *
 	 * @return string
 	 */
