@@ -98,9 +98,8 @@ if (in_array($clean_op,$valid_op,true)){
 			}
 		}
 
-  		include_once ICMS_ROOT_PATH."/kernel/icmspersistabletable.php";
-  		$objectTable = new IcmsPersistableTable($sprockets_rights_handler);
-  		$objectTable->addColumn(new IcmsPersistableColumn('title'));
+  		$objectTable = new icms_ipf_view_Table($sprockets_rights_handler);
+  		$objectTable->addColumn(new icms_ipf_view_Column('title'));
   		$objectTable->addIntroButton('addrights', 'rights.php?op=mod', _AM_SPROCKETS_RIGHTS_CREATE);
 
   		$icmsAdminTpl->assign('sprockets_rights_table', $objectTable->fetch());

@@ -60,10 +60,10 @@ function edittag($tag_id = 0)
 
 		$tag_id = $categoryTree = '';
 		$categoryObjArray = $allChildCategories = $newParentCategory = array();
-		$criteria = new CriteriaCompo();
+		$criteria = new icms_db_criteria_Compo();
 
 		// exclude labels that are only tags (not categories)
-		$criteria->add(new Criteria('label_type', 0, '!='));
+		$criteria->add(new icms_db_criteria_Item('label_type', 0, '!='));
 		$categoryObjArray = $sprockets_tag_handler->getObjects($criteria);
 
 		// get a category tree
@@ -214,12 +214,11 @@ if (in_array($clean_op,$valid_op,true)){
 			}
 		}
 
-  		include_once ICMS_ROOT_PATH."/kernel/icmspersistabletable.php";
-  		$objectTable = new IcmsPersistableTable($sprockets_tag_handler);
-  		$objectTable->addColumn(new IcmsPersistableColumn('title'));
-		$objectTable->addColumn(new IcmsPersistableColumn('label_type'));
-		$objectTable->addcolumn(new IcmsPersistableColumn('navigation_element'));
-		$objectTable->addcolumn(new IcmsPersistableColumn('rss', 'left', false, false, false,
+  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler);
+  		$objectTable->addColumn(new icms_ipf_view_Column('title'));
+		$objectTable->addColumn(new icms_ipf_view_Column('label_type'));
+		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element'));
+		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', false, false, false,
 				_AM_SPROCKETS_TAG_RSS_FEED));
 		$objectTable->addFilter('label_type', 'label_type_filter');
 		$objectTable->addFilter('navigation_element', 'navigation_element_filter');

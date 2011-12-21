@@ -28,7 +28,7 @@ if($rightsObj && !$rightsObj->isNew()) {
 	/**
 	 * Generating meta information for this page
 	 */
-	$icms_metagen = new IcmsMetagen($rightsObj->getVar('title'),
+	$icms_metagen = new icms_ipf_Metagen($rightsObj->getVar('title'),
 		$rightsObj->getVar('meta_keywords','n'), $rightsObj->getVar('meta_description', 'n'));
 	$icms_metagen->createMetaTags();
 
@@ -39,10 +39,10 @@ if($rightsObj && !$rightsObj->isNew()) {
 
 	$icmsTpl->assign('sprockets_title', _MD_SPROCKETS_ALL_RIGHTS);
 
-	$objectTable = new IcmsPersistableTable($sprockets_rights_handler, $criteria = null, array(),
+	$objectTable = new icms_ipf_view_Table($sprockets_rights_handler, $criteria = null, array(),
 			true);
 	$objectTable->isForUserSide();
-	$objectTable->addColumn(new IcmsPersistableColumn('title'));
+	$objectTable->addColumn(new icms_ipf_view_Column('title'));
 	$icmsTpl->assign('sprockets_rights_table', $objectTable->fetch());
 }
 

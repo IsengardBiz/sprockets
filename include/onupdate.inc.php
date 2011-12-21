@@ -54,8 +54,8 @@ function authorise_mimetypes() {
 		$allowed_modules = array();
 		$mimetypeObj = '';
 
-		$criteria = new CriteriaCompo();
-		$criteria->add(new Criteria('extension', $extension));
+		$criteria = new icms_db_criteria_Compo();
+		$criteria->add(new icms_db_criteria_Item('extension', $extension));
 		$mimetypeObj = array_shift($system_mimetype_handler->getObjects($criteria));
 
 		if ($mimetypeObj) {
@@ -78,14 +78,11 @@ function authorise_mimetypes() {
 
 /**
  * Prepares the module for use, authorises mimetypes, sets up directories and inserts license data
- *
- * @global obj $xoopsDB
+ * 
  * @param <type> $module
  * @return bool
  */
 function icms_module_install_sprockets($module) {
-
-	global $xoopsDB;
 
 	// create an uploads directory for images
 	$path = ICMS_ROOT_PATH . '/uploads/' . basename(dirname(dirname(__FILE__))) . '/';
@@ -103,34 +100,34 @@ function icms_module_install_sprockets($module) {
 	$queries = array();
 	
 	// a generic tag to hold untagged content
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_tag')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_tag')
 		. " (`title`, `description`) values ('Example', 'For testing purposes, replace this with your own tags.')";
 
 	// some common licenseS
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`) values ('Copyright, all rights reserved',
                 'This work is subject to copyright and all rights are reserved. Contact the creators for permission if you wish to modify or distribute this work.')";
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`, `identifier`) values ('Creative Commons Attribution',
                 'This license lets others distribute, remix, tweak, and build upon a work, even commercially, as long as they credit the author for the original creation. This is the most accommodating of licenses offered, in terms of what others can do with works licensed under Attribution.', 'http://creativecommons.org/licenses/by/3.0')";
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`, `identifier`) values ('Creative Commons Attribution Share Alike', 'This license lets others remix, tweak, and build upon a work even for commercial reasons, as long as they credit the author and license their new creations under the identical terms. This license is often compared to open source software licenses. All new works based on the original will carry the same license, so any derivatives will also allow commercial use.',
                 'http://creativecommons.org/licenses/by-sa/3.0')";
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`, `identifier`) values ('Creative Commons Attribution No Derivatives' , 'This license allows for redistribution of a work, commercial and non-commercial, as long as it is passed along unchanged and in whole, with credit to the author.', 'http://creativecommons.org/licenses/by-nd/3.0')";
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`, `identifier`) values ('Creative Commons Attribution Non-Commercial', 'This license lets others remix, tweak, and build upon a work non-commercially, and although their new works must also acknowledge the author and be non-commercial, they don’t have to license their derivative works on the same terms.', 'http://creativecommons.org/licenses/by-nc/3.0')";
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`, `identifier`) values ('Creative Commons Attribution Non-Commercial Share Alike', 'This license lets others remix, tweak, and build upon a work non-commercially, as long as they credit the author and license their new creations under the identical terms. Others can download and redistribute the work just like the by-nc-nd license, but they can also translate, make remixes, and produce new stories based on the work. All new work based on the original will carry the same license, so any derivatives will also be non-commercial in nature.',
                 'http://creativecommons.org/licenses/by-nc-sa/3.0')";
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`, `identifier`) values ('Creative Commons Attribution Non-Commercial No Derivatives', 'This license is the most restrictive Creative Commons license, allowing redistribution. This license is often called the free  advertising license because it allows others to download the works and share them with others as long as they mention and link back to the author, but they can’t change them in any way or use them commercially.',
                 'http://creativecommons.org/licenses/by-nc-nd/3.0')";
-	$queries[] = "INSERT into " . $xoopsDB->prefix('sprockets_rights')
+	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`) values ('Public domain', 'Works in the public domain are not subject to restrictions concerning their use or distribution.')";
 
 	foreach($queries as $query) {
-		$result = $xoopsDB->query($query);
+		$result = icms::$xoopsDB->query($query);
 	}
 	return true;
 }

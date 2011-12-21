@@ -44,16 +44,16 @@ if (isset($sprocketsModule)) {
 	$i++;
 	$headermenu[$i]['title'] = _PREFERENCES;
 	$headermenu[$i]['link'] = '../../system/admin.php?fct=preferences&amp;op=showmod&amp;mod='
-		. $sprocketsModule->mid();
+		. $sprocketsModule->getVar('mid');
 	$i++;
 	$headermenu[$i]['title'] = _MI_SPROCKETS_TEMPLATES;
 	$headermenu[$i]['link'] = '../../system/admin.php?fct=tplsets&op=listtpl&tplset='
-		. $icmsConfig['template_set'] . '&moddir=' . $sprocketsModule->dirname();
+		. $icmsConfig['template_set'] . '&moddir=' . $sprocketsModule->getVar('dirname');
 
 	$i++;
 	$headermenu[$i]['title'] = _CO_ICMS_UPDATE_MODULE;
 	$headermenu[$i]['link'] = ICMS_URL . '/modules/system/admin.php?fct=modulesadmin&op=update&module='
-		. $sprocketsModule->dirname();
+		. $sprocketsModule->getVar('dirname');
 
 	$i++;
 	$headermenu[$i]['title'] = _MODABOUT_ABOUT;

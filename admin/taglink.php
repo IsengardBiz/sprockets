@@ -95,12 +95,11 @@ if (in_array($clean_op,$valid_op,true)){
 
   		$sprocketsModule->displayAdminMenu(2, _AM_SPROCKETS_TAGLINKS);
 
-  		include_once ICMS_ROOT_PATH."/kernel/icmspersistabletable.php";
-  		$objectTable = new IcmsPersistableTable($sprockets_taglink_handler);
-  		$objectTable->addColumn(new IcmsPersistableColumn('tid'));
-		$objectTable->addColumn(new IcmsPersistableColumn('mid'));
-		$objectTable->addColumn(new IcmsPersistableColumn('iid'));
-		$objectTable->addColumn(new IcmsPersistableColumn('item'));
+  		$objectTable = new icms_ipf_view_Table($sprockets_taglink_handler);
+  		$objectTable->addColumn(new icms_ipf_view_Column('tid'));
+		$objectTable->addColumn(new icms_ipf_view_Column('mid'));
+		$objectTable->addColumn(new icms_ipf_view_Column('iid'));
+		$objectTable->addColumn(new icms_ipf_view_Column('item'));
 
   		$objectTable->addIntroButton('addtaglink', 'taglink.php?op=mod',
 				_AM_SPROCKETS_TAGLINK_CREATE);

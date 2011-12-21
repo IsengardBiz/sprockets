@@ -24,7 +24,7 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS root path not defined");
 function sprockets_getModuleAdminLink($moduleName='sprockets') {
 	$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
 	if (!$moduleName && (isset ($sprocketsModule) && is_object($sprocketsModule))) {
-		$moduleName = $sprocketsModule->dirname();
+		$moduleName = $sprocketsModule->getVar('dirname');
 	}
 	$ret = '';
 	if ($moduleName) {
@@ -42,7 +42,7 @@ function sprockets_getModuleName($withLink = true, $forBreadCrumb = false, $modu
 	if (!$moduleName) {
 
 		$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
-		$moduleName = $sprocketsModule->dirname();
+		$moduleName = $sprocketsModule->getVar('dirname');
 	}
 	$icmsModuleConfig = icms_getModuleConfig($moduleName);
 	if (!isset ($sprocketsModule)) {
@@ -50,10 +50,10 @@ function sprockets_getModuleName($withLink = true, $forBreadCrumb = false, $modu
 	}
 
 	if (!$withLink) {
-		return $sprocketsModule->name();
+		return $sprocketsModule->getVar('name');
 	} else {
 		$ret = ICMS_URL . '/modules/' . $moduleName . '/';
-		return '<a href="' . $ret . '">' . $sprocketsModule->name() . '</a>';
+		return '<a href="' . $ret . '">' . $sprocketsModule->getVar('name') . '</a>';
 	}
 }
 

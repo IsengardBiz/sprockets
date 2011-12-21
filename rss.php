@@ -40,9 +40,9 @@ if ($clean_tag_id) {
 	$sprocketsModule = icms_getModuleInfo(basename(dirname(__FILE__)));
 
 	// get handlers
-	$sprockets_taglink_handler = icms_getModuleHandler('taglink', $sprocketsModule->dirname(),
+	$sprockets_taglink_handler = icms_getModuleHandler('taglink', $sprocketsModule->getVar('dirname'),
 		'sprockets');
-	$sprockets_tag_handler = icms_getModuleHandler('tag', $sprocketsModule->dirname(),
+	$sprockets_tag_handler = icms_getModuleHandler('tag', $sprocketsModule->getVar('dirname'),
 		'sprockets');
 	
 	// generate a tag-specific RSS feed, drawing on content from all compatible modules
@@ -64,7 +64,7 @@ if ($clean_tag_id) {
 		$unified_feed->description = $tag_description;
 		$unified_feed->language = _LANGCODE;
 		$unified_feed->charset = _CHARSET;
-		$unified_feed->category = $sprocketsModule->name();
+		$unified_feed->category = $sprocketsModule->getVar('name');
 
 		// if there's a tag icon, use it as the feed image
 		if ($tagObj->getVar('icon', 'e')) {
@@ -95,7 +95,7 @@ if ($clean_tag_id) {
 				$individual = encode_entities($individual);
 			}
 			$description = encode_entities($contentObj->getVar('description', 'e'));
-			$title = encode_entities($contentObj->title());
+			$title = encode_entities($contentObj->getVar('title'));
 			$link = encode_entities($contentObj->getItemLink(true));
 
 			$unified_feed->feeds[] = array (

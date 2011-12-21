@@ -35,9 +35,9 @@ function sprockets_content_recent_show($options) {
 	$sprockets_taglink_handler = icms_getModuleHandler('taglink', 
 		basename(dirname(dirname(__FILE__))), 'sprockets');
 	
-	$criteria = new CriteriaCompo();
+	$criteria = new icms_db_criteria_Compo();
 	if ($options[1]) {
-		$criteria->add(new Criteria('tid', $options[1]));
+		$criteria->add(new icms_db_criteria_Item('tid', $options[1]));
 		
 	}
 	$criteria->setSort('taglink_id');
@@ -91,9 +91,9 @@ function sprockets_content_recent_show($options) {
 			$id_string = "(" . implode(",", $content_ids[$module_name]) . ")";
 
 			// retrieve the relevant content objects		
-			$criteria = new CriteriaCompo();
-			$criteria->add(new Criteria($id_field, $id_string, 'IN')); // this applies the tag filter
-			$criteria->add(new Criteria('online_status', 1)); // only show content marked online
+			$criteria = new icms_db_criteria_Compo();
+			$criteria->add(new icms_db_criteria_Item($id_field, $id_string, 'IN')); // this applies the tag filter
+			$criteria->add(new icms_db_criteria_Item('online_status', 1)); // only show content marked online
 			$criteria->setSort('date');
 			$criteria->setOrder('DESC');
 
@@ -226,7 +226,7 @@ function sprockets_content_recent_edit($options) {
 		$form .= '/>' . _MB_SPROCKETS_CONTENT_NO . '</td></tr>';
 		
 	// build select box for choosing content to spotlight
-	$criteria = new CriteriaCompo();
+	$criteria = new icms_db_criteria_Compo();
 	$criteria->setStart(0);
 	$criteria->setLimit(50);
 	$criteria->setSort('taglink_id');
@@ -283,9 +283,9 @@ function sprockets_content_recent_edit($options) {
 			$id_string = "(" . implode(",", $content_ids[$module_name]) . ")";
 
 			// retrieve the relevant content objects			
-			$criteria = new CriteriaCompo();
-			$criteria->add(new Criteria($id_field, $id_string, 'IN')); // this applies the tag filter
-			$criteria->add(new Criteria('online_status', 1)); // only show content marked online
+			$criteria = new icms_db_criteria_Compo();
+			$criteria->add(new Criteriaicms_db_criteria_Item($id_field, $id_string, 'IN')); // this applies the tag filter
+			$criteria->add(new icms_db_criteria_Item('online_status', 1)); // only show content marked online
 			$criteria->setSort('date');
 			$criteria->setOrder('DESC');
 			$criteria->setLimit(20); // get more than we need, in case some is marked offline

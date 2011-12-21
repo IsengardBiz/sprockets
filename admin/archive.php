@@ -33,9 +33,9 @@ function editarchive($archive_id = 0) {
 		$clean_module_id = isset($_POST['module_id']) ? (int) $_POST['module_id'] : 0 ;
 		
 		if ($clean_module_id !== '0') {
-			$module_handler = &xoops_gethandler( 'module' );
+			$module_handler = icms::handler('icms_module');
 			$selected_module = &$module_handler->get($clean_module_id);
-			$target_directory = $selected_module->dirname();
+			$target_directory = $selected_module->getVar('dirname');
 			$_POST['base_url'] = ICMS_URL . '/modules/' . $target_directory	. '/oaipmh_target.php';
 		}	
 		
@@ -129,11 +129,10 @@ if (in_array($clean_op,$valid_op,true)) {
 				}
 			}
 
-			include_once ICMS_ROOT_PATH."/kernel/icmspersistabletable.php";
-			$objectTable = new IcmsPersistableTable($sprockets_archive_handler, false);
-			$objectTable->addColumn(new IcmsPersistableColumn('repository_name'));
-			$objectTable->addColumn(new IcmsPersistableColumn('module_id'));
-			$objectTable->addColumn(new IcmsPersistableColumn('enable_archive'));
+			$objectTable = new icms_ipf_view_Table($sprockets_archive_handler, false);
+			$objectTable->addColumn(new icms_ipf_view_Column('repository_name'));
+			$objectTable->addColumn(new icms_ipf_view_Column('module_id'));
+			$objectTable->addColumn(new icms_ipf_view_Column('enable_archive'));
 
 			$objectTable->addIntroButton('addarchive', 'archive.php?op=mod',
 				_AM_SPROCKETS_ARCHIVE_CREATE);
