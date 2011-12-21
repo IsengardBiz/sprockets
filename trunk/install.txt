@@ -1,0 +1,20 @@
+/**
+* Install information
+*
+* @copyright	Copyright Madfish (Simon Wilkinson) 2011
+* @license		http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL)
+* @since		1.0
+* @author		Madfish (Simon Wilkinson) <simon@isengard.biz>
+* @package		sprockets
+* @version		$Id$
+*/
+
+How to install Sprockets
+=============================
+
+Sprockets is installed as a regular ImpressCMS module, which means you should copy the complete /sprockets folder into the /modules directory of your website. Then, log in to your site as administrator, go to System Admin > Modules, look for the Sprockets icon in the list of uninstalled modules and click in the install icon. Follow the directions in the screen and you'll be ready to go.
+
+
+.:: The SmartFactory ::.
+.:: Open Source : smartfactory.ca ::.
+.:: Professionnal : inboxinternational.com ::.

@@ -1,0 +1,9 @@
+Version 1.0 Final
+=================
+
+- First public release of the module.
+
+Version 1.01
+------------
+
+* Remove unused reference to Catalogue module in /class/archive.php (sato-san)
