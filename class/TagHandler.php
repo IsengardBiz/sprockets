@@ -87,7 +87,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 
 	/**
-	 * Returns a select box of available tags
+	 * Returns a select box of available tags, optionally filtered by module (ie. tags in use)
 	 *
 	 * @param string $action page to load on submit
 	 * @param int $selected
@@ -105,9 +105,10 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			$criteria = icms_buildCriteria(array('navigation_element' => TRUE));
 		}
 		
-		$tagList = array(0 => $zero_option_message) + $this->getList($criteria);
+		$tagList = $this->getList($criteria);
 		
 		if ($module_id) {
+
 			// Only display tags that contain content relevant to this module. Note: Tags
 			// containing offline content will still be displayed. This can change later if
 			// there is agreement on standardising existing module fields with Sprockets
@@ -126,7 +127,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 				exit;
 
 			} else {
-
 				$rows = $sprockets_taglink_handler->convertResultSet($result);
 				foreach ($rows as $key => $row) {
 					$tag_ids[] = $row->getVar('tid');
@@ -134,12 +134,11 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 				// remove empty tags
 				if (empty($tag_ids)) {
 					$tagList = '';
-							
 				} else {
-					$tagList = array_intersect($tagList, $tag_ids);
+					// Flip the array so we can use the IDs to check for matching keys in the master $tagList
+					$tagList =  array(0 => $zero_option_message) + array_intersect_key($tagList, array_flip($tag_ids));
 				}
 			}
-			
 		}		
 
 		if (!empty($tagList)) {
@@ -157,7 +156,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			return $form;
 			
 		} else {
-			
+
 			return false;
 		}
 	}
