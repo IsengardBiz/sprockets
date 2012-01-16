@@ -22,7 +22,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	public function __construct(& $handler) {
 		global $icmsConfig, $sprocketsConfig;
 
-		parent::__construct($handler);
+		icms_ipf_object::__construct($handler);
 
 		$this->quickInitVar('tag_id', XOBJ_DTYPE_INT, true);
 		$this->quickInitVar('label_type', XOBJ_DTYPE_INT, true, false, false, 0);
