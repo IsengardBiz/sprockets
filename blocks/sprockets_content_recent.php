@@ -115,13 +115,11 @@ function sprockets_content_recent_show($options) {
 
 	$sorted = $unsorted = array();
 	
-	// The problem is that the $combined_content_array contains a subarray for each module, when actually it should hold the objects from each.
-	
 	// sort the combined module content by date
 	foreach ($combined_content_array as $key => $contentObj) {
 		$unsorted[$key] = $contentObj->getVar('date', 'e');
 	}
-	asort($unsorted);
+	arsort($unsorted);
 	foreach ($unsorted as $key => $value) {
 		$sorted[$key] = $combined_content_array[$key];
 	}
