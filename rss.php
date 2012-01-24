@@ -82,7 +82,7 @@ if ($clean_tag_id) {
 		// $tag_id = false, $module_id = false, $item_type = false, $start = false, $limit = false,
 		// $sort = 'taglink_id', $order = 'DESC'
 		$content_object_array = $sprockets_taglink_handler->getTaggedItems($clean_tag_id, false,
-				false, false, $sprocketsConfig['number_rss_items']);
+				false, false, icms::$module->config['number_rss_items']);
 
 		// prepare an array of content items
 		foreach($content_object_array as $contentObj) {

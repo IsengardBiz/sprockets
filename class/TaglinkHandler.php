@@ -186,6 +186,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
 		
 		// get handler for each module/item type, build query string and retrieve content objects	
+		// MARK - it seems that item types are being assigned to the wrong module somewhere here
+		// This causes the RSS feed to crash
+		// The problem is with the $module_key, not the $moduleObj
 		foreach ($module_array as $key => $moduleObj) {
 			
 			foreach ($taglinks_by_module[$key] as $module_key => $item_array) {
@@ -204,6 +207,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 				$criteria->add(new icms_db_criteria_Item($item_id, $id_string, 'IN'));
 				$criteria->add(new icms_db_criteria_Item('online_status', '1'));
+				
+				//TESTCODE
+				echo '|';
+				echo $module_key . ' ' . $moduleObj->getVar('dirname');
+				//TESTCODE
 
 				$content_handler = icms_getModuleHandler($module_key, $moduleObj->getVar('dirname'),
 						$moduleObj->getVar('dirname'));
