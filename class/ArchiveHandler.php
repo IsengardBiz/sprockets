@@ -63,21 +63,36 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		$newsModule = icms_getModuleInfo('news');
 		$podcastModule = icms_getModuleInfo('podcast');
 		$libraryModule = icms_getModuleInfo('library');
+		$catalogueModule = icms_getModuleInfo('catalogue');
+		$partnersModule = icms_getModuleInfo('partners');
+		$projectsModule = icms_getModuleInfo('projects');
 		
 		$module_names = array();
 		
 		// need to add something to check that only one archive object is created per module
 		
 		if ($newsModule) {
-			$module_names[$newsModule->getVar('mid')] = 'news';
+			$module_names[$newsModule->getVar('mid')] = $newsModule->getVar('dirname');
 		}
 
 		if ($podcastModule) {
-			$module_names[$podcastModule->getVar('mid')] = 'podcast';
+			$module_names[$podcastModule->getVar('mid')] = $podcastModule->getVar('dirname');
 		}
 		
 		if ($libraryModule) {
-			$module_names[$libraryModule->getVar('mid')] = 'library';
+			$module_names[$libraryModule->getVar('mid')] = $libraryModule->getVar('dirname');
+		}
+		
+		if ($catalogueModule) {
+			$module_names[$catalogueModule->getVar('mid')] = $catalogueModule->getVar('dirname');
+		}
+		
+		if ($partnersModule) {
+			$module_names[$partnersModule->getVar('mid')] = $partnersModule->getVar('dirname');
+		}
+		
+		if ($projectsModule) {
+			$module_names[$projectsModule->getVar('mid')] = $projectsModule->getVar('dirname');
 		}
 		
 		return $module_names;

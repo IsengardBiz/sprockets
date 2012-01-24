@@ -102,7 +102,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$tagList = $tag_ids = array();
 		
 		if ($navigation_elements_only) {
-			$criteria = icms_buildCriteria(array('navigation_element' => TRUE));
+			$criteria = icms_buildCriteria(array('navigation_element' => '1'));
 		}
 		
 		$tagList = $this->getList($criteria);

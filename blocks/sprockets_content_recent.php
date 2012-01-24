@@ -44,23 +44,29 @@ function sprockets_content_recent_show($options) {
 	$criteria->setOrder('DESC');
 	$criteria->setLimit($options[0]);
 	
-	$taglink_object_array =  $sprockets_taglink_handler->getObjects($criteria);
+	$taglink_object_array = $sprockets_taglink_handler->getObjects($criteria);
 	unset($criteria);
 	
 	// get a list of compatible modules
 	$installed_modules = $sprockets_archive_handler->getModuleNames();
 	
-	$item_array = array('news' => 'article', 'podcast' => 'soundtrack', 'library' => 'publication',
-		'catalogue', 'item');
-
+	$item_array = array(
+		'news' => 'article',
+		'podcast' => 'soundtrack',
+		'library' => 'publication',
+		'catalogue' => 'item',
+		'projects' => 'project',
+		'partners' => 'partner'
+		);
+	
 	/** 
 	 * Its simpler just to do a separate query for each module, perhaps a more efficient way
 	 * can be found later on. Each compatible module needs to have its primary content object added
 	 * to this array, which is used to retrieve appropriate handlers.
 	 */
-	
-	foreach ($installed_modules as $module_key => $module_name) {
 
+	foreach ($installed_modules as $module_key => $module_name) {
+		
 		$id_string = '';
 		$content_ids[$module_name] = array();
 		$id_field = $item_array[$module_name] . '_id';
@@ -84,7 +90,7 @@ function sprockets_content_recent_show($options) {
 				$content_ids[$module_name][$taglink->id()] = $taglink->getVar('iid');
 			}
 		}
-
+		
 		if (count($content_ids[$module_name]) >0) {
 			
 			// construct a string of IDs to use as a $criteria
@@ -96,19 +102,20 @@ function sprockets_content_recent_show($options) {
 			$criteria->add(new icms_db_criteria_Item('online_status', 1)); // only show content marked online
 			$criteria->setSort('date');
 			$criteria->setOrder('DESC');
-
 			$criteria->setLimit($options[0]); // get more than we need, in case some is marked offline
 
-			$content_object_array[$module_name] = $content_handler->getObjects($criteria, true, true);
+			$content_object_array[$module_name] = $content_handler->getObjects($criteria, TRUE, TRUE);
 
-			// combine the objects from different modules
-			$combined_content_array = $combined_content_array + $content_object_array[$module_name];
+			// Append the content objects to the combined content array
+			$combined_content_array = array_merge($combined_content_array, $content_object_array[$module_name]);
 		} else {
 			unset($content_ids[$module_name]);
 		}
 	}
 
 	$sorted = $unsorted = array();
+	
+	// The problem is that the $combined_content_array contains a subarray for each module, when actually it should hold the objects from each.
 	
 	// sort the combined module content by date
 	foreach ($combined_content_array as $key => $contentObj) {
@@ -244,7 +251,7 @@ function sprockets_content_recent_edit($options) {
 	$installed_modules = $sprockets_archive_handler->getModuleNames();
 	
 	$item_array = array('news' => 'article', 'podcast' => 'soundtrack', 'library' => 'publication',
-		'catalogue', 'item');
+		'catalogue' => 'item', 'projects' => 'project', 'partners' => 'partner');
 
 	/** 
 	 * Its simpler just to do a separate query for each module, perhaps a more efficient way
@@ -284,7 +291,7 @@ function sprockets_content_recent_edit($options) {
 
 			// retrieve the relevant content objects			
 			$criteria = new icms_db_criteria_Compo();
-			$criteria->add(new Criteriaicms_db_criteria_Item($id_field, $id_string, 'IN')); // this applies the tag filter
+			$criteria->add(new icms_db_criteria_Item($id_field, $id_string, 'IN')); // this applies the tag filter
 			$criteria->add(new icms_db_criteria_Item('online_status', 1)); // only show content marked online
 			$criteria->setSort('date');
 			$criteria->setOrder('DESC');
