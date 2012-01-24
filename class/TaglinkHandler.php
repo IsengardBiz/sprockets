@@ -191,7 +191,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			foreach ($taglinks_by_module[$key] as $module_key => $item_array) {
 				
 				$item_id = $item_string = '';
-				$content_objects = array();
+				$id_string = $content_objects = array();
 				$criteria = new icms_db_criteria_Compo();
 
 				foreach ($item_array as $item_key => $taglink) {
