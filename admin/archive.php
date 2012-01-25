@@ -39,7 +39,7 @@ function editarchive($archive_id = 0) {
 			$_POST['base_url'] = ICMS_URL . '/modules/' . $target_directory	. '/oaipmh_target.php';
 		}	
 		
-        $controller = new IcmsPersistableController($sprockets_archive_handler);		
+        $controller = new icms_ipf_Controller($sprockets_archive_handler);		
 		$controller->postDataToObject($archiveObj);
 	}
 
