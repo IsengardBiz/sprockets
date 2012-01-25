@@ -93,7 +93,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
     }
 	
 	/**
-	 * Returns a list of content objects associated with a specific tag, module, item type
+	 * Returns a list of content objects associated with a specific tag, module or item type
 	 *
 	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
 	 * feeds and tag pages. Always use this method with a limit and as many parameters as possible
@@ -117,7 +117,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		global $sprocketsConfig;
 		
 		$content_id_array = $content_object_array = $taglink_object_array = $module_ids
-			= $item_types = $module_array = $parent_id_buffer = array();
+			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module = array();
 		
 		// get content objects as per the supplied parameters
 		$criteria = new icms_db_criteria_Compo();
@@ -152,8 +152,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$taglink_object_array = $this->getObjects($criteria);
 		
-		// get the required module objects
-		
+		// Get the required module object if parameter supplied, or build an array of module IDs from the taglinks
 		if($module_id) {
 			$module_ids[] = $module_id;
 		} else {
@@ -161,64 +160,48 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$module_ids[] = $taglink->getVar('mid');
 			}
 			$module_ids = array_unique($module_ids);
-		}
-		if ($item_type) {
-			$item_types[] = $item_type;
-		} else {
-			foreach ($taglink_object_array as $taglink) {
-				$item_types[] = $taglink->getItem();
-			}
-			$item_types = array_unique($item_types);
-		}
+		}	
 		
+		// Retrieve the module objects and create a subarray for each with its mid as key, to hold its taglinks
 		foreach ($module_ids as $key => $mid) {
 			$module_handler = icms::handler('icms_module');
 			$module_array[$mid] = &$module_handler->get($mid);
-			$taglinks_by_module[$mid] = array();
 		}
-		
-		// sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
+
+		// IMPORTANT!! Sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
 		foreach ($taglink_object_array as $key => $taglink) {
 			if (!array_key_exists($taglink->getItem(), $taglinks_by_module[$taglink->getVar('mid')])) {
-				$taglinks_by_module[$mid][$taglink->getItem()] = array();
+				$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()] = array();
 			}
-			$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()][$taglink->id()] = $taglink;
+			$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()][$taglink->getVar('taglink_id')] = $taglink;
 		}
 		
-		// get handler for each module/item type, build query string and retrieve content objects	
-		// MARK - it seems that item types are being assigned to the wrong module somewhere here
-		// This causes the RSS feed to crash
-		// The problem is with the $module_key, not the $moduleObj
+		// Get handler for each module/item type, build query string and retrieve content objects	
+		// For each module...
 		foreach ($module_array as $key => $moduleObj) {
-			
+
+			// For each item type (eg. article, project, partner)...
 			foreach ($taglinks_by_module[$key] as $module_key => $item_array) {
-				
 				$item_id = $item_string = '';
 				$id_string = $content_objects = array();
 				$criteria = new icms_db_criteria_Compo();
 
+				// Prepare a string of item IDs as search criteria
 				foreach ($item_array as $item_key => $taglink) {
-						
 					$id_string[] = $taglink->getVar('iid');
 				}
-
 				$item_id = $module_key . '_id';
 				$id_string = "(" . implode(",", $id_string) . ")";
-
 				$criteria->add(new icms_db_criteria_Item($item_id, $id_string, 'IN'));
 				$criteria->add(new icms_db_criteria_Item('online_status', '1'));
-				
-				//TESTCODE
-				echo '|';
-				echo $module_key . ' ' . $moduleObj->getVar('dirname');
-				//TESTCODE
 
+				// Retrieve the content objects
 				$content_handler = icms_getModuleHandler($module_key, $moduleObj->getVar('dirname'),
 						$moduleObj->getVar('dirname'));
-	
 				$content_objects = $content_handler->getObjects($criteria);
-
-				$content_object_array = $content_object_array + $content_objects;
+				
+				// Concatenate the content objects to form combined (multi-module) results
+				$content_object_array = array_merge($content_object_array, $content_objects);
 			}
 		}
 
