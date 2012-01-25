@@ -50,6 +50,12 @@ function sprockets_content_recent_show($options) {
 	// get a list of compatible modules
 	$installed_modules = $sprockets_archive_handler->getModuleNames();
 	
+	/** 
+	 * Its simpler just to do a separate query for each module, perhaps a more efficient way
+	 * can be found later on. Each compatible module needs to have its primary content object added
+	 * to this array, which is used to retrieve appropriate handlers.
+	 */
+	
 	$item_array = array(
 		'news' => 'article',
 		'podcast' => 'soundtrack',
@@ -58,12 +64,6 @@ function sprockets_content_recent_show($options) {
 		'projects' => 'project',
 		'partners' => 'partner'
 		);
-	
-	/** 
-	 * Its simpler just to do a separate query for each module, perhaps a more efficient way
-	 * can be found later on. Each compatible module needs to have its primary content object added
-	 * to this array, which is used to retrieve appropriate handlers.
-	 */
 
 	foreach ($installed_modules as $module_key => $module_name) {
 		
@@ -84,7 +84,7 @@ function sprockets_content_recent_show($options) {
 
 		foreach ($taglink_object_array as $key => $taglink) {
 			if ($taglink->id() == $options[5]) {
-				$spotlight_id = $taglink->getVar('iid');
+				$spotlight_id = $taglink->getVar('taglink_id');
 			}
 			if ($taglink->getVar('mid') == $module_key) {
 				$content_ids[$module_name][$taglink->id()] = $taglink->getVar('iid');
