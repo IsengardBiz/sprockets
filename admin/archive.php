@@ -108,7 +108,7 @@ if (in_array($clean_op,$valid_op,true)) {
 		case "del":
 
 			include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-			$controller = new IcmsPersistableController($sprockets_archive_handler);
+			$controller = new icms_ipf_Controller($sprockets_archive_handler);
 			$controller->handleObjectDeletion();
 
 			break;
