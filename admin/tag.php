@@ -19,8 +19,6 @@
 */
 function edittag($tag_id = 0)
 {
-	include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-
 	global $sprockets_tag_handler, $icmsAdminTpl;
 
 	$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
@@ -157,8 +155,7 @@ if (in_array($clean_op,$valid_op,true)){
 	
   	case "addtag":
 
-        include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-        $controller = new IcmsPersistableController($sprockets_tag_handler);
+        $controller = new icms_ipf_Controller($sprockets_tag_handler);
   		$controller->storeFromDefaultForm(_AM_SPROCKETS_TAG_CREATED, _AM_SPROCKETS_TAG_MODIFIED);
 
   		break;
@@ -189,8 +186,7 @@ if (in_array($clean_op,$valid_op,true)){
 
   	case "del":
 
-  	    include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-        $controller = new IcmsPersistableController($sprockets_tag_handler);
+        $controller = new icms_ipf_Controller($sprockets_tag_handler);
 		$tagObj = $sprockets_tag_handler->get($clean_tag_id);
 		if ($tagObj->getVar('label_type', 'e') !== '0') {
 			$warning = _AM_SPROCKETS_CATEGORY_DELETE_CAUTION;

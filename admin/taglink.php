@@ -69,8 +69,7 @@ if (in_array($clean_op,$valid_op,true)){
 
   	case "addtaglink":
 
-		include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-		$controller = new IcmsPersistableController($sprockets_taglink_handler);
+		$controller = new icms_ipf_Controller($sprockets_taglink_handler);
   		$controller->storeFromDefaultForm(_AM_SPROCKETS_TAGLINK_CREATED,
 			_AM_SPROCKETS_TAGLINK_MODIFIED);
 
@@ -78,7 +77,6 @@ if (in_array($clean_op,$valid_op,true)){
 
   	case "del":
 
-  	    include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
         $controller = new icms_ipf_Controller($sprockets_taglink_handler);
   		$controller->handleObjectDeletion();
 

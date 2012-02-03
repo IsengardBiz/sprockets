@@ -37,7 +37,3 @@ $sprockets_isAdmin = icms_userIsAdmin(SPROCKETS_DIRNAME);
 
 // Creating the module config array to make it available throughout the module
 $sprocketsConfig = icms_getModuleConfig(SPROCKETS_DIRNAME);
-
-// creating the icmsPersistableRegistry to make it available throughout the module
-global $icmsPersistableRegistry;
-$icmsPersistableRegistry = IcmsPersistableRegistry::getInstance();

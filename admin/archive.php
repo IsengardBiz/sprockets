@@ -86,8 +86,7 @@ if (in_array($clean_op,$valid_op,true)) {
 		
 		case "addarchive":
 
-			include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-			$controller = new IcmsPersistableController($sprockets_archive_handler);
+			$controller = new icms_ipf_Controller($sprockets_archive_handler);
 			$controller->storeFromDefaultForm(_AM_SPROCKETS_ARCHIVE_CREATED,
 					_AM_SPROCKETS_ARCHIVE_MODIFIED);
 
@@ -107,7 +106,6 @@ if (in_array($clean_op,$valid_op,true)) {
 
 		case "del":
 
-			include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
 			$controller = new icms_ipf_Controller($sprockets_archive_handler);
 			$controller->handleObjectDeletion();
 

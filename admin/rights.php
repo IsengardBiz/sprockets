@@ -69,8 +69,7 @@ if (in_array($clean_op,$valid_op,true)){
 
   	case "addrights":
 
-        include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-        $controller = new IcmsPersistableController($sprockets_rights_handler);
+        $controller = new icms_ipf_Controller($sprockets_rights_handler);
   		$controller->storeFromDefaultForm(_AM_SPROCKETS_RIGHTS_CREATED,
 			_AM_SPROCKETS_RIGHTS_MODIFIED);
 
@@ -78,8 +77,7 @@ if (in_array($clean_op,$valid_op,true)){
 
   	case "del":
 
-  	    include_once ICMS_ROOT_PATH."/kernel/icmspersistablecontroller.php";
-        $controller = new IcmsPersistableController($sprockets_rights_handler);
+        $controller = new icms_ipf_Controller($sprockets_rights_handler);
   		$controller->handleObjectDeletion();
 
   		break;
