@@ -33,7 +33,7 @@ define('SPROCKETS_DB_VERSION', 1);
  */
 
 function icms_module_update_sprockets($module) {
-    return true;
+    return TRUE;
 }
 
 /**
@@ -80,7 +80,7 @@ function icms_module_install_sprockets($module) {
 
 	// create an uploads directory for images
 	$path = ICMS_ROOT_PATH . '/uploads/' . basename(dirname(dirname(__FILE__))) . '/';
-	$directory_exists = $writeable = true;
+	$directory_exists = $writeable = TRUE;
 
 	// check if upload directory exists, make one if not
 	if (!is_dir($path)) {
@@ -123,5 +123,5 @@ function icms_module_install_sprockets($module) {
 	foreach($queries as $query) {
 		$result = icms::$xoopsDB->query($query);
 	}
-	return true;
+	return TRUE;
 }

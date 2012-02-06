@@ -111,8 +111,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @return array $content_object_array
 	 */
 	
-	public function getTaggedItems($tag_id = false, $module_id = false, $item_type = false,
-			$start = false, $limit = false, $sort = 'taglink_id', $order = 'DESC') {
+	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
+			$start = FALSE, $limit = FALSE, $sort = 'taglink_id', $order = 'DESC') {
 
 		global $sprocketsConfig;
 		

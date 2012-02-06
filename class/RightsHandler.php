@@ -38,13 +38,13 @@ class SprocketsRightsHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTagSelectBox($selected = null, $zero_option_message = '---',
-			$navigation_elements_only = true) {
+			$navigation_elements_only = TRUE) {
 		
 		$form = $criteria = '';
 		$tagList = array();
 
 		if ($navigation_elements_only) {
-			$criteria = icms_buildCriteria(array('navigation_element' => true));
+			$criteria = icms_buildCriteria(array('navigation_element' => TRUE));
 		}
 
 		$tagList = array(0 => $zero_option_message) + $this->getList($criteria);
@@ -71,7 +71,7 @@ class SprocketsRightsHandler extends icms_ipf_Handler {
 	 * @param bool $with_links
 	 * @return array 
 	 */
-	public function get_rights_buffer($with_links = false) {
+	public function get_rights_buffer($with_links = FALSE) {
 		
 		$rights_object_array = $rights_buffer = array();
 		

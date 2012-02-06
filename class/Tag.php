@@ -24,14 +24,14 @@ class SprocketsTag extends icms_ipf_seo_Object {
 
 		icms_ipf_object::__construct($handler);
 
-		$this->quickInitVar('tag_id', XOBJ_DTYPE_INT, true);
-		$this->quickInitVar('label_type', XOBJ_DTYPE_INT, true, false, false, 0);
-		$this->quickInitVar('title', XOBJ_DTYPE_TXTBOX, true);
-		$this->quickInitVar('parent_id', XOBJ_DTYPE_INT, false, false, false, 0);
-		$this->quickInitVar('description', XOBJ_DTYPE_TXTAREA, false);
-		$this->quickInitVar('icon', XOBJ_DTYPE_IMAGE, false);
-		$this->quickInitVar('navigation_element', XOBJ_DTYPE_INT, false, false, false, 1);
-		$this->quickInitVar('rss', XOBJ_DTYPE_INT, true, false, false, 1);
+		$this->quickInitVar('tag_id', XOBJ_DTYPE_INT, TRUE);
+		$this->quickInitVar('label_type', XOBJ_DTYPE_INT, TRUE, FALSE, FALSE, 0);
+		$this->quickInitVar('title', XOBJ_DTYPE_TXTBOX, TRUE);
+		$this->quickInitVar('parent_id', XOBJ_DTYPE_INT, FALSE, FALSE, FALSE, 0);
+		$this->quickInitVar('description', XOBJ_DTYPE_TXTAREA, FALSE);
+		$this->quickInitVar('icon', XOBJ_DTYPE_IMAGE, FALSE);
+		$this->quickInitVar('navigation_element', XOBJ_DTYPE_INT, FALSE, FALSE, FALSE, 1);
+		$this->quickInitVar('rss', XOBJ_DTYPE_INT, TRUE, FALSE, FALSE, 1);
 
 		$this->setControl('label_type', array(
 			'name' => 'select',
@@ -110,7 +110,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 
 			return $parentObj->getVar('title');
 		}
-		return false;
+		return FALSE;
 	}
 	
 	/**
@@ -125,7 +125,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		$navigation_element = $this->getVar('navigation_element', 'e');
 		$button = '<a href="' . ICMS_URL . '/modules/' . basename(dirname(dirname(__FILE__)))
 				. '/admin/tag.php?tag_id=' . $this->id() . '&amp;op=toggleNavigationElement">';
-		if ($navigation_element == false) {
+		if ($navigation_element == FALSE) {
 			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_cancel.png" alt="'
 				. _CO_SPROCKETS_TAG_NAVIGATION_DISABLED 
 				. '" title="' . _CO_SPROCKETS_TAG_NAVIGATION_ENABLE . '" /></a>';
@@ -151,7 +151,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 			return '<img src="' . $path . $icon . '" alt="' . $this->getVar('title', 'e')
 			. '" title="' . $this->getVar('title', 'e') . '" />';
 		} else {
-			return false;
+			return FALSE;
 		}
 	}
 	
@@ -165,7 +165,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 
 		$button = '<a href="' . ICMS_URL . '/modules/' . basename(dirname(dirname(__FILE__)))
 				. '/admin/tag.php?tag_id=' . $this->id() . '&amp;op=toggleStatus">';
-		if ($status == false) {
+		if ($status == FALSE) {
 			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_cancel.png" alt="' 
 				. _CO_SPROCKETS_TAG_OFFLINE . '" title="' . _CO_SPROCKETS_TAG_SWITCH_ONLINE . '" /></a>';
 		} else {

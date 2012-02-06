@@ -143,7 +143,7 @@ if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
 // sanitise the tag_id
 $clean_tag_id = isset($_GET['tag_id']) ? (int) $_GET['tag_id'] : 0 ;
 
-if (in_array($clean_op,$valid_op,true)){
+if (in_array($clean_op,$valid_op,TRUE)){
   switch ($clean_op) {
   	case "mod":	
   	case "changedField":
@@ -214,7 +214,7 @@ if (in_array($clean_op,$valid_op,true)){
   		$objectTable->addColumn(new icms_ipf_view_Column('title'));
 		$objectTable->addColumn(new icms_ipf_view_Column('label_type'));
 		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element'));
-		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', false, false, false,
+		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, FALSE, FALSE,
 				_AM_SPROCKETS_TAG_RSS_FEED));
 		$objectTable->addFilter('label_type', 'label_type_filter');
 		$objectTable->addFilter('navigation_element', 'navigation_element_filter');

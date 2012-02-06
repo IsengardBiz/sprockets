@@ -34,7 +34,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
     	if ($tagObj && !$tagObj->isNew()) {
     		return $tagObj->getVar('title');
     	} else {
-    		return false;
+    		return FALSE;
     	}
     }
 
@@ -96,7 +96,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTagSelectBox($action, $selected = null, $zero_option_message = '---',
-			$navigation_elements_only = true, $module_id = null, $item = null) {
+			$navigation_elements_only = TRUE, $module_id = null, $item = null) {
 
 		$form = $criteria = '';
 		$tagList = $tag_ids = array();
@@ -157,7 +157,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			
 		} else {
 
-			return false;
+			return FALSE;
 		}
 	}
 
@@ -169,7 +169,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * @param array $tag_object_array
 	 * @return array 
 	 */
-	public function get_parent_id_buffer($tag_object_array, $with_links = false) {
+	public function get_parent_id_buffer($tag_object_array, $with_links = FALSE) {
 		
 		$parent_id_string = '';
 		$parent_objects = $parent_buffer = array();
@@ -185,7 +185,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$criteria->add(new icms_db_criteria_Item('tag_id', $parent_id_string, 'IN'));
 		
 		if ($with_links) {
-			$parent_objects = $this->getObjects($criteria, true, true);
+			$parent_objects = $this->getObjects($criteria, TRUE, TRUE);
 			foreach ($parent_objects as $parent) {
 				$parent_buffer[$parent->id()] = $parent->getItemLink();
 			}
@@ -226,7 +226,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		//$criteria->add(new icms_db_criteria_Item('label_type', '1', '!='));
 		$criteria->add(new icms_db_criteria_Item('rss', '1'));
 		
-		$tag_object_array = $this->getObjects($criteria, true, true);
+		$tag_object_array = $this->getObjects($criteria, TRUE, TRUE);
 		
 		return $tag_object_array;
 	}
@@ -243,14 +243,14 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$status = $obj = '';
 		
 		$obj = $this->get($id);
-		if ($obj->getVar($field, 'e') == true) {
+		if ($obj->getVar($field, 'e') == TRUE) {
 			$obj->setVar($field, 0);
 			$status = 0;
 		} else {
 			$obj->setVar($field, 1);
 			$status = 1;
 		}
-		$this->insert($obj, true);
+		$this->insert($obj, TRUE);
 		
 		return $status;
 	}
@@ -336,13 +336,13 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 					$result = $sprockets_tag_handler->db->query($sql);
 					if (!$result) {
 						$obj->setErrors($sprockets_tag_handler->db->error());
-						return false;
+						return FALSE;
 					}
 				}
 			}
 		}
 		
-		return true;
+		return TRUE;
 	} 
 
 	/**
@@ -401,6 +401,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$criteria->add(new icms_db_criteria_Item('tid', $markedForDeletion, 'IN'));
 		$sprockets_taglink_handler->deleteAll($criteria);
 		
-		return true;
+		return TRUE;
 	}
 }

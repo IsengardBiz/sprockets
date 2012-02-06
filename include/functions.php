@@ -37,7 +37,7 @@ function sprockets_getModuleAdminLink($moduleName='sprockets') {
 /**
  * @todo to be move in icms core
  */
-function sprockets_getModuleName($withLink = true, $forBreadCrumb = false, $moduleName = false) {
+function sprockets_getModuleName($withLink = TRUE, $forBreadCrumb = FALSE, $moduleName = FALSE) {
 
 	if (!$moduleName) {
 

@@ -134,7 +134,7 @@ function sprockets_content_recent_show($options) {
 	$block['sprockets_recent_content'] = $combined_content_array;
 
 	// check if spotlight mode is active, and if spotlight article has already been retrieved
-	if ($options[4] == true && (count($block['sprockets_recent_content']) > 0)) {	
+	if ($options[4] == TRUE && (count($block['sprockets_recent_content']) > 0)) {	
 		if (array_key_exists($spotlight_id, $block['sprockets_recent_content'])) {
 			$spotlightObj = $block['sprockets_recent_content'][$spotlight_id];
 			unset($block['sprockets_recent_content'][$spotlight_id]);
@@ -199,8 +199,8 @@ function sprockets_content_recent_edit($options) {
 	if ($sprocketsModule) {
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_RECENT_TAG . '</td>';
-		// Parameters XoopsFormSelect: ($caption, $name, $value = null, $size = 1, $multiple = false)
-		$form_select = new XoopsFormSelect('', 'options[]', $options[1], '1', false);
+		// Parameters XoopsFormSelect: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
+		$form_select = new XoopsFormSelect('', 'options[]', $options[1], '1', FALSE);
 		$tagList = $sprockets_tag_handler->getList();
 		$tagList = array(0 => 'All') + $tagList;
 		$form_select->addOptionArray($tagList);
@@ -295,7 +295,7 @@ function sprockets_content_recent_edit($options) {
 			$criteria->setOrder('DESC');
 			$criteria->setLimit(20); // get more than we need, in case some is marked offline
 
-			$content_object_array[$module_name] = $content_handler->getObjects($criteria, true, true);
+			$content_object_array[$module_name] = $content_handler->getObjects($criteria, TRUE, TRUE);
 
 			// change the keys of these objects to match their taglink
 			$taglink_ids = array_flip($content_ids[$module_name]);
@@ -341,8 +341,8 @@ function sprockets_content_recent_edit($options) {
 	
 	// build a select box of article titles
 	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_SPOTLIGHTED_ARTICLE . '</td>';
-	// Parameters XoopsFormSelect: ($caption, $name, $value = null, $size = 1, $multiple = false)
-	$form_spotlight = new XoopsFormSelect('', 'options[5]', $options[5], '1', false);
+	// Parameters XoopsFormSelect: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
+	$form_spotlight = new XoopsFormSelect('', 'options[5]', $options[5], '1', FALSE);
 	$form_spotlight->addOptionArray($content_array);
 	$form .= '<td>' . $form_spotlight->render() . '</td></tr>';
 	$form .= '</table>';

@@ -31,28 +31,28 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 		parent::__construct($handler);
 
-		$this->quickInitVar('archive_id', XOBJ_DTYPE_INT, true);
-		$this->quickInitVar('module_id', XOBJ_DTYPE_INT, true);
-		$this->quickInitVar('enable_archive', XOBJ_DTYPE_INT, true, false, false, 1);
-		$this->quickInitVar('metadata_prefix', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('archive_id', XOBJ_DTYPE_INT, TRUE);
+		$this->quickInitVar('module_id', XOBJ_DTYPE_INT, TRUE);
+		$this->quickInitVar('enable_archive', XOBJ_DTYPE_INT, TRUE, FALSE, FALSE, 1);
+		$this->quickInitVar('metadata_prefix', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setMetadataPrefix());
-		$this->quickInitVar('namespace', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('namespace', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setNamespace());
-		$this->quickInitVar('granularity', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('granularity', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setGranularity());
-		$this->quickInitVar('deleted_record', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('deleted_record', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setDeletedRecord());
-		$this->quickInitVar('earliest_date_stamp', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('earliest_date_stamp', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setEarliestDateStamp());
-		$this->quickInitVar('admin_email', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('admin_email', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setAdminEmail());
-		$this->quickInitVar('protocol_version', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('protocol_version', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setProtocolVersion());
-		$this->quickInitVar('repository_name', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('repository_name', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setRepositoryName());
-		$this->quickInitVar('base_url', XOBJ_DTYPE_TXTBOX, false, false, false,
+		$this->quickInitVar('base_url', XOBJ_DTYPE_TXTBOX, FALSE, FALSE, FALSE,
 			$this->handler->setBaseUrl());
-		$this->quickInitVar('compression', XOBJ_DTYPE_TXTBOX, true, false, false,
+		$this->quickInitVar('compression', XOBJ_DTYPE_TXTBOX, TRUE, FALSE, FALSE,
 			$this->handler->setCompression());
 		$this->initCommonVar('counter');
 		$this->initCommonVar('dohtml');
@@ -228,7 +228,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		// for everything)
 
 		$response = '';
-		$valid = true;
+		$valid = TRUE;
 
 		$response = $this->oai_header();
 		$response .= '<request verb="ListMetadataFormats"';
@@ -305,7 +305,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	public function listIdentifiers($content_handler, $metadataPrefix = null, $from = null,
 			$until = null, $set = null, $resumptionToken = null, $cursor = null) {
 
-		$haveResults = false; // flag if any records were returned by query
+		$haveResults = FALSE; // flag if any records were returned by query
 		$rows = array();
 
 		$response = $this->oai_header();
@@ -317,7 +317,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		// if an object was in fact returned proceed to process
 		if (!empty($rows)) {
 			$records = $datestamp = '';
-			$haveResults = true;
+			$haveResults = TRUE;
 
 			// generate the headers and spit out the xml
 			foreach($rows as $content) {
@@ -329,7 +329,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				unset($datestamp);
 			}
 		}
-		if ($haveResults == true) {
+		if ($haveResults == TRUE) {
 			$response .= '<ListIdentifiers>' . $records . '</ListIdentifiers>';
 		} else {
 			$response .= $this->throw_error('noRecordsMatch', 'No records match the request '
@@ -383,9 +383,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 */
 	public function getRecord($content_handler, $identifier = null, $metadataPrefix = null) {
 		$record = $response = $dc_identifier = '';
-		$valid = true;
+		$valid = TRUE;
 		$schema = 'oai-identifier.xsd';
-		$haveResult = false;
+		$haveResult = FALSE;
 
 		$response = $this->oai_header();
 		$response .= '<request verb="GetRecord" identifier="' . $identifier
@@ -395,26 +395,26 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		// input validation:
 		if (empty($identifier) ) {
 			// throws badArgument
-			$valid = false;
+			$valid = FALSE;
 			$response .= $this->throw_error('badArgument', 'Required argument missing: identifier');
 		}
 
 		if (empty($metadataPrefix)) {
 			// throws badArgument
-			$valid = false;
+			$valid = FALSE;
 			$response .= $this->throw_error('badArgument',
 				'Required arguments missing: metadataPrefix');
 		} else {
 			if ($metadataPrefix !== 'oai_dc') {
 				// throws cannotDisseminateFormat
-				$valid = false;
+				$valid = FALSE;
 				$response .= $this->throw_error('cannotDisseminateFormat', 'This archive only '
 					. 'supports unqualified Dublin Core metadata format');
 			}
 		}
 
 		// lookup record
-		if ($valid == true) {
+		if ($valid == TRUE) {
 
 			// only select records that are marked as online AND federated
 			$criteria = icms_buildCriteria(array(
@@ -430,7 +430,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 			// if an object was in fact returned proceed to process
 			if (!empty($contentObj)) {
-				$haveResult = true;
+				$haveResult = TRUE;
 				$content = $contentObj->toArray();
 				
 				// we need the date to remain as a timestamp though...so put it back!
@@ -472,7 +472,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				$response .= $this->record_to_xml($content);
 				$response .= '</GetRecord>';
 			}
-			if ($haveResult == false) {
+			if ($haveResult == FALSE) {
 				// throws idDoesNotExist
 				$response .= $this->throw_error('idDoesNotExist', 'Record ID does not exist, or '
 					. 'has not been selected for federation');
@@ -500,7 +500,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	public function listRecords($content_handler, $metadataPrefix = null, $from = null,
 		$until = null, $set = null, $resumptionToken = null, $cursor = null) {
 
-		$haveResults = false; // flags if any records were returned by query
+		$haveResults = FALSE; // flags if any records were returned by query
 		$contentArray = array();
 		
 		$response = $this->oai_header();
@@ -511,7 +511,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		// if there are some contents
 		if (!empty($contentArray)) {
 			$records = $sql = $rows = '';
-			$haveResults = true;
+			$haveResults = TRUE;
 			$contentObjArray = $rightsObjArray = $formatObjArray = array();
 			$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
 
@@ -522,9 +522,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			$sprockets_rights_handler = icms_getModuleHandler('rights', $sprocketsModule->getVar('dirname'),
 				'sprockets');
 
-			$rightsObjArray = $sprockets_rights_handler->getObjects(null, true);
+			$rightsObjArray = $sprockets_rights_handler->getObjects(null, TRUE);
 			$system_mimetype_handler = icms_getModuleHandler('mimetype', 'system');			
-			$mimetypeObjArray = $system_mimetype_handler->getObjects(null, true);
+			$mimetypeObjArray = $system_mimetype_handler->getObjects(null, TRUE);
 
 			// include the build in mimetype lookup list
 			$mimetype_list = icms_Utils::mimetypes();
@@ -555,7 +555,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				$records .= $this->record_to_xml($content);
 			}
 		}
-		if ($haveResults == true) {
+		if ($haveResults == TRUE) {
 			$response .= '<ListRecords>' . $records . '</ListRecords>';
 		}
 		
@@ -609,7 +609,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			
 		$sprocketsConfig = icms_getModuleConfig(basename(dirname(dirname(__FILE__))));
 
-		$valid = true; // if any part of the request is invalid, this will be set to false => exit
+		$valid = TRUE; // if any part of the request is invalid, this will be set to FALSE => exit
 		$response .= '<request verb="' . $requestVerb . '" metadataPrefix="' . $metadataPrefix . '"';
 
 		if (!empty($from)) {
@@ -634,23 +634,23 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		// this archive does not support resumption tokens
 		if (!empty($resumptionToken)) {
 			// throws badResumptionToken
-			$valid = false;
+			$valid = FALSE;
 			$response .= $this->throw_error('badResumptionToken', 'This archive does not support '
 				. 'resumption tokens, you get it all in one hit or not at all.');
 		}
 		if (!empty($set)) {
 			// throws noSetHierarchy
-			$valid = false;
+			$valid = FALSE;
 			$response .= $this->throw_error('noSetHierarchy', 'This archive does not support sets');
 		}
 
 		if (empty($metadataPrefix)) {
-			$valid = false;
+			$valid = FALSE;
 			$response .= $this->throw_error('badArgument', 'Missing required argument: '
 				. 'metadataPrefix');
 		} else {
 			if ($metadataPrefix !== 'oai_dc') {
-				$valid = false;
+				$valid = FALSE;
 				$response .= $this->throw_error('cannotDisseminateFormat', 'This archive only '
 					. 'supports unqualified Dublin Core metadata format');
 			}
@@ -664,15 +664,15 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 			$valid_timestamp = $this->validate_datetime($from);
 
-			if ($valid_timestamp == false) {
-				$valid = $false;
+			if ($valid_timestamp == FALSE) {
+				$valid = $FALSE;
 				$response .= $this->throw_error('badArgument', 'Invalid datetime: from');
 			} else {
 				$valid_timestamp = $time = '';
 				$time = $from;
 				$valid_timestamp = $this->not_before_earliest_datestamp($time);
-				if ($valid_timestamp == false) {
-					$valid = false;
+				if ($valid_timestamp == FALSE) {
+					$valid = FALSE;
 					$response .= $this->throw_error('badArgument', 'Invalid datetime: from '
 						. 'precedes earliest datestamp, your harvester should check this with an '
 						. 'Identify request');
@@ -685,15 +685,15 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			$until = str_replace('Z', '', $until);
 			$until = str_replace('T', ' ', $until);
 			$valid_timestamp = $this->validate_datetime($until);
-			if ($valid_timestamp == false) {
-				$valid = $false;
+			if ($valid_timestamp == FALSE) {
+				$valid = $FALSE;
 				$response .= $this->throw_error('badArgument', 'Invalid datetime: until');
 			} else {
 				$valid_timestamp = $time = '';
 				$time = $until;
 				$valid_timestamp = $this->not_before_earliest_datestamp($time);
-				if ($valid_timestamp == false) {
-					$valid = false;
+				if ($valid_timestamp == FALSE) {
+					$valid = FALSE;
 					$response .= $this->throw_error('badArgument', 'Invalid datetime: until '
 						. 'precedes earliest datestamp, your harvester should check this with an '
 						. 'Identify request');
@@ -705,8 +705,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		if (!empty($from) && !empty($until)) {
 			$valid_timestamp = '';
 			$valid_timestamp = $this->from_precedes_until($from, $until);
-			if ($valid_timestamp == false) {
-				$valid = false;
+			if ($valid_timestamp == FALSE) {
+				$valid = FALSE;
 				$response .= $this->throw_error('badArgument', 'Invalid datetime: until parameter '
 					. 'precedes from parameter');
 			}
@@ -714,7 +714,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 		// lookup all records within the specified time range / cursor offset limit
 		// if there is a $resumptionToken, need to look at the cursor position to see where to start
-		if ($valid == true) {
+		if ($valid == TRUE) {
 			$from = strtotime($from);
 			$until = strtotime($until);
 			$sql = $rows = $fields = '';
@@ -802,7 +802,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			$contentArray = array();
 
 			if ($requestVerb == 'ListRecords') {
-				$contentArray = $content_handler->getObjects(null, true, true, $sql);
+				$contentArray = $content_handler->getObjects(null, TRUE, TRUE, $sql);
 			} else {
 				$contentArray = $this->handler->query($sql);
 			}
@@ -1007,9 +1007,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		$earliest_date_stamp = strtotime($earliest_date_stamp);
 
 		if ($request_date_stamp >= $earliest_date_stamp) {
-			$validity = true;
+			$validity = TRUE;
 		} else {
-			$validity = false;
+			$validity = FALSE;
 		}
 		return $validity;
 	}
@@ -1035,12 +1035,12 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function validate_datetime($time) {
-		$valid = true;
+		$valid = TRUE;
 
 		if (preg_match("/^([1-3][0-9]{3,3})-(0?[1-9]|1[0-2])-(0?[1-9]|[1-2][0-9]|3[0-1])\s([0-1][0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])$/", $time)) {
 			// do nothing
 		} else {
-			$valid = false;
+			$valid = FALSE;
 		}
 		
 		////////// EXPLANATION OF THE DATETIME VALIDATION REGEX //////////
@@ -1080,7 +1080,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 */
 	public function from_precedes_until ($from, $until) {
 
-		$valid = false;
+		$valid = FALSE;
 		$from_datetime = $until_datetime = '';
 
 		// convert to unix timestamps for easy comparison
@@ -1088,7 +1088,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		$until_datetime = strtotime($until);
 
 		if ($from_datetime < $until_datetime) {
-			$valid = true;
+			$valid = TRUE;
 		}
 		
 		return $valid;

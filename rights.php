@@ -40,13 +40,13 @@ if($rightsObj && !$rightsObj->isNew()) {
 	$icmsTpl->assign('sprockets_title', _MD_SPROCKETS_ALL_RIGHTS);
 
 	$objectTable = new icms_ipf_view_Table($sprockets_rights_handler, $criteria = null, array(),
-			true);
+			TRUE);
 	$objectTable->isForUserSide();
 	$objectTable->addColumn(new icms_ipf_view_Column('title'));
 	$icmsTpl->assign('sprockets_rights_table', $objectTable->fetch());
 }
 
-$icmsTpl->assign('sprockets_module_home', sprockets_getModuleName(true, true));
+$icmsTpl->assign('sprockets_module_home', sprockets_getModuleName(TRUE, TRUE));
 $icmsTpl->assign('sprockets_display_breadcrumb', $sprocketsConfig['display_breadcrumb']);
 
 include_once 'footer.php';

@@ -30,7 +30,7 @@ global $sprocketsConfig;
 $clean_tag_id = $sort_order = '';
 $tags_with_rss = array();
 
-$clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : false;
+$clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : FALSE;
 
 if ($clean_tag_id) {
 
@@ -79,10 +79,10 @@ if ($clean_tag_id) {
 		$unified_feed->atom_link = '"' . SPROCKETS_URL . 'rss.php?tag_id=' . $tagObj->id() . '"';
 
 		// get the content objects for this tag's feed
-		// $tag_id = false, $module_id = false, $item_type = false, $start = false, $limit = false,
+		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $limit = FALSE,
 		// $sort = 'taglink_id', $order = 'DESC'
-		$content_object_array = $sprockets_taglink_handler->getTaggedItems($clean_tag_id, false,
-				false, false, icms::$module->config['number_rss_items']);
+		$content_object_array = $sprockets_taglink_handler->getTaggedItems($clean_tag_id, FALSE,
+				FALSE, FALSE, icms::$module->config['number_rss_items']);
 
 		// prepare an array of content items
 		foreach($content_object_array as $contentObj) {
@@ -96,7 +96,7 @@ if ($clean_tag_id) {
 			}
 			$description = encode_entities($contentObj->getVar('description', 'e'));
 			$title = encode_entities($contentObj->getVar('title'));
-			$link = encode_entities($contentObj->getItemLink(true));
+			$link = encode_entities($contentObj->getItemLink(TRUE));
 
 			$unified_feed->feeds[] = array (
 				'title' => $title,

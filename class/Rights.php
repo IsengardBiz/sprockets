@@ -26,10 +26,10 @@ class SprocketsRights extends icms_ipf_seo_Object {
 		
 		parent::__construct($handler);
 
-		$this->quickInitVar('rights_id', XOBJ_DTYPE_INT, true);
-		$this->quickInitVar('title', XOBJ_DTYPE_TXTBOX, true);
-		$this->quickInitVar('description', XOBJ_DTYPE_TXTAREA, false);
-		$this->quickInitVar('identifier', XOBJ_DTYPE_TXTBOX, false);
+		$this->quickInitVar('rights_id', XOBJ_DTYPE_INT, TRUE);
+		$this->quickInitVar('title', XOBJ_DTYPE_TXTBOX, TRUE);
+		$this->quickInitVar('description', XOBJ_DTYPE_TXTAREA, FALSE);
+		$this->quickInitVar('identifier', XOBJ_DTYPE_TXTBOX, FALSE);
 		$this->initCommonVar('dohtml');
 		$this->initCommonVar('dobr');
 		

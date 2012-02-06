@@ -74,7 +74,7 @@ if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
 // sanitise archive_id
 $clean_archive_id = isset($_GET['archive_id']) ? (int) $_GET['archive_id'] : 0 ;
 
-if (in_array($clean_op,$valid_op,true)) {
+if (in_array($clean_op,$valid_op,TRUE)) {
 	switch ($clean_op) {
 		case "mod":
 		case "changedField":
@@ -127,7 +127,7 @@ if (in_array($clean_op,$valid_op,true)) {
 				}
 			}
 
-			$objectTable = new icms_ipf_view_Table($sprockets_archive_handler, false);
+			$objectTable = new icms_ipf_view_Table($sprockets_archive_handler, FALSE);
 			$objectTable->addColumn(new icms_ipf_view_Column('repository_name'));
 			$objectTable->addColumn(new icms_ipf_view_Column('module_id'));
 			$objectTable->addColumn(new icms_ipf_view_Column('enable_archive'));

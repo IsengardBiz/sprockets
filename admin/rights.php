@@ -57,7 +57,7 @@ if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
 // sanitise rights_id
 $clean_rights_id = isset($_GET['rights_id']) ? (int) $_GET['rights_id'] : 0 ;
 
-if (in_array($clean_op,$valid_op,true)){
+if (in_array($clean_op,$valid_op,TRUE)){
   switch ($clean_op) {
   	case "mod":
   	case "changedField":

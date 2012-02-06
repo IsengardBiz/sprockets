@@ -58,7 +58,7 @@ if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
 // sanitise the taglink_id
 $clean_taglink_id = isset($_GET['taglink_id']) ? (int) $_GET['taglink_id'] : 0 ;
 
-if (in_array($clean_op,$valid_op,true)){
+if (in_array($clean_op,$valid_op,TRUE)){
   switch ($clean_op) {
   	case "mod":
   	case "changedField":

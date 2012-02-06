@@ -197,7 +197,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 *
 	 * @return string
 	 */
-	public function setBaseUrl($directory = false) {
+	public function setBaseUrl($directory = FALSE) {
 
 		$base_url = '';
 
@@ -252,7 +252,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 			$obj->setVar($field, 1);
 			$status = 1;
 		}
-		$this->insert($obj, true);
+		$this->insert($obj, TRUE);
 		
 		return $status;
 	}
@@ -269,10 +269,10 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 
 		$module_id = '';
 		$archive_object_array = $module_id_array = array();
-		$valid_target = true;
+		$valid_target = TRUE;
 
 		$module_id = $obj->getVar('module_id', 'e');
-		$archive_object_array = $this->getObjects($criteria = null, true, true);
+		$archive_object_array = $this->getObjects($criteria = null, TRUE, TRUE);
 
 		foreach ($archive_object_array as $archive) {
 			$module_id_array[$archive->id()] = $archive->getVar('module_id', 'e');
@@ -284,7 +284,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 
 				// a new archive cannot target the same module as an existing one
 				
-				$valid_target = false;
+				$valid_target = FALSE;
 
 			} else {
 
@@ -297,13 +297,13 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 					// the module ID should not match any of the remaining values
 					if (in_array($module_id, $module_id_array)) {
 
-						$valid_target = false;
+						$valid_target = FALSE;
 					}
 					
 				} else {
 
 					// we cannot change the target module if it is being handled by another archive
-					$valid_target = false;
+					$valid_target = FALSE;
 				}
 
 			}
@@ -311,7 +311,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 
 		if ($valid_target) {
 
-			return true;
+			return TRUE;
 
 		} else {
 

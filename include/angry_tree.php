@@ -184,7 +184,7 @@ class IcmsPersistableTree {
 	 * @param   integer $key             ID of the object to display as the root of select options
 	 * @return  string  HTML select box
 	 **/
-	function makeSelBox($name, $fieldName, $prefix='-', $selected='', $addEmptyOption = false, $key=0)
+	function makeSelBox($name, $fieldName, $prefix='-', $selected='', $addEmptyOption = FALSE, $key=0)
     {
         $ret = array(0 => '---');
 		

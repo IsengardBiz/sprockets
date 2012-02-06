@@ -34,7 +34,7 @@ if (isset($_POST['css'])) $clean_css = htmlentities(strip_tags(trim($_POST['css'
 
 // whitelist permitted operations
 $valid_op = array ('save', '');
-if (in_array($clean_op, $valid_op, true))
+if (in_array($clean_op, $valid_op, TRUE))
 {
 	global $icmsConfig;
 	$theme_path = ICMS_ROOT_PATH . '/themes/' . $icmsConfig['theme_set'] . '/';
@@ -54,7 +54,7 @@ if (in_array($clean_op, $valid_op, true))
 					$valid_stylesheets[] = $value;
 				}
 			}
-			$valid_stylesheet = false;
+			$valid_stylesheet = FALSE;
 			if (in_array($clean_stylesheet, $valid_stylesheets))
 			{
 				$valid_stylesheet = $clean_stylesheet;
