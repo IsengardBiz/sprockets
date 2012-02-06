@@ -126,13 +126,13 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		$button = '<a href="' . ICMS_URL . '/modules/' . basename(dirname(dirname(__FILE__)))
 				. '/admin/tag.php?tag_id=' . $this->id() . '&amp;op=toggleNavigationElement">';
 		if ($navigation_element == false) {
-			$button .= '<img src="../images/button_cancel.png" alt="'
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_cancel.png" alt="'
 				. _CO_SPROCKETS_TAG_NAVIGATION_DISABLED 
 				. '" title="' . _CO_SPROCKETS_TAG_NAVIGATION_ENABLE . '" /></a>';
 		} else {
-			$button .= '<img src="../images/button_ok.png" alt="'
-				. _CO_SPROCKETS_TAG_NAVIGATION_ENABLED
-				. '" title="' . _CO_SPROCKETS_TAG_NAVIGATION_DISABLE . '" /></a>';
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_ok.png" alt="'
+				. _CO_SPROCKETS_TAG_NAVIGATION_ENABLED . '" title="'
+				. _CO_SPROCKETS_TAG_NAVIGATION_DISABLE . '" /></a>';
 		}
 		return $button;
 	}
@@ -166,11 +166,11 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		$button = '<a href="' . ICMS_URL . '/modules/' . basename(dirname(dirname(__FILE__)))
 				. '/admin/tag.php?tag_id=' . $this->id() . '&amp;op=toggleStatus">';
 		if ($status == false) {
-			$button .= '<img src="../images/button_cancel.png" alt="' . _CO_SPROCKETS_TAG_OFFLINE 
-			. '" title="' . _CO_SPROCKETS_TAG_SWITCH_ONLINE . '" /></a>';
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_cancel.png" alt="' 
+				. _CO_SPROCKETS_TAG_OFFLINE . '" title="' . _CO_SPROCKETS_TAG_SWITCH_ONLINE . '" /></a>';
 		} else {
-			$button .= '<img src="../images/button_ok.png" alt="' . _CO_SPROCKETS_TAG_ONLINE
-			. '" title="' . _CO_SPROCKETS_TAG_SWITCH_OFFLINE . '" /></a>';
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_ok.png" alt="' 
+				. _CO_SPROCKETS_TAG_ONLINE . '" title="' . _CO_SPROCKETS_TAG_SWITCH_OFFLINE . '" /></a>';
 		}
 		return $button;
 	}

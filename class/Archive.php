@@ -137,11 +137,13 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		$button = '<a href="' . ICMS_URL . '/modules/' . basename(dirname(dirname(__FILE__)))
 				. '/admin/archive.php?archive_id=' . $this->id() . '&amp;op=toggleStatus">';
 		if ($status == 0) {
-			$button .= '<img src="../images/button_cancel.png" alt="' . _CO_SPROCKETS_ARCHIVE_OFFLINE 
-			. '" title="' . _CO_SPROCKETS_ARCHIVE_SWITCH_ONLINE . '" /></a>';
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_cancel.png" alt="' 
+				. _CO_SPROCKETS_ARCHIVE_OFFLINE . '" title="' . _CO_SPROCKETS_ARCHIVE_SWITCH_ONLINE 
+				. '" /></a>';
 		} else {
-			$button .= '<img src="../images/button_ok.png" alt="' . _CO_SPROCKETS_ARCHIVE_ONLINE
-			. '" title="' . _CO_SPROCKETS_ARCHIVE_SWITCH_OFFLINE . '" /></a>';
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_ok.png" alt="' 
+			. _CO_SPROCKETS_ARCHIVE_ONLINE . '" title="' . _CO_SPROCKETS_ARCHIVE_SWITCH_OFFLINE 
+			. '" /></a>';
 		}
 		return $button;
 	}
