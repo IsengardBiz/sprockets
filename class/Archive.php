@@ -527,7 +527,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			$mimetypeObjArray = $system_mimetype_handler->getObjects(null, true);
 
 			// include the build in mimetype lookup list
-			$mimetype_list = include ICMS_ROOT_PATH . '/class/mimetypes.inc.php';
+			$mimetype_list = icms_Utils::mimetypes();
 
 			// process each publication and generate XML output
 			foreach($contentArray as $contentObj) {

@@ -44,7 +44,7 @@ function sprockets_getModuleName($withLink = true, $forBreadCrumb = false, $modu
 		$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
 		$moduleName = $sprocketsModule->getVar('dirname');
 	}
-	$icmsModuleConfig = icms_getModuleConfig($moduleName);
+	
 	if (!isset ($sprocketsModule)) {
 		return '';
 	}

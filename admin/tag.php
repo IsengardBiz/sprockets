@@ -33,7 +33,7 @@ function edittag($tag_id = 0)
 			$_POST['parent_id'] == '0';
 		}
 		
-        $controller = new IcmsPersistableController($sprockets_tag_handler);		
+        $controller = new icms_ipf_Controller($sprockets_tag_handler);		
 		$controller->postDataToObject($tagObj);
 	}
 	
