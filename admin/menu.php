@@ -20,10 +20,11 @@ $adminmenu[$i]['title'] = _MI_SPROCKETS_RIGHTS;
 $adminmenu[$i]['link'] = 'admin/rights.php';
 
 // Included for development/debugging purpose only, uncomment to access taglinks table
-
+/*
 $i++;
 $adminmenu[$i]['title'] = _MI_SPROCKETS_TAGLINKS;
 $adminmenu[$i]['link'] = 'admin/taglink.php';
+*/
 
 $i++;
 $adminmenu[$i]['title'] = _MI_SPROCKETS_ARCHIVE;
@@ -39,9 +40,8 @@ $sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
 
 if (isset($sprocketsModule)) {
 
-	$i = -1;
+	$i = 0;
 
-	$i++;
 	$headermenu[$i]['title'] = _PREFERENCES;
 	$headermenu[$i]['link'] = '../../system/admin.php?fct=preferences&amp;op=showmod&amp;mod='
 		. $sprocketsModule->getVar('mid');
@@ -57,5 +57,5 @@ if (isset($sprocketsModule)) {
 
 	$i++;
 	$headermenu[$i]['title'] = _MODABOUT_ABOUT;
-	$headermenu[$i]['link'] = ICMS_URL . '/modules/sprockets/admin/about.php';
+	$headermenu[$i]['link'] = ICMS_URL . '/modules/' . $sprocketsModule->getVar('dirname') . '/admin/about.php';
 }

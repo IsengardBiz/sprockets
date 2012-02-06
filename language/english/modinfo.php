@@ -29,7 +29,7 @@ define("_MI_SPROCKETS_DISPLAY_BREADCRUMB_DSC", "Show or hide the horizontal brea
 define("_MI_SPROCKETS_NUMBER_RSS_ITEMS", "Number of items in RSS feeds?");
 define("_MI_SPROCKETS_NUMBER_RSS_ITEMS_DSC", "Recommended (sane) range is 5-10 items. This is query
 	intensive, so be careful.");
-define("_MI_SPROCKETS_RESUMPTION_TOKEN_CURSOR_OFFSET", "OAIMPH resumption token offset (records).");
+define("_MI_SPROCKETS_RESUMPTION_TOKEN_CURSOR_OFFSET", "OAIMPH resumption token offset (records)");
 define("_MI_SPROCKETS_RESUMPTION_TOKEN_CURSOR_OFFSET_DSC", "The maximum number of records to return 
 	in response to an OAIPMH ListRecords or ListIdentifiers request. Such requests generate a large
 	number of queries. If your OAI repository has a large number of records (hundreds or thousands),
@@ -39,11 +39,11 @@ define("_MI_SPROCKETS_RESUMPTION_TOKEN_CURSOR_OFFSET_DSC", "The maximum number o
 	in a series of smaller transactions without overloading the server. Sites on shared web hosting 
 	should keep this value low (<100), sites with dedicated servers can consider increasing it. To 
 	disable partial harvesting (ie. return all records), set this value to 0.");
-define("_MI_SPROCKETS_RESUMPTION_TOKEN_EXPIRATION", "OAIPMH resumption token expiration (seconds).");
+define("_MI_SPROCKETS_RESUMPTION_TOKEN_EXPIRATION", "OAIPMH resumption token expiration (seconds)");
 define("_MI_SPROCKETS_RESUMPTION_TOKEN_EXPIRATION_DSC", "The time that a resumption 
 	token will remain valid. Expired tokens are refused. 30 minutes (1800 seconds) is a reasonable 
 	value.");
-define("_MI_SPROCKETS_RESUMPTION_TOKEN_THROTTLE", "OAIPMH throttle (seconds).");
+define("_MI_SPROCKETS_RESUMPTION_TOKEN_THROTTLE", "OAIPMH throttle (seconds)");
 define("_MI_SPROCKETS_RESUMPTION_TOKEN_THROTTLE_DSC", "To reduce server load from OAIPMH ListRecords 
 	and ListIdentifiers requests you can ask clients to wait for a while before submitting 
 	their next partial harvest request. Requests made within the moratorium period will be ignored 
