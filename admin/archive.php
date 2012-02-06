@@ -34,7 +34,7 @@ function editarchive($archive_id = 0) {
 		
 		if ($clean_module_id !== '0') {
 			$module_handler = icms::handler('icms_module');
-			$selected_module = &$module_handler->get($clean_module_id);
+			$selected_module = $module_handler->get($clean_module_id);
 			$target_directory = $selected_module->getVar('dirname');
 			$_POST['base_url'] = ICMS_URL . '/modules/' . $target_directory	. '/oaipmh_target.php';
 		}	

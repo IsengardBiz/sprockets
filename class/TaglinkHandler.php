@@ -39,7 +39,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$rows = $this->query($sql, $criteria);
 		foreach ($rows as $key => $mid) {			
-			$module_list[$mid] = &$module_handler->get($mid);
+			$module_list[$mid] = $module_handler->get($mid);
 		}
 		
 		return $module_list;
@@ -165,7 +165,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Retrieve the module objects and create a subarray for each with its mid as key, to hold its taglinks
 		foreach ($module_ids as $key => $mid) {
 			$module_handler = icms::handler('icms_module');
-			$module_array[$mid] = &$module_handler->get($mid);
+			$module_array[$mid] = $module_handler->get($mid);
 		}
 
 		// IMPORTANT!! Sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
@@ -235,7 +235,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		 */
 		
 		// Remove existing taglinks prior to saving the updated set
-		$this->deleteAllForObject(&$obj);
+		$this->deleteAllForObject($obj);
 		
 		$tag_array = $obj->getVar($tag_var);
 		$moduleObj = icms_getModuleInfo($obj->handler->_moduleName);
