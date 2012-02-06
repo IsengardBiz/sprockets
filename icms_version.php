@@ -20,7 +20,7 @@ $modversion = array(
   'version'=> '1.1',
   'description'=> _MI_SPROCKETS_MD_DESC,
   'author'=> "Madfish (Simon Wilkinson)",
-  'credits'=> "Skeleton code generated with ImBuilding.",
+  'credits'=> "Skeleton code generated with ImBuilding. Module icon by David Lanham http://dlanham.com/",
   'help'=> "",
   'license'=> "GNU General Public License (GPL)",
   'official'=> 0,
@@ -34,8 +34,8 @@ $modversion = array(
 /**  Development information */
   'status_version'=> "1.1",
   'status'=> "Beta",
-  'date'=> "10/10/2011",
-  'author_word'=> "",
+  'date'=> "6/2/2012",
+  'author_word'=> "This version of Sprockets is compatible with ImpressCMS V1.3.x and V2.0.",
 
 /** Contributors */
   'developer_website_url' => "https://www.isengard.biz",

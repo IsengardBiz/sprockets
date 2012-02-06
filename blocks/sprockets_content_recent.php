@@ -199,8 +199,8 @@ function sprockets_content_recent_edit($options) {
 	if ($sprocketsModule) {
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_RECENT_TAG . '</td>';
-		// Parameters XoopsFormSelect: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
-		$form_select = new XoopsFormSelect('', 'options[]', $options[1], '1', FALSE);
+		// Parameters icms_form_elements_Select: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
+		$form_select = new icms_form_elements_Select('', 'options[]', $options[1], '1', FALSE);
 		$tagList = $sprockets_tag_handler->getList();
 		$tagList = array(0 => 'All') + $tagList;
 		$form_select->addOptionArray($tagList);
@@ -341,8 +341,8 @@ function sprockets_content_recent_edit($options) {
 	
 	// build a select box of article titles
 	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_SPOTLIGHTED_ARTICLE . '</td>';
-	// Parameters XoopsFormSelect: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
-	$form_spotlight = new XoopsFormSelect('', 'options[5]', $options[5], '1', FALSE);
+	// Parameters icms_form_elements_Select: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
+	$form_spotlight = new icms_form_elements_Select('', 'options[5]', $options[5], '1', FALSE);
 	$form_spotlight->addOptionArray($content_array);
 	$form .= '<td>' . $form_spotlight->render() . '</td></tr>';
 	$form .= '</table>';
