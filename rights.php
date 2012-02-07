@@ -35,8 +35,6 @@ if($rightsObj && !$rightsObj->isNew()) {
 } else {
 
 	// display a table listing all rights
-	include_once ICMS_ROOT_PATH."/kernel/icmspersistabletable.php";
-
 	$icmsTpl->assign('sprockets_title', _MD_SPROCKETS_ALL_RIGHTS);
 
 	$objectTable = new icms_ipf_view_Table($sprockets_rights_handler, $criteria = null, array(),
