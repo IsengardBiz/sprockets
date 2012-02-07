@@ -30,23 +30,24 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getModuleOptions() {
-		$newsModule = icms_getModuleInfo('news');
-		$podcastModule = icms_getModuleInfo('podcast');
-		$libraryModule = icms_getModuleInfo('library');
 		
 		$module_options = array();
+		$module_handler = icms::handler("icms_module");
 		
 		// need to add something to check that only one archive object is created per module
 		
-		if ($newsModule) {
+		if (icms_get_module_status("news")) {
+			$newsModule = $module_handler->getByDirname("news");
 			$module_options[$newsModule->getVar('mid')] = $newsModule->getVar('name');
 		}
 
-		if ($podcastModule) {
+		if (icms_get_module_status("podcast")) {
+			$podcastModule = $module_handler->getByDirname("podcast");
 			$module_options[$podcastModule->getVar('mid')] = $podcastModule->getVar('name');
 		}
 		
-		if ($libraryModule) {
+		if (icms_get_module_status("library")) {
+			$libraryModule = $module_handler->getByDirname("library");
 			$module_options[$libraryModule->getVar('mid')] = $libraryModule->getVar('name');
 		}
 		
@@ -60,38 +61,39 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getModuleNames() {
-		$newsModule = icms_getModuleInfo('news');
-		$podcastModule = icms_getModuleInfo('podcast');
-		$libraryModule = icms_getModuleInfo('library');
-		$catalogueModule = icms_getModuleInfo('catalogue');
-		$partnersModule = icms_getModuleInfo('partners');
-		$projectsModule = icms_getModuleInfo('projects');
 		
 		$module_names = array();
+		$module_handler = icms::handler("icms_module");
 		
 		// need to add something to check that only one archive object is created per module
 		
-		if ($newsModule) {
+		if (icms_get_module_status("news")) {
+			$newsModule = $module_handler->getByDirname("news");
 			$module_names[$newsModule->getVar('mid')] = $newsModule->getVar('dirname');
 		}
 
-		if ($podcastModule) {
+		if (icms_get_module_status("podcast")) {
+			$podcastModule = $module_handler->getByDirname("podcast");
 			$module_names[$podcastModule->getVar('mid')] = $podcastModule->getVar('dirname');
 		}
 		
-		if ($libraryModule) {
+		if (icms_get_module_status("library")) {
+			$libraryModule = $module_handler->getByDirname("library");
 			$module_names[$libraryModule->getVar('mid')] = $libraryModule->getVar('dirname');
 		}
 		
-		if ($catalogueModule) {
+		if (icms_get_module_status("catalogue")) {
+			$catalogueModule = $module_handler->getByDirname("catalogue");
 			$module_names[$catalogueModule->getVar('mid')] = $catalogueModule->getVar('dirname');
 		}
 		
-		if ($partnersModule) {
+		if (icms_get_module_status("partners")) {
+			$partnersModule = $module_handler->getByDirname("partners");
 			$module_names[$partnersModule->getVar('mid')] = $partnersModule->getVar('dirname');
 		}
 		
-		if ($projectsModule) {
+		if (icms_get_module_status("projects")) {
+			$projectsModule = $module_handler->getByDirname("projects");
 			$module_names[$projectsModule->getVar('mid')] = $projectsModule->getVar('dirname');
 		}
 		

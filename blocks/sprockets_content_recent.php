@@ -23,8 +23,8 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS root path not defined");
 function sprockets_content_recent_show($options) {
 	include_once(ICMS_ROOT_PATH . '/modules/' . basename(dirname(dirname(__FILE__)))
 		. '/include/common.php');
-	
-	$sql = $criteria = $spotlight_id = '';
+
+	$sql = $criteria = $spotlight_removed = FALSE;
 	$module_options = $taglink_object_array = $content_ids = $content_object_array = 
 		$combined_content_array = $rows = array();
 	
@@ -35,26 +35,31 @@ function sprockets_content_recent_show($options) {
 	$sprockets_taglink_handler = icms_getModuleHandler('taglink', 
 		basename(dirname(dirname(__FILE__))), 'sprockets');
 	
+	// Note: Spotlighted articles are loaded separately, in order to keep things simple.
+	// Otherwise the whole tag filtering business creates headaches and complications.
 	$criteria = new icms_db_criteria_Compo();
 	if ($options[1]) {
 		$criteria->add(new icms_db_criteria_Item('tid', $options[1]));
-		
 	}
 	$criteria->setSort('taglink_id');
 	$criteria->setOrder('DESC');
-	$criteria->setLimit($options[0]);
+	$criteria->setLimit($options[0] + 1); // in case we need to delete the spotlight item
 	
-	$taglink_object_array = $sprockets_taglink_handler->getObjects($criteria);
+	$taglink_object_array = $sprockets_taglink_handler->getObjects($criteria, TRUE, TRUE);
 	unset($criteria);
+	
+	// check if the spotlight item has been retrieved, if so remove it, handled separately
+	if (array_key_exists($options[5], $taglink_object_array)) {
+		unset($taglink_object_array[$options[5]]);
+		$spotlight_removed = TRUE;
+	}
 	
 	// get a list of compatible modules
 	$installed_modules = $sprockets_archive_handler->getModuleNames();
-	
-	/** 
-	 * Its simpler just to do a separate query for each module, perhaps a more efficient way
-	 * can be found later on. Each compatible module needs to have its primary content object added
-	 * to this array, which is used to retrieve appropriate handlers.
-	 */
+
+	 // Its simpler just to do a separate query for each module, perhaps a more efficient way
+	 // can be found later on. Each compatible module needs to have its primary content object added
+	 // to this array, which is used to retrieve appropriate handlers.
 	
 	$item_array = array(
 		'news' => 'article',
@@ -67,30 +72,34 @@ function sprockets_content_recent_show($options) {
 
 	foreach ($installed_modules as $module_key => $module_name) {
 		
+		// Initialise
 		$id_string = '';
 		$content_ids[$module_name] = array();
 		$id_field = $item_array[$module_name] . '_id';
 		$content_handler = icms_getModuleHandler($item_array[$module_name], $module_name,
 				$module_name);
 
-		/**
-		 * Need to sort the taglinks into their respective modules and objects, in order to set up 
-		 * queries. Taglinks know their module ID (mid), tag ID (tid), item ID (iid) and type 
-		 * (eg. 'article'). The results have been filtered by tag ID already, but need to be sorted by
-		 * module ID. If more complex modules are introduced later on, it may become necessary to sort 
-		 * by object type as well. However, at the moment each module only has one content object so 
-		 * this issue can be ignored.
-		 */
+		// Need to sort the taglinks into their respective modules and objects, in order to set up 
+		// queries. Taglinks know their module ID (mid), tag ID (tid), item ID (iid) and type 
+		// (eg. 'article'). The results have been filtered by tag ID already, but need to be sorted by
+		// module ID. If more complex modules are introduced later on, it may become necessary to sort 
+		// by object type as well. However, at the moment each module only has one content object so 
+		// this issue can be ignored.
 
 		foreach ($taglink_object_array as $key => $taglink) {
-			if ($taglink->id() == $options[5]) {
-				$spotlight_id = $taglink->getVar('taglink_id');
-			}
 			if ($taglink->getVar('mid') == $module_key) {
 				$content_ids[$module_name][$taglink->id()] = $taglink->getVar('iid');
 			}
 		}
+
+		// If the spotlighted item was NOT removed (and is not set as the most recent item),
+		// unset the last item on the array to keep the expected length
+		if ($options[5] > 0 && $spotlight_removed == FALSE)
+		{
+			$removed = array_pop($taglink_object_array);
+		}
 		
+		// This is probably where the removed spotlight gets reinserted.
 		if (count($content_ids[$module_name]) >0) {
 			
 			// construct a string of IDs to use as a $criteria
@@ -107,6 +116,7 @@ function sprockets_content_recent_show($options) {
 			$content_object_array[$module_name] = $content_handler->getObjects($criteria, TRUE, TRUE);
 
 			// Append the content objects to the combined content array
+			// Potential problem with the spotlight - array merge renumbers numeric keys, so the ID is lost from this point on
 			$combined_content_array = array_merge($combined_content_array, $content_object_array[$module_name]);
 		} else {
 			unset($content_ids[$module_name]);
@@ -133,26 +143,27 @@ function sprockets_content_recent_show($options) {
 	
 	$block['sprockets_recent_content'] = $combined_content_array;
 
-	// check if spotlight mode is active, and if spotlight article has already been retrieved
-	if ($options[4] == TRUE && (count($block['sprockets_recent_content']) > 0)) {	
-		if (array_key_exists($spotlight_id, $block['sprockets_recent_content'])) {
-			$spotlightObj = $block['sprockets_recent_content'][$spotlight_id];
-			unset($block['sprockets_recent_content'][$spotlight_id]);
-		} elseif ($options[5] == 0) {
+	// check if spotlight mode is active ($options[4])
+	if ($options[4])
+	{
+		if ($options[5] == 0) // Spotlight is set to most recent item
+		{
 			$spotlightObj = array_shift($block['sprockets_recent_content']);
-		} else {
-			
-			// the stored ID is actually the taglink ID, need to recover the taglink to get spotlight
-			$taglinkObj = $sprockets_taglink_handler->get($options[5]);	
-			$spotlightObj = $taglinkObj->getLinkedObject();
-			
-			$trim = array_pop($block['sprockets_recent_content']);
 		}
+		else // Spotlight set to specific item, do lookup
+		{
+			$spotlightTaglinkObj = $sprockets_taglink_handler->get($options[5]);	
+			$spotlightObj = $spotlightTaglinkObj->getLinkedObject();
+		}
+		
 		// prepare spotlight content for display
-		$block['sprockets_recent_content_spotlight_title'] = $spotlightObj->getItemLink();
-		$block['sprockets_recent_content_spotlight_description'] = $spotlightObj->getVar('description');
-		$block['sprockets_recent_content_spotlight_link'] = $spotlightObj->getItemLink();
-		$block['sprockets_recent_content_title'] = _MB_SPROCKETS_RECENT_CONTENT_TITLE;
+		if ($spotlightObj)
+		{
+			$block['sprockets_recent_content_spotlight_title'] = $spotlightObj->getItemLink();
+			$block['sprockets_recent_content_spotlight_description'] = $spotlightObj->getVar('description');
+			$block['sprockets_recent_content_spotlight_link'] = $spotlightObj->getItemLink();
+			$block['sprockets_recent_content_title'] = _MB_SPROCKETS_RECENT_CONTENT_TITLE;
+		}
 	}
 
 	// prepare for display
@@ -188,7 +199,7 @@ function sprockets_content_recent_edit($options) {
 
 	$sorted = $unsorted = $content_array = array();
 	
-	// select number of recent articles to display in the block
+	// select number of recent items to display in the block
 	$form = '<table><tr>';
 	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_RECENT_LIMIT . '</td>';
 	$form .= '<td>' . '<input type="text" name="options[]" value="' . $options[0] . '" /></td>';
@@ -196,7 +207,6 @@ function sprockets_content_recent_edit($options) {
 
 	// optionally display results from a single tag - only if sprockets module is installed
 	$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
-	if ($sprocketsModule) {
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_RECENT_TAG . '</td>';
 		// Parameters icms_form_elements_Select: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
@@ -205,7 +215,6 @@ function sprockets_content_recent_edit($options) {
 		$tagList = array(0 => 'All') + $tagList;
 		$form_select->addOptionArray($tagList);
 		$form .= '<td>' . $form_select->render() . '</td></tr>';
-	}
 
 	// customise date format string as per PHP's date() method
 	$form .= '<td>' . _MB_SPROCKETS_CONTENT_DATE_STRING . '</td>';	

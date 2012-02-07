@@ -20,11 +20,11 @@ $adminmenu[$i]['title'] = _MI_SPROCKETS_RIGHTS;
 $adminmenu[$i]['link'] = 'admin/rights.php';
 
 // Included for development/debugging purpose only, uncomment to access taglinks table
-/*
+
 $i++;
 $adminmenu[$i]['title'] = _MI_SPROCKETS_TAGLINKS;
 $adminmenu[$i]['link'] = 'admin/taglink.php';
-*/
+
 
 $i++;
 $adminmenu[$i]['title'] = _MI_SPROCKETS_ARCHIVE;

@@ -106,7 +106,7 @@ class SprocketsTaglink extends icms_ipf_Object {
 	}
 
 	/**
-	 * Returns the linked object associated with this taglink
+	 * Returns the linked object associated with this taglink (online objects only)
 	 *
 	 * @return object $contentObj
 	 */
@@ -119,6 +119,10 @@ class SprocketsTaglink extends icms_ipf_Object {
 			$module->getVar('dirname'));
 		
 		$contentObj = $content_handler->get($this->getItemId());
+		if ($contentObj->getVar('online_status', 'e') == 0)
+		{
+			$contentObj = null;
+		}
 		
 		return $contentObj;
 	}
