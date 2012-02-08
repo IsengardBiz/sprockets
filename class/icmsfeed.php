@@ -16,8 +16,6 @@ if (!defined('ICMS_ROOT_PATH')) {
 	exit();
 }
 
-include_once ICMS_ROOT_PATH . '/class/template.php';
-
 class IcmsFeed {
 
 	public $title;
@@ -93,11 +91,11 @@ class IcmsFeed {
 	 * Render the feed and display it directly
 	 */
 	public function render() {
-		global $xoopsLogger;
-		$xoopsLogger->disableLogger();
+		
+		icms::$logger->disableLogger();
 
 		header('Content-Type: application/rss+xml; charset='._CHARSET);
-		$xoopsOption['template_main'] = "db:podcast_rss.html";
+		$xoopsOption['template_main'] = "db:sprockets_rss.html";
 		
 		$tpl = new icms_view_Tpl();
 
