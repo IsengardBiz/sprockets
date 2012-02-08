@@ -100,7 +100,7 @@ class SprocketsTaglink extends icms_ipf_Object {
 	public function getModuleObject() {
 		
 		$module_handler = icms::handler('icms_module');
-		$module = $module_handler->get($this->getVar('mid', 'e'));
+		$module = $module_handler->getByDirname($this->getVar('mid', 'e'));
 
 		return $module;
 	}
