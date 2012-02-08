@@ -104,7 +104,7 @@ if ($clean_tag_id) {
 				'description' => $description,
 				'author' => $creator,
 				// pubdate must be a RFC822-date-time EXCEPT with 4-digit year or won't validate
-				'pubdate' => date(DATE_RSS, $contentObj->getVar('date')),
+				'pubdate' => date(DATE_RSS, $contentObj->getVar('date', 'e')),
 				'guid' => $link,
 				'category' => $tag_title
 				);
