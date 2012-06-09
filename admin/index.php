@@ -12,5 +12,5 @@
 * @version		$Id$
 */
 
-header('location: tag.php');
+include 'tag.php';
 exit;
