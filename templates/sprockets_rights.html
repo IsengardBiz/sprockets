@@ -24,8 +24,10 @@
 <{/if}>
 
 <{if $sprockets_rights_table}>
-	<h2><{$sprockets_title}></h2>
-	<{$sprockets_rights_table}>
+	<div id="sprockets_content_container">
+		<h2><{$sprockets_title}></h2>
+		<{$sprockets_rights_table}>
+	</div>
 <{/if}>
 
 <{includeq file='db:sprockets_footer.html'}>
