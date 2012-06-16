@@ -1,0 +1,18 @@
+Version 1.0 Final
+=================
+
+- First public release of the module.
+
+Version 1.01
+------------
+
+* Remove unused reference to Catalogue module in /class/archive.php (sato-san)
+
+Version 1.1
+-----------
+
+* Updated to comply with ImpressCMS 1.3/2.0 specification (no longer compatible with 1.2).
+
+Version 1.11
+------------
+* Fix slow index page load when gzip enabled on ICMS 1.3.2.

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<channel>
+		<title><{$channel_title}></title>
+		<link><{$channel_link}></link>
+		<description><{$channel_desc}></description>
+		<{if $channel_copyright}><copyright><{$channel_copyright}></copyright><{/if}>
+		<{if $channel_lastbuild}><lastBuildDate><{$channel_lastbuild}></lastBuildDate><{/if}>
+		<docs>http://backend.userland.com/rss/</docs>
+		<{if $channel_generator}><generator><{$channel_generator}></generator><{/if}>
+		<{if $channel_category}><category><{$channel_category}></category><{/if}>
+		<{if $channel_editor}><managingEditor><{$channel_editor}></managingEditor><{/if}>
+		<{if $channel_webmaster}><webMaster><{$channel_webmaster}></webMaster><{/if}>
+		<ttl><{$channel_ttl}></ttl>
+		<{if $channel_language}><language><{$channel_language}></language><{/if}>
+		<atom:link href=<{$atom_link}> rel="self" type="application/rss+xml" />
+			<{if $image_url != ""}><image>
+				<title><{$channel_title}></title>
+				<url><{$image_url}></url>
+				<link><{$channel_link}></link>
+				<width><{$channel_width}></width>
+				<height><{$channel_height}></height>
+			</image><{/if}>
+			<{foreach item=item from=$items}><item>
+				<title><{$item.title}></title>
+				<{if $item.link}><link><{$item.link}></link><{/if}>
+				<{if $item.description}><description><{$item.description}></description><{/if}>
+				<{if $item.pubdate}><pubDate><{$item.pubdate}></pubDate><{/if}>
+				<guid><{$item.guid}></guid>
+				<{if $item.category}><category><{$item.category}></category><{/if}>
+				<{if $item.author}><{foreach item=creator from=$item.author}><dc:creator><{$creator}></dc:creator><{/foreach}><{/if}>
+				<{if $item.enclosure}><{$item.enclosure}><{/if}>
+			</item><{/foreach}>
+	</channel>
+</rss>
