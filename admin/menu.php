@@ -14,6 +14,10 @@ $i = 0;
 
 $adminmenu[$i]['title'] = _MI_SPROCKETS_TAGS;
 $adminmenu[$i]['link'] = 'admin/tag.php';
+$i++;
+
+$adminmenu[$i]['title'] = _MI_SPROCKETS_CATEGORIES;
+$adminmenu[$i]['link'] = 'admin/category.php';
 
 $i++;
 $adminmenu[$i]['title'] = _MI_SPROCKETS_RIGHTS;
