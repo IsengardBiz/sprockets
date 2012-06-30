@@ -70,7 +70,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 */
 	
 	function getVar($key, $format = 's') {
-		if ($format == 's' && in_array($key, array ('label_type', 'parent_id', 'icon',
+		if ($format == 's' && in_array($key, array ('label_type', 'parent_id', 'mid', 'icon',
 			'navigation_element', 'rss'))) {
 			return call_user_func(array ($this,	$key));
 		}
@@ -98,6 +98,11 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		}
 	}
 	
+	/**
+	 * Converts parent_id into a human readable string
+	 *
+	 * @return string
+	 */
 	public function parent_id() {
 		
 		$parent_id = $this->getVar('parent_id', 'e');
@@ -113,6 +118,27 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		}
 		return FALSE;
 	}
+	
+	/**
+	 * Converts mid into a human readable icon (yes/no)
+	 *
+	 * @return string
+	 */
+	public function mid()
+	{
+		$mid = $this->getVar('mid', 'e');
+		$moduleObj = $moduleName = '';
+		
+		if ($mid)
+		{
+			// Get the module object and retrieve its name
+			$module_handler = icms::handler('icms_module');
+			$moduleObj = $module_handler->get($mid);
+			$moduleName = $moduleObj->getVar('name');
+		}
+		return $moduleName;
+	}
+	
 	
 	/**
 	 * Converts navigation_element into a human readable icon (yes/no)
