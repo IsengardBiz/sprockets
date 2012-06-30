@@ -101,115 +101,120 @@ function edittag($tag_id = 0)
 
 include_once("admin_header.php");
 
-$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))),
-	'sprockets');
+if (icms_get_module_status("sprockets"))
+{
+	$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))),
+		'sprockets');
 
-$clean_op = '';
+	$clean_op = '';
 
-/** Create a whitelist of valid values */
-$valid_op = array ('mod','changedField','addtag', 'toggleStatus', 'toggleNavigationElement', 'del',
-	'');
+	/** Create a whitelist of valid values */
+	$valid_op = array ('mod','changedField','addtag', 'toggleStatus', 'toggleNavigationElement', 'del',
+		'');
 
-if (isset($_GET['op'])) $clean_op = htmlentities($_GET['op']);
-if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
+	if (isset($_GET['op'])) $clean_op = htmlentities($_GET['op']);
+	if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
 
-// Sanitise the tag_id
-$clean_tag_id = isset($_GET['tag_id']) ? (int) $_GET['tag_id'] : 0 ;
+	// Sanitise the tag_id
+	$clean_tag_id = isset($_GET['tag_id']) ? (int) $_GET['tag_id'] : 0 ;
 
-if (in_array($clean_op,$valid_op,TRUE)){
-  switch ($clean_op) {
-  	case "mod":	
-  	case "changedField":
+	if (in_array($clean_op,$valid_op,TRUE)){
+	  switch ($clean_op) {
+		case "mod":	
+		case "changedField":
 
-  		icms_cp_header();
-  		edittag($clean_tag_id);
-		
-  		break;
-	
-  	case "addtag":
+			icms_cp_header();
+			edittag($clean_tag_id);
 
-        $controller = new icms_ipf_Controller($sprockets_tag_handler);
-  		$controller->storeFromDefaultForm(_AM_SPROCKETS_TAG_CREATED, _AM_SPROCKETS_TAG_MODIFIED);
+			break;
 
-  		break;
-	
-	case "toggleStatus":
-		
-			$status = $sprockets_tag_handler->toggleStatus($clean_tag_id, 'rss');
+		case "addtag":
+
+			$controller = new icms_ipf_Controller($sprockets_tag_handler);
+			$controller->storeFromDefaultForm(_AM_SPROCKETS_TAG_CREATED, _AM_SPROCKETS_TAG_MODIFIED);
+
+			break;
+
+		case "toggleStatus":
+
+				$status = $sprockets_tag_handler->toggleStatus($clean_tag_id, 'rss');
+				$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/category.php';
+				if ($status == 0) {
+					redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_RSS_DISABLED);
+				} else {
+					redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_RSS_ENABLED);
+				}
+
+			break;
+
+		case "toggleNavigationElement":
+			$status = $ret = '';
+			$status = $sprockets_tag_handler->toggleStatus($clean_tag_id, 'navigation_element');
 			$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/category.php';
 			if ($status == 0) {
-				redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_RSS_DISABLED);
+				redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_NAVIGATION_DISABLED);
 			} else {
-				redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_RSS_ENABLED);
+				redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_NAVIGATION_ENABLED);
 			}
-			
-		break;
-		
-	case "toggleNavigationElement":
-		$status = $ret = '';
-		$status = $sprockets_tag_handler->toggleStatus($clean_tag_id, 'navigation_element');
-		$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/category.php';
-		if ($status == 0) {
-			redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_NAVIGATION_DISABLED);
-		} else {
-			redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_NAVIGATION_ENABLED);
-		}
-		
-		break;
 
-  	case "del":
+			break;
 
-        $controller = new icms_ipf_Controller($sprockets_tag_handler);
-		$tagObj = $sprockets_tag_handler->get($clean_tag_id);
-		if ($tagObj->getVar('label_type', 'e') !== '0') {
-			$warning = _AM_SPROCKETS_CATEGORY_DELETE_CAUTION;
-		} else {
-			$warning = '';
-		}
-  		$controller->handleObjectDeletion($warning);
+		case "del":
 
-  		break;
-
-  	default:
-
-  		icms_cp_header();
-  		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_TAGS);
-		
-		// If no op is set, but there is a (valid) tag_id, display a single object
-		if ($clean_tag_id) {
+			$controller = new icms_ipf_Controller($sprockets_tag_handler);
 			$tagObj = $sprockets_tag_handler->get($clean_tag_id);
-			if ($tagObj->id()) {
-				$tagObj->displaySingleObject();
+			if ($tagObj->getVar('label_type', 'e') !== '0') {
+				$warning = _AM_SPROCKETS_CATEGORY_DELETE_CAUTION;
+			} else {
+				$warning = '';
 			}
-		}
-		
-		// Restrict content to categories only (no tags)
-		$criteria = icms_buildCriteria(array('label_type' => '1'));
+			$controller->handleObjectDeletion($warning);
 
-  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria, $actions = array());
-		$objectTable->addCustomAction('edit_category_action');
-		$objectTable->addCustomAction('delete_category_action');
-  		$objectTable->addColumn(new icms_ipf_view_Column('title', 'left', FALSE,
-				'category_admin_titles', basename(dirname(dirname(__FILE__)))));
-		$objectTable->addColumn(new icms_ipf_view_Column('mid'));
-		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element', 'left', FALSE,
-				'category_admin_navigation_element', basename(dirname(dirname(__FILE__)))));
-		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, 
-				'category_admin_rss', basename(dirname(dirname(__FILE__))),
-				_AM_SPROCKETS_TAG_RSS_FEED));
-		$objectTable->addFilter('mid', 'module_filter');
-		$objectTable->addFilter('navigation_element', 'navigation_element_filter');
-		$objectTable->addfilter('rss', 'rss_filter');
-		$objectTable->addQuickSearch('title');
-  		$objectTable->addIntroButton('addtag', 'category.php?op=mod', _AM_SPROCKETS_CATEGORY_CREATE);
+			break;
 
-  		$icmsAdminTpl->assign('sprockets_tag_table', $objectTable->fetch());
-  		$icmsAdminTpl->display('db:sprockets_admin_tag.html');
-		
-  		break;
-  }
-  icms_cp_footer();
+		default:
+
+			icms_cp_header();
+			$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_TAGS);
+
+			// If no op is set, but there is a (valid) tag_id, display a single object
+			if ($clean_tag_id) {
+				$tagObj = $sprockets_tag_handler->get($clean_tag_id);
+				if ($tagObj->id()) {
+					$tagObj->displaySingleObject();
+				}
+			}
+
+			// Restrict content to categories only (no tags)
+			$criteria = icms_buildCriteria(array('label_type' => '1'));
+
+			$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria, $actions = array());
+			$objectTable->addCustomAction('edit_category_action');
+			$objectTable->addCustomAction('delete_category_action');
+			$objectTable->addColumn(new icms_ipf_view_Column('title', 'left', FALSE,
+					'category_admin_titles', basename(dirname(dirname(__FILE__)))));
+			$objectTable->addColumn(new icms_ipf_view_Column('mid'));
+			$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element', 'left', FALSE,
+					'category_admin_navigation_element', basename(dirname(dirname(__FILE__)))));
+			$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, 
+					'category_admin_rss', basename(dirname(dirname(__FILE__))),
+					_AM_SPROCKETS_TAG_RSS_FEED));
+			$objectTable->addFilter('mid', 'module_filter');
+			$objectTable->addFilter('navigation_element', 'navigation_element_filter');
+			$objectTable->addfilter('rss', 'rss_filter');
+			$objectTable->addQuickSearch('title');
+			$objectTable->addIntroButton('addtag', 'category.php?op=mod', _AM_SPROCKETS_CATEGORY_CREATE);
+
+			$icmsAdminTpl->assign('sprockets_tag_table', $objectTable->fetch());
+			$icmsAdminTpl->display('db:sprockets_admin_tag.html');
+
+			break;
+	  }
+	}
 }
+
+icms_cp_footer();
+
 /**
  * If you want to have a specific action taken because the user input was invalid,
  * place it at this point. Otherwise, a blank page will be displayed
