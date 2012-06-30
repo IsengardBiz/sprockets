@@ -64,8 +64,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$categoryObjArray = array();
 		$criteria = new icms_db_criteria_Compo();
 		
-		// select those that have category status (label_type = 1 (category) or 2 (both))
-		$criteria->add(new icms_db_criteria_Item('label_type', 0, '!='));
+		// Select those that have category status (label_type = 1)
+		$criteria = icms_buildCriteria(array('label_type' => '1'));
 		$categoryObjArray = $this->getObjects($criteria);
 		
 		//IcmsPersistableTree(&$objectArr, $myId, $parentId, $rootId = null)
@@ -256,92 +256,12 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 		
 	/**
-	 * Performs maintenance on categories and taglinks if a tag is changed
+	 * Currently not in use.
 	 *
 	 * @param object $obj SprocketsTag object
 	 * @return bool
 	 */
 	protected function afterSave(& $obj) {
-		
-		/**
-		 * Category to tag conversion: If a category/both is converted to a 'tag only' it is removed
-		 * from the category tree. Any child categories and related taglinks are therefore deleted.
-		 * The way to test if conversion has occurred is to check if other categories have this tag
-		 * set as their parent_id
-		 */
-		
-		// check if this label is a tag-only type (label_type = 0)
-		if ($obj->getVar('label_type', 'e') == '0') {
-			
-			// initialise
-			$firstChildCategoryArray = $allChildCategories = $allCategoryArray = $markedForDeletion 
-				= $markedForUpdate = array();
-			$categoryTree = $sql = '';
-			$criteria = new icms_db_criteria_Compo();
-			
-			// get handlers
-			$sprockets_tag_handler = icms_getModuleHandler('tag',
-				basename(dirname(dirname(__FILE__))), 'sprockets');
-			$sprockets_taglink_handler = icms_getModuleHandler('taglink',
-				basename(dirname(dirname(__FILE__))), 'sprockets');
-			
-			// read out all categories into an array
-			$criteria->add(new icms_db_criteria_Item('label_type', 0, '!='));
-			$allCategoryArray = $sprockets_tag_handler->getObjects($criteria);
-			
-			// check if there are any categories that identify this tag as their parent. If there 
-			// are, that indicates that this tag was converted from a category, and some cleanup is 
-			// in order
-			
-			$criteria->add(new icms_db_criteria_Item('parent_id', $obj->id()));
-			$firstChildCategoryArray = $sprockets_tag_handler->getObjects($criteria);
-			
-			if (count($firstChildCategoryArray) > 0) {
-				
-				// get a category tree
-				include_once ICMS_ROOT_PATH . '/modules/sprockets/include/angry_tree.php';
-				$categoryTree = new IcmsPersistableTree($allCategoryArray, 'tag_id', 'parent_id');
-				
-				// compile a list of subordinate categories that need to be deleted or updated
-				$allChildCategories = $categoryTree->getAllChild($obj->id());
-				foreach ($allChildCategories as $key => $child) {
-					
-					// sort the children into i) 'category only' and ii) 'category/tag' labels
-					if ($child->getVar('label_type', 'e') == 1) {
-						$markedForDeletion[] = $child->id();
-					} elseif ($child->getVar('label_type', 'e') == 2) {
-						$markedForUpdate[] = $child->id();
-					}
-				}
-				
-				$markedForDeletion = "('" . implode("','", $markedForDeletion) . "')";
-				$markedForUpdate = "('" . implode("','", $markedForUpdate) . "')";
-
-				// delete 'category only' subcategories
-				$criteria = new icms_db_criteria_Compo();
-				$criteria->add(new icms_db_criteria_Item('tag_id', $markedForDeletion, 'IN'));
-				$sprockets_tag_handler->deleteAll($criteria);
-				
-				// delete 'category only' related taglinks
-				$criteria = new icms_db_criteria_Compo();
-				$criteria->add(new icms_db_criteria_Item('tid', $markedForDeletion, 'IN'));
-				$sprockets_taglink_handler->deleteAll($criteria);
-
-				// update 'category/tag' labels to be just tags
-				if (!empty($markedForUpdate)) {
-					
-					$sql = "UPDATE " . $sprockets_tag_handler->table
-						. " SET `label_type` = '0', `parent_id` = '0' WHERE `tag_id` IN "
-						. $markedForUpdate;
-					$result = $sprockets_tag_handler->db->query($sql);
-					if (!$result) {
-						$obj->setErrors($sprockets_tag_handler->db->error());
-						return FALSE;
-					}
-				}
-			}
-		}
-		
 		return TRUE;
 	} 
 
@@ -366,9 +286,9 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			basename(dirname(dirname(__FILE__))), 'sprockets');
 
 		/*
-		 * Deleting a parent category also kills the category subtree underneath it. Items that
-		 * are both tags and categories will be remarked as tags only. Content is not affected.
-		 * Any item that no longer has a tag or category become part of the 'untagged' collection.
+		 * Deleting a parent category also kills the category subtree underneath it. Content is not
+		 * affected. Any item that no longer has a tag or category become part of the 'untagged'
+		 * collection.
 		 */
 		
 		// exclude labels that are only tags (not categories)
