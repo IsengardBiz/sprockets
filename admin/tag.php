@@ -28,6 +28,7 @@ function edittag($tag_id = 0)
 	
 	$tagObj->setVar('label_type', '0');
 	$tagObj->hideFieldFromForm('label_type');
+	$tagObj->hideFieldFromForm('mid');
 	$tagObj->hideFieldFromForm('parent_id');
 	$tagObj->showFieldOnForm('navigation_element');
 		

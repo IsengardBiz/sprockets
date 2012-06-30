@@ -81,6 +81,7 @@ function edittag($tag_id = 0)
 	// Set label type as CATEGORY, hide label_type field to stop user changing it
 	$tagObj->setVar('label_type', '1');
 	$tagObj->hideFieldFromForm('label_type');
+	$tagObj->hideFieldFromForm('mid');
 	$tagObj->showFieldOnForm('navigation_element');
 		
 	if (!$tagObj->isNew()){
