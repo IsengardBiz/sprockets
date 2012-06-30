@@ -41,6 +41,10 @@ define("_AM_SPROCKETS_TAG_RSS_FEED", "RSS feed?");
 define("_AM_SPROCKETS_TAG_NAVIGATION_ENABLED", "Navigation element enabled");
 define("_AM_SPROCKETS_TAG_NAVIGATION_DISABLED", "Navigation element disabled");
 
+// Category
+define("_AM_SPROCKETS_CATEGORY_EDIT", "Edit");
+define("_AM_SPROCKETS_CATEGORY_DELETE", "Delete");
+
 // Taglink
 define("_AM_SPROCKETS_TAGLINKS", "Taglinks");
 define("_AM_SPROCKETS_TAGLINKS_DSC", "All taglinks in the module");

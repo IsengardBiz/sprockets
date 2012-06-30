@@ -277,4 +277,34 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		}
 		return $button;
 	}
+	
+	/**
+	 * Displays a custom edit action button, which links back to the CATEGORY admin page
+	 * 
+	 * @return mixed
+	 */
+	public function edit_category_action()
+	{
+		$button = '';	
+		$button = '<a href="category.php?tag_id=' . $this->getVar('tag_id') . '&amp;op=mod">
+			<img src="' . ICMS_IMAGES_SET_URL . '/actions/edit.png" alt="' 
+			. _AM_SPROCKETS_CATEGORY_EDIT . '" title="' . _AM_SPROCKETS_CATEGORY_EDIT . '" /></a>';
+
+		return $button;
+	}
+	
+	/**
+	 * Displays a custom delete action button, which links back to the CATEGORY admin page
+	 * 
+	 * @return mixed
+	 */
+	public function delete_category_action()
+	{
+		$button = '';
+		$button = '<a href="category.php?tag_id=' . $this->getVar('tag_id') . '&amp;op=del">
+			<img src="' . ICMS_IMAGES_SET_URL . '/actions/editdelete.png" alt="' 
+			. _AM_SPROCKETS_CATEGORY_DELETE . '" title="' . _AM_SPROCKETS_CATEGORY_DELETE . '" /></a>';
+
+		return $button;
+	}
 }

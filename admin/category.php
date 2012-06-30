@@ -186,7 +186,9 @@ if (in_array($clean_op,$valid_op,TRUE)){
 		// Restrict content to categories only (no tags)
 		$criteria = icms_buildCriteria(array('label_type' => '1'));
 
-  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria);
+  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria, $actions = array());
+		$objectTable->addCustomAction('edit_category_action');
+		$objectTable->addCustomAction('delete_category_action');
   		$objectTable->addColumn(new icms_ipf_view_Column('title', 'left', FALSE,
 				'category_admin_titles', basename(dirname(dirname(__FILE__)))));
 		$objectTable->addColumn(new icms_ipf_view_Column('mid'));
