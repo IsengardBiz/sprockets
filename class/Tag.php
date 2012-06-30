@@ -33,13 +33,6 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		$this->quickInitVar('icon', XOBJ_DTYPE_IMAGE, FALSE);
 		$this->quickInitVar('navigation_element', XOBJ_DTYPE_INT, FALSE, FALSE, FALSE, 1);
 		$this->quickInitVar('rss', XOBJ_DTYPE_INT, TRUE, FALSE, FALSE, 1);
-
-		$this->setControl('label_type', array(
-			'name' => 'select',
-			'itemHandler' => 'tag',
-			'method' => 'getLabelTypeOptions',
-			'module' => 'sprockets',
-			'onSelect' => 'submit'));
 		
 		// this control is a category tree select box
         $this->setControl('parent_id', array(
