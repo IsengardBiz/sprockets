@@ -187,11 +187,13 @@ if (in_array($clean_op,$valid_op,TRUE)){
 		$criteria = icms_buildCriteria(array('label_type' => '1'));
 
   		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria);
-  		$objectTable->addColumn(new icms_ipf_view_Column('title'));
+  		$objectTable->addColumn(new icms_ipf_view_Column('title', 'left', FALSE,
+				'category_admin_titles', basename(dirname(dirname(__FILE__)))));
 		$objectTable->addColumn(new icms_ipf_view_Column('mid'));
-		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element'));
-		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, FALSE, FALSE,
-				_AM_SPROCKETS_TAG_RSS_FEED));
+		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element', 'left', FALSE,
+				'category_admin_navigation_element', basename(dirname(dirname(__FILE__)))));
+		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, 
+				'category_admin_rss', FALSE, _AM_SPROCKETS_TAG_RSS_FEED));
 		$objectTable->addFilter('mid', 'module_filter');
 		$objectTable->addFilter('navigation_element', 'navigation_element_filter');
 		$objectTable->addfilter('rss', 'rss_filter');

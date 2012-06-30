@@ -252,7 +252,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	public function rss_filter() {
 		return array(0 => _CO_SPROCKETS_TAG_RSS_DISABLED, 1 => _CO_SPROCKETS_TAG_RSS_ENABLED);
 	}
-
+	
 	/**
 	 * Returns an array of tag objects that have RSS feeds enabled
 	 *

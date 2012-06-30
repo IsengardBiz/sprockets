@@ -219,4 +219,62 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		
 		return $rss_snippet;		
 	}
+	
+	/**
+	 * Alters the category object admin links to point at the category admin page
+	 */
+	public function category_admin_titles( $moduleDirectory = "sprockets" )
+	{
+		$title = $this->getVar('title', 'e');
+		$title = '<a href="' . ICMS_URL . '/modules/' . $moduleDirectory
+			. '/admin/category.php?tag_id=' . $this->getVar("tag_id") . '">'
+			. $this->getVar("title", "e") . '</a>';
+	
+		return $title;
+	}
+	
+	/**
+	 * Alters the category object navigation_element icon links to point at the category admin page
+	 *
+	 * @return string
+	 */
+	public function category_admin_navigation_element( $moduleDirectory = "sprockets" ) {
+		
+		$navigation_element = $button = '';
+		
+		$navigation_element = $this->getVar('navigation_element', 'e');
+		$button = '<a href="' . ICMS_URL . '/modules/' . $moduleDirectory
+				. '/admin/category.php?tag_id=' . $this->id() . '&amp;op=toggleNavigationElement">';
+		if ($navigation_element == FALSE) {
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_cancel.png" alt="'
+				. _CO_SPROCKETS_TAG_NAVIGATION_DISABLED 
+				. '" title="' . _CO_SPROCKETS_TAG_NAVIGATION_ENABLE . '" /></a>';
+		} else {
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_ok.png" alt="'
+				. _CO_SPROCKETS_TAG_NAVIGATION_ENABLED . '" title="'
+				. _CO_SPROCKETS_TAG_NAVIGATION_DISABLE . '" /></a>';
+		}
+		return $button;
+	}
+	
+	/**
+	 * Alters the category object navigation_element icon links to point at the category admin page
+	 *
+	 * @return string
+	 */
+	public function category_admin_rss( $moduleDirectory = "sprockets" )
+	{
+		$status = $this->getVar('rss', 'e');
+
+		$button = '<a href="' . ICMS_URL . '/modules/' . $moduleDirectory
+				. '/admin/category.php?tag_id=' . $this->id() . '&amp;op=toggleStatus">';
+		if ($status == FALSE) {
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_cancel.png" alt="' 
+				. _CO_SPROCKETS_TAG_OFFLINE . '" title="' . _CO_SPROCKETS_TAG_SWITCH_ONLINE . '" /></a>';
+		} else {
+			$button .= '<img src="' . ICMS_IMAGES_SET_URL . '/actions/button_ok.png" alt="' 
+				. _CO_SPROCKETS_TAG_ONLINE . '" title="' . _CO_SPROCKETS_TAG_SWITCH_OFFLINE . '" /></a>';
+		}
+		return $button;
+	}
 }
