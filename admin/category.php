@@ -22,25 +22,12 @@ function edittag($tag_id = 0)
 	global $sprockets_tag_handler, $icmsAdminTpl;
 
 	$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
-
 	$tagObj = $sprockets_tag_handler->get($tag_id);
-
-	if (isset($_POST['op']) && $_POST['op'] == 'changedField' && in_array($_POST['changedField'],
-		array('label_type'))) {
-		
-		// tags must not have a parent_id or they may get deleted when categories are deleted
-		if ($_POST['label_type'] == '0') {
-			$_POST['parent_id'] == '0';
-		}
-		
-        $controller = new icms_ipf_Controller($sprockets_tag_handler);		
-		$controller->postDataToObject($tagObj);
-	}
 	
 	if (isset($_POST['op']) && $_POST['op'] == 'changedField' && in_array($_POST['changedField'],
 		array('parent_id'))) {
 		
-		// disallow setting own ID as parent
+		// Disallow setting own ID as parent
 		if ($_POST['parent_id'] == $tagObj->id()) {
 			$_POST['parent_id'] = $tagObj->getVar('parent_id');
 		}
@@ -48,7 +35,7 @@ function edittag($tag_id = 0)
 		/**
 		 * Parent category: Check if the category has been relocated underneath one of its own 
 		 * children. If this happens, that child category (only) needs to have its parent_id 
-		 * updated to the next highest level, otherwise the category hierarchy will be destroyed. \
+		 * updated to the next highest level, otherwise the category hierarchy will be destroyed. 
 		 * This effectively means the child is promoted to be the parent node of this branch.
 		 * This issue must be dealt with here, if you wait to build a category tree in beforeSave()
 		 * the hierarchy is already mangled.
@@ -60,27 +47,27 @@ function edittag($tag_id = 0)
 		$categoryObjArray = $allChildCategories = $newParentCategory = array();
 		$criteria = new icms_db_criteria_Compo();
 
-		// exclude labels that are only tags (not categories)
+		// Exclude labels that are only tags (not categories)
 		$criteria->add(new icms_db_criteria_Item('label_type', 0, '!='));
 		$categoryObjArray = $sprockets_tag_handler->getObjects($criteria);
 
-		// get a category tree
+		// Get a category tree
 		$categoryTree = new IcmsPersistableTree($categoryObjArray, 'tag_id', 'parent_id');
 
-		// check if the category has any children
+		// Check if the category has any children
 		$allChildCategories = $categoryTree->getAllChild($tagObj->id());
 		
-		// check if the category has been reassigned as a child of its own subcategory
+		// Check if the category has been reassigned as a child of its own subcategory
 		if (count($allChildCategories) > 0) {
 			
-			// get the next highest parent_id
+			// Get the next highest parent_id
 			$parent_id = $tagObj->getVar('parent_id');
 			
-			// check if the proposed parent_id matches a $tagObj child
+			// Check if the proposed parent_id matches a $tagObj child
 			foreach ($allChildCategories as $key => $child) {
 				if ($_POST['parent_id'] == $key) {
 					
-					// update that child's parent ID to next highest parent
+					// Update that child's parent ID to next highest parent
 					$child->setVar('parent_id', $parent_id);
 					$sprockets_tag_handler->insert($child);
 				}
@@ -91,25 +78,10 @@ function edittag($tag_id = 0)
 		$controller->postDataToObject($tagObj);
 	}
 	
-	// show/hide the parent_id/navigation_element field if category functionality enabled/disabled
-
-	switch($tagObj->getVar('label_type', 'e')) {
-
-		case "0": // tag
-			$tagObj->hideFieldFromForm('parent_id');
-			$tagObj->showFieldOnForm('navigation_element');
-			break;
-
-		case "1": // category
-			$tagObj->showFieldOnForm('parent_id');
-			$tagObj->hideFieldFromForm('navigation_element');
-			break;
-
-		case "2": // both
-			$tagObj->showFieldOnForm('parent_id');
-			$tagObj->showFieldOnForm('navigation_element');
-			break;
-	}
+	// Set label type as CATEGORY, hide label_type field to stop user changing it
+	$tagObj->setVar('label_type', '1');
+	$tagObj->hideFieldFromForm('label_type');
+	$tagObj->showFieldOnForm('navigation_element');
 		
 	if (!$tagObj->isNew()){
 				
@@ -140,7 +112,7 @@ $valid_op = array ('mod','changedField','addtag', 'toggleStatus', 'toggleNavigat
 if (isset($_GET['op'])) $clean_op = htmlentities($_GET['op']);
 if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
 
-// sanitise the tag_id
+// Sanitise the tag_id
 $clean_tag_id = isset($_GET['tag_id']) ? (int) $_GET['tag_id'] : 0 ;
 
 if (in_array($clean_op,$valid_op,TRUE)){
@@ -163,7 +135,7 @@ if (in_array($clean_op,$valid_op,TRUE)){
 	case "toggleStatus":
 		
 			$status = $sprockets_tag_handler->toggleStatus($clean_tag_id, 'rss');
-			$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/tag.php';
+			$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/category.php';
 			if ($status == 0) {
 				redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_RSS_DISABLED);
 			} else {
@@ -175,7 +147,7 @@ if (in_array($clean_op,$valid_op,TRUE)){
 	case "toggleNavigationElement":
 		$status = $ret = '';
 		$status = $sprockets_tag_handler->toggleStatus($clean_tag_id, 'navigation_element');
-		$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/tag.php';
+		$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/category.php';
 		if ($status == 0) {
 			redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_NAVIGATION_DISABLED);
 		} else {
@@ -202,25 +174,26 @@ if (in_array($clean_op,$valid_op,TRUE)){
   		icms_cp_header();
   		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_TAGS);
 		
-		// if no op is set, but there is a (valid) tag_id, display a single object
+		// If no op is set, but there is a (valid) tag_id, display a single object
 		if ($clean_tag_id) {
 			$tagObj = $sprockets_tag_handler->get($clean_tag_id);
 			if ($tagObj->id()) {
 				$tagObj->displaySingleObject();
 			}
 		}
+		
+		// Restrict content to categories only (no tags)
+		$criteria = icms_buildCriteria(array('label_type' => '1'));
 
-  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler);
+  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria);
   		$objectTable->addColumn(new icms_ipf_view_Column('title'));
-		$objectTable->addColumn(new icms_ipf_view_Column('label_type'));
 		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element'));
 		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, FALSE, FALSE,
 				_AM_SPROCKETS_TAG_RSS_FEED));
-		$objectTable->addFilter('label_type', 'label_type_filter');
 		$objectTable->addFilter('navigation_element', 'navigation_element_filter');
 		$objectTable->addfilter('rss', 'rss_filter');
 		$objectTable->addQuickSearch('title');
-  		$objectTable->addIntroButton('addtag', 'tag.php?op=mod', _AM_SPROCKETS_TAG_CREATE);
+  		$objectTable->addIntroButton('addtag', 'category.php?op=mod', _AM_SPROCKETS_CATEGORY_CREATE);
 
   		$icmsAdminTpl->assign('sprockets_tag_table', $objectTable->fetch());
   		$icmsAdminTpl->display('db:sprockets_admin_tag.html');
