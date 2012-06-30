@@ -193,7 +193,8 @@ if (in_array($clean_op,$valid_op,TRUE)){
 		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element', 'left', FALSE,
 				'category_admin_navigation_element', basename(dirname(dirname(__FILE__)))));
 		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, 
-				'category_admin_rss', FALSE, _AM_SPROCKETS_TAG_RSS_FEED));
+				'category_admin_rss', basename(dirname(dirname(__FILE__))),
+				_AM_SPROCKETS_TAG_RSS_FEED));
 		$objectTable->addFilter('mid', 'module_filter');
 		$objectTable->addFilter('navigation_element', 'navigation_element_filter');
 		$objectTable->addfilter('rss', 'rss_filter');
