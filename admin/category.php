@@ -188,9 +188,11 @@ if (in_array($clean_op,$valid_op,TRUE)){
 
   		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria);
   		$objectTable->addColumn(new icms_ipf_view_Column('title'));
+		$objectTable->addColumn(new icms_ipf_view_Column('mid'));
 		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element'));
 		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, FALSE, FALSE,
 				_AM_SPROCKETS_TAG_RSS_FEED));
+		$objectTable->addFilter('mid', 'module_filter');
 		$objectTable->addFilter('navigation_element', 'navigation_element_filter');
 		$objectTable->addfilter('rss', 'rss_filter');
 		$objectTable->addQuickSearch('title');

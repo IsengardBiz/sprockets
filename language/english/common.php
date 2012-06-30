@@ -15,11 +15,6 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS root path not defined");
 // tag
 define("_CO_SPROCKETS_TAG_TITLE", "Title");
 define("_CO_SPROCKETS_TAG_TITLE_DSC", " Name of this tag (subject).");
-define("_CO_SPROCKETS_TAG_LABEL_TYPE", "Label type");
-define("_CO_SPROCKETS_TAG_LABEL_TYPE_DSC", "Is this a tag, a category or both?<br /><br />
-	<strong><font color=\"red\">Warning:</font></strong> If you convert a category to a tag, 
-	you are removing it from the category tree. Any subcategories underneath it will be deleted. 
-	Content assigned to the category will also be carried over into the new tag.");
 define("_CO_SPROCKETS_TAG_DESCRIPTION", "Description");
 define("_CO_SPROCKETS_TAG_DESCRIPTION_DSC", " Description of this tag (optional).");
 define("_CO_SPROCKETS_TAG_ICON", "Tag icon");
@@ -27,6 +22,7 @@ define("_CO_SPROCKETS_TAG_ICON_DSC", "You can upload a logo or icon to use with 
 define("_CO_SPROCKETS_TAG_PARENT_ID", "Parent category");
 define("_CO_SPROCKETS_TAG_PARENT_ID_DSC", "If this is a subcategory, specify its immediate parent. 
 	A category cannot be assigned as its own parent.");
+define("_CO_SPROCKETS_TAG_MID", "Module");
 define("_CO_SPROCKETS_TAG_RSS", "RSS feed");
 define("_CO_SPROCKETS_TAG_RSS_DSC", "Enable a unified RSS feed for this tag, drawing on content 
 	from ALL compatible modules on the site.");

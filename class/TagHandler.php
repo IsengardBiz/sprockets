@@ -197,19 +197,58 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 
 	/**
-	 * Adds a label_type filter to the admin side tag table
-	 *
+	 * Allows the category admin page to be filtered by module
+	 * 
 	 * @return array
 	 */
-
-	public function label_type_filter() {
-		return $this->getLabelTypeOptions();
+	public function module_filter()
+	{
+		$moduleList = array();
+		
+		// Get a unique list of module IDs that have created categories
+		/*$icmsDB = icms::$xoopsDB;
+		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))), 'sprockets');		
+		$sql = "SELECT DISTINCT `mid` from " . $sprockets_tag_handler->table . " WHERE `label_type` = '1'";
+		$result = icms::$xoopsDB->query($sql);
+		if (!$result)
+		{
+			echo 'Error: Module filter failed';
+			exit;
+		}
+		else
+		{
+			$rows = $sprockets_tag_handler->convertResultSet($result);
+			foreach ($rows as $key => $value)
+			{
+				$moduleList[] = $value->getVar('mid');
+			}
+			$moduleList = " (" . implode(',', $moduleList) . ") ";
+		}*/
+		
+		// Get a list of modules installed on the system, module id as key
+		$module_handler = icms::handler('icms_module');
+		//$criteria = new icms_db_criteria_Compo();
+		//$criteria->add(new icms_db_criteria_Item('mid', $moduleList, 'IN'));
+		$moduleList = $module_handler->getList($criteria = NULL, FALSE);
+				
+		// Return the list
+		return $moduleList;
 	}
 	
+	/**
+	 * Allows the tag/category admin page to be filtered by those with/without navigation element status
+	 * 
+	 * @return array
+	 */
 	public function navigation_element_filter() {
 		return array(0 => _CO_SPROCKETS_TAG_NO, 1 => _CO_SPROCKETS_TAG_YES);
 	}
 	
+	/**
+	 * Allows the tag/category admin page to be filtered by those with/without rss feeds
+	 * 
+	 * @return array
+	 */
 	public function rss_filter() {
 		return array(0 => _CO_SPROCKETS_TAG_RSS_DISABLED, 1 => _CO_SPROCKETS_TAG_RSS_ENABLED);
 	}
