@@ -44,7 +44,7 @@ if (in_array($clean_op, $valid_op, TRUE))
 	{		
 		case "save": // overwrites style.css with the revised style sheet
 			
-			$sprocketsModule->displayAdminMenu(3, _AM_SPROCKETS_EDIT_CSS);
+			$sprocketsModule->displayAdminMenu(4, _AM_SPROCKETS_EDIT_CSS);
 			
 			// compare $clean_stylesheet against whitelist of valid file names to prevent abuse
 			foreach ($theme_files as $key => $value)
@@ -79,7 +79,7 @@ if (in_array($clean_op, $valid_op, TRUE))
 		
 		default: // displays style.css in a form where it can be edited
 			
-			$sprocketsModule->displayAdminMenu(3, _AM_SPROCKETS_EDIT_CSS);
+			$sprocketsModule->displayAdminMenu(4, _AM_SPROCKETS_EDIT_CSS);
 
 			$file_handle = $style_css = $theme_select_form = $stylesheet_edit_form
 				= $css_list = $valid_stylesheet = '';

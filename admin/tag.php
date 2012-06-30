@@ -22,94 +22,14 @@ function edittag($tag_id = 0)
 	global $sprockets_tag_handler, $icmsAdminTpl;
 
 	$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
-
 	$tagObj = $sprockets_tag_handler->get($tag_id);
-
-	if (isset($_POST['op']) && $_POST['op'] == 'changedField' && in_array($_POST['changedField'],
-		array('label_type'))) {
 		
-		// tags must not have a parent_id or they may get deleted when categories are deleted
-		if ($_POST['label_type'] == '0') {
-			$_POST['parent_id'] == '0';
-		}
-		
-        $controller = new icms_ipf_Controller($sprockets_tag_handler);		
-		$controller->postDataToObject($tagObj);
-	}
+	// Set label type as tag, hide category fields
 	
-	if (isset($_POST['op']) && $_POST['op'] == 'changedField' && in_array($_POST['changedField'],
-		array('parent_id'))) {
-		
-		// disallow setting own ID as parent
-		if ($_POST['parent_id'] == $tagObj->id()) {
-			$_POST['parent_id'] = $tagObj->getVar('parent_id');
-		}
-		
-		/**
-		 * Parent category: Check if the category has been relocated underneath one of its own 
-		 * children. If this happens, that child category (only) needs to have its parent_id 
-		 * updated to the next highest level, otherwise the category hierarchy will be destroyed. \
-		 * This effectively means the child is promoted to be the parent node of this branch.
-		 * This issue must be dealt with here, if you wait to build a category tree in beforeSave()
-		 * the hierarchy is already mangled.
-		 */
-		
-		include_once ICMS_ROOT_PATH . '/modules/sprockets/include/angry_tree.php';
-
-		$tag_id = $categoryTree = '';
-		$categoryObjArray = $allChildCategories = $newParentCategory = array();
-		$criteria = new icms_db_criteria_Compo();
-
-		// exclude labels that are only tags (not categories)
-		$criteria->add(new icms_db_criteria_Item('label_type', 0, '!='));
-		$categoryObjArray = $sprockets_tag_handler->getObjects($criteria);
-
-		// get a category tree
-		$categoryTree = new IcmsPersistableTree($categoryObjArray, 'tag_id', 'parent_id');
-
-		// check if the category has any children
-		$allChildCategories = $categoryTree->getAllChild($tagObj->id());
-		
-		// check if the category has been reassigned as a child of its own subcategory
-		if (count($allChildCategories) > 0) {
-			
-			// get the next highest parent_id
-			$parent_id = $tagObj->getVar('parent_id');
-			
-			// check if the proposed parent_id matches a $tagObj child
-			foreach ($allChildCategories as $key => $child) {
-				if ($_POST['parent_id'] == $key) {
-					
-					// update that child's parent ID to next highest parent
-					$child->setVar('parent_id', $parent_id);
-					$sprockets_tag_handler->insert($child);
-				}
-			}
-		}
-		
-		$controller = new IcmsPersistableController($sprockets_tag_handler);
-		$controller->postDataToObject($tagObj);
-	}
-	
-	// show/hide the parent_id/navigation_element field if category functionality enabled/disabled
-
-	switch($tagObj->getVar('label_type', 'e')) {
-
-		case "0": // tag
-			$tagObj->hideFieldFromForm('parent_id');
-			$tagObj->showFieldOnForm('navigation_element');
-			break;
-
-		case "1": // category
-			$tagObj->showFieldOnForm('parent_id');
-			$tagObj->hideFieldFromForm('navigation_element');
-			break;
-
-		case "2": // both
-			$tagObj->showFieldOnForm('parent_id');
-			$tagObj->showFieldOnForm('navigation_element');
-			break;
-	}
+	$tagObj->setVar('label_type', '0');
+	$tagObj->hideFieldFromForm('label_type');
+	$tagObj->hideFieldFromForm('parent_id');
+	$tagObj->showFieldOnForm('navigation_element');
 		
 	if (!$tagObj->isNew()){
 				
@@ -140,7 +60,7 @@ $valid_op = array ('mod','changedField','addtag', 'toggleStatus', 'toggleNavigat
 if (isset($_GET['op'])) $clean_op = htmlentities($_GET['op']);
 if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
 
-// sanitise the tag_id
+// Sanitise the tag_id
 $clean_tag_id = isset($_GET['tag_id']) ? (int) $_GET['tag_id'] : 0 ;
 
 if (in_array($clean_op,$valid_op,TRUE)){
@@ -188,12 +108,7 @@ if (in_array($clean_op,$valid_op,TRUE)){
 
         $controller = new icms_ipf_Controller($sprockets_tag_handler);
 		$tagObj = $sprockets_tag_handler->get($clean_tag_id);
-		if ($tagObj->getVar('label_type', 'e') !== '0') {
-			$warning = _AM_SPROCKETS_CATEGORY_DELETE_CAUTION;
-		} else {
-			$warning = '';
-		}
-  		$controller->handleObjectDeletion($warning);
+  		$controller->handleObjectDeletion($warning = '');
 
   		break;
 
@@ -209,14 +124,15 @@ if (in_array($clean_op,$valid_op,TRUE)){
 				$tagObj->displaySingleObject();
 			}
 		}
+		
+		// Restrict content to tags only (no categories)
+		$criteria = icms_buildCriteria(array('label_type' => '0'));
 
-  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler);
+  		$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria);
   		$objectTable->addColumn(new icms_ipf_view_Column('title'));
-		$objectTable->addColumn(new icms_ipf_view_Column('label_type'));
 		$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element'));
 		$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, FALSE, FALSE,
 				_AM_SPROCKETS_TAG_RSS_FEED));
-		$objectTable->addFilter('label_type', 'label_type_filter');
 		$objectTable->addFilter('navigation_element', 'navigation_element_filter');
 		$objectTable->addfilter('rss', 'rss_filter');
 		$objectTable->addQuickSearch('title');

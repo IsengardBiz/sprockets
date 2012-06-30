@@ -44,11 +44,11 @@ function editarchive($archive_id = 0) {
 	}
 
 	if (!$archiveObj->isNew()) {
-		$sprocketsModule->displayAdminMenu(2, _AM_SPROCKETS_ARCHIVES . " > " . _CO_ICMS_EDITING);
+		$sprocketsModule->displayAdminMenu(3, _AM_SPROCKETS_ARCHIVES . " > " . _CO_ICMS_EDITING);
 		$sform = $archiveObj->getForm(_AM_SPROCKETS_ARCHIVE_EDIT, 'addarchive');
 		$sform->assign($icmsAdminTpl);
 	} else {
-		$sprocketsModule->displayAdminMenu(2, _AM_SPROCKETS_ARCHIVES . " > " . _CO_ICMS_CREATINGNEW);
+		$sprocketsModule->displayAdminMenu(3, _AM_SPROCKETS_ARCHIVES . " > " . _CO_ICMS_CREATINGNEW);
 		$sform = $archiveObj->getForm(_AM_SPROCKETS_ARCHIVE_CREATE, 'addarchive');
 		$sform->assign($icmsAdminTpl);
 	}
@@ -114,7 +114,7 @@ if (in_array($clean_op,$valid_op,TRUE)) {
 		default:
 
 			icms_cp_header();
-			$sprocketsModule->displayAdminMenu(2, _AM_SPROCKETS_ARCHIVES);
+			$sprocketsModule->displayAdminMenu(3, _AM_SPROCKETS_ARCHIVES);
 			
 			// advise that only one archive object can be created per client module
 			echo _CO_SPROCKETS_ONLY_ONE_ARCHIVE_PER_MODULE;

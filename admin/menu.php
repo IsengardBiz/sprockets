@@ -11,11 +11,10 @@
 */
 
 $i = 0;
-
 $adminmenu[$i]['title'] = _MI_SPROCKETS_TAGS;
 $adminmenu[$i]['link'] = 'admin/tag.php';
-$i++;
 
+$i++;
 $adminmenu[$i]['title'] = _MI_SPROCKETS_CATEGORIES;
 $adminmenu[$i]['link'] = 'admin/category.php';
 
@@ -25,7 +24,7 @@ $adminmenu[$i]['link'] = 'admin/rights.php';
 
 // Included for development/debugging purpose only, uncomment to access taglinks table
 /*
-$i++;
+$i++
 $adminmenu[$i]['title'] = _MI_SPROCKETS_TAGLINKS;
 $adminmenu[$i]['link'] = 'admin/taglink.php';
 */
@@ -49,6 +48,7 @@ if (isset($sprocketsModule)) {
 	$headermenu[$i]['title'] = _PREFERENCES;
 	$headermenu[$i]['link'] = '../../system/admin.php?fct=preferences&amp;op=showmod&amp;mod='
 		. $sprocketsModule->getVar('mid');
+	
 	$i++;
 	$headermenu[$i]['title'] = _MI_SPROCKETS_TEMPLATES;
 	$headermenu[$i]['link'] = '../../system/admin.php?fct=tplsets&op=listtpl&tplset='

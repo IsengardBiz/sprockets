@@ -26,12 +26,12 @@ function editrights($rights_id = 0)
 	$rightsObj = $sprockets_rights_handler->get($rights_id);
 
 	if (!$rightsObj->isNew()){
-		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_RIGHTS . " > " . _CO_ICMS_EDITING);
+		$sprocketsModule->displayAdminMenu(2, _AM_SPROCKETS_RIGHTS . " > " . _CO_ICMS_EDITING);
 		$sform = $rightsObj->getForm(_AM_SPROCKETS_RIGHTS_EDIT, 'addrights');
 		$sform->assign($icmsAdminTpl);
 
 	} else {
-		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_RIGHTS . " > " . _CO_ICMS_CREATINGNEW);
+		$sprocketsModule->displayAdminMenu(2, _AM_SPROCKETS_RIGHTS . " > " . _CO_ICMS_CREATINGNEW);
 		$sform = $rightsObj->getForm(_AM_SPROCKETS_RIGHTS_CREATE, 'addrights');
 		$sform->assign($icmsAdminTpl);
 
@@ -86,7 +86,7 @@ if (in_array($clean_op,$valid_op,TRUE)){
 
   		icms_cp_header();
 
-  		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_RIGHTS);
+  		$sprocketsModule->displayAdminMenu(2, _AM_SPROCKETS_RIGHTS);
 
 		// if no op is set, but there is a (valid) soundtrack_id, display a single object
 		if ($clean_rights_id) {

@@ -113,12 +113,12 @@ function edittag($tag_id = 0)
 		
 	if (!$tagObj->isNew()){
 				
-		$sprocketsModule->displayAdminMenu(0, _AM_SPROCKETS_TAGS . " > " . _CO_ICMS_EDITING);
+		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_TAGS . " > " . _CO_ICMS_EDITING);
 		$sform = $tagObj->getForm(_AM_SPROCKETS_TAG_EDIT, 'addtag');
 		$sform->assign($icmsAdminTpl);
 
 	} else {
-		$sprocketsModule->displayAdminMenu(0, _AM_SPROCKETS_TAGS . " > " . _CO_ICMS_CREATINGNEW);
+		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_TAGS . " > " . _CO_ICMS_CREATINGNEW);
 		$sform = $tagObj->getForm(_AM_SPROCKETS_TAG_CREATE, 'addtag');
 		$sform->assign($icmsAdminTpl);
 
@@ -200,7 +200,7 @@ if (in_array($clean_op,$valid_op,TRUE)){
   	default:
 
   		icms_cp_header();
-  		$sprocketsModule->displayAdminMenu(0, _AM_SPROCKETS_TAGS);
+  		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_TAGS);
 		
 		// if no op is set, but there is a (valid) tag_id, display a single object
 		if ($clean_tag_id) {
