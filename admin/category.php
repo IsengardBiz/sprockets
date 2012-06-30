@@ -45,10 +45,9 @@ function edittag($tag_id = 0)
 
 		$tag_id = $categoryTree = '';
 		$categoryObjArray = $allChildCategories = $newParentCategory = array();
-		$criteria = new icms_db_criteria_Compo();
 
-		// Exclude labels that are only tags (not categories)
-		$criteria->add(new icms_db_criteria_Item('label_type', 0, '!='));
+		// Only work on categories (exclude tags)
+		$criteria = icms_buildCriteria(array('label_type' => '1'));
 		$categoryObjArray = $sprockets_tag_handler->getObjects($criteria);
 
 		// Get a category tree
