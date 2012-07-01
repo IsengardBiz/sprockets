@@ -221,7 +221,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 
 	/**
-	 * Saves tags for an object by creating taglinks
+	 * Saves tags for an object by creating taglinks. NB: If you are saving categories, you need to
+	 * pass in the category key.
 	 *
 	 * Based on code from ImTagging: author marcan aka Marc-André Lanciault <marcan@smartfactory.ca>
 	 * 
@@ -237,7 +238,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Remove existing taglinks prior to saving the updated set
 		$this->deleteAllForObject($obj);
 		
+		// Make sure this is an array (select control returns string, selectmulti returns array)
 		$tag_array = $obj->getVar($tag_var);
+		if (!is_array($tag_array) && !empty($tag_array))
+		{
+			$tag_array = array($tag_array);
+		}		
+		
 		$moduleObj = icms_getModuleInfo($obj->handler->_moduleName);
 
 		if (count($tag_array) > 0) {
