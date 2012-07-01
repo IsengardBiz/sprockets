@@ -222,7 +222,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 	/**
 	 * Saves tags for an object by creating taglinks. NB: If you are saving categories, you need to
-	 * pass in the category key.
+	 * pass in the category key. Also note: If your object has both tags and categories, then you 
+	 * need to call this method TWICE with different label_type (0 = tag, 1 = category) in order to 
+	 * update them both.
 	 *
 	 * Based on code from ImTagging: author marcan aka Marc-André Lanciault <marcan@smartfactory.ca>
 	 * 
@@ -230,13 +232,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @param string $tag_var
 	 */
 
-	public function storeTagsForObject(& $obj, $tag_var='tag') {
+	public function storeTagsForObject(& $obj, $label_type, $tag_var='tag') {
 		/**
 		 * @todo: check if tags have changed and if so don't do anything
 		 */
 		
 		// Remove existing taglinks prior to saving the updated set
-		$this->deleteAllForObject($obj);
+		$this->deleteTagsForObject($obj, $label_type);
 		
 		// Make sure this is an array (select control returns string, selectmulti returns array)
 		$tag_array = $obj->getVar($tag_var);
@@ -259,6 +261,62 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			}
 		}
     }
+	
+	/**
+	 * Deletes either the category- or tag-related taglinks of an object prior to updating it.
+	 * 
+	 * When updating an objects tags or categories, it is necessary to delete the old ones before
+	 * saving the new, modified set. This creates a problem: Since tags/categories are managed 
+	 * separately (because some objects may have both), you can't just delete them all because they 
+	 * reside in the same database table. You need to delete EITHER the tags OR the categories.
+	 * Otherwise updating your tags will kill all your categories, and vice-versa. So call this
+	 * method with the appropriate label_type and it will selectively delete them.
+	 * 
+	 * @param obj $obj
+	 * @param int $label_type (0 = tags, 1 = categories) 
+	 */
+	public function deleteTagsForObject(& $obj, $label_type = '0')
+	{
+		$criteria = $sprockets_tag_handler = $sprockets_taglink_handler = $moduleObj = '';
+		$tagObjArray = $taglinkObjArray = $taglinks_for_deletion = array();
+		
+		// Taglinks know the tag id, module id, item id and item type.
+		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))), 
+				'sprockets');
+		$sprockets_taglink_handler = icms_getModuleHandler('taglink', basename(dirname(dirname(__FILE__))),
+				'sprockets');
+		
+		// Read a buffer of ALL tags OR categories on the system (one or the other)
+		$criteria = icms_buildCriteria(array('label_type' => $label_type));
+		$tagObjArray = $sprockets_tag_handler->getObjects($criteria, TRUE);
+		unset($criteria);
+		
+		// Read a buffer of ALL taglinks for THIS OBJECT
+		$moduleObj = icms_getModuleInfo($obj->handler->_moduleName);
+		$criteria = icms_buildCriteria(array(
+			'mid' => $moduleObj->getVar('mid'), 
+			'iid' => $obj->id(), 
+			'item' => $obj->handler->_itemname));
+		$taglinkObjArray = $sprockets_taglink_handler->getObjects($criteria, TRUE);
+		
+		// Check if each taglink tid is one of the target tag/category IDs. If so, mark the taglink_id for deletion
+		foreach ($taglinkObjArray as $taglink)
+		{
+			if (array_key_exists($taglink->getVar('tid'), $tagObjArray))
+			{
+				$taglinks_for_deletion[] = $taglink->getVar('taglink_id');
+			}
+		}
+		
+		// Delete marked taglinks
+		if (!empty($taglinks_for_deletion))
+		{
+			$taglinks_for_deletion = '(' . implode($taglinks_for_deletion) . ')';
+			$criteria = new icms_db_criteria_Compo();
+			$criteria->add(new icms_db_criteria_Item('taglink_id', $taglinks_for_deletion, 'IN'));
+			$this->deleteAll($criteria);
+		}
+	}
 
 	// This function based on code from ImTagging
 
