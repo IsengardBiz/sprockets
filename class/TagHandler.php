@@ -175,6 +175,39 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			return FALSE;
 		}
 	}
+	
+	/**
+	 * Returns a select box of available categories, optionally filtered by module
+	 *
+	 * @param string $action page to load on submit
+	 * @param int $selected
+	 * @param string $zero_option_message
+	 * @return string $form
+	 */
+	
+	public function getCategorySelectBox($action, $selected = null, $zero_option_message = '---',
+			$module_id = null, $item = null) 
+	{		
+		$categoryList = $this->getCategoryOptions();
+		if (!empty($categoryList)) {
+			$form = '<div><form name="tag_selection_form" action="' . $action . '" method="get">';
+			$form .= '<select name="tag_id" id="tag_id" onchange="this.form.submit()">';
+			foreach ($categoryList as $key => $value) {
+				if ($key == $selected) {
+				$form .= '<option value="' . $key . '" selected="selected">' . $value . '</option>';
+				} else {
+					$form .= '<option value="' . $key . '">' . $value . '</option>';
+				}
+			}
+			$form .= '</select></form></div>';
+
+			return $form;
+			
+		} else {
+
+			return FALSE;
+		}
+	}
 
 	/**
 	 * Returns an array of parent category titles for a given list of tag objects, optionally with links
