@@ -102,17 +102,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 
 	/**
-	 * Returns a list of label type options (tag, category, both) used to build select box
-	 *
-	 * @return array
-	 */
-
-	public function getLabelTypeOptions() {
-		return array(0 => _CO_SPROCKETS_TAG_TAG, 1 => _CO_SPROCKETS_TAG_CATEGORY, 
-			2 => _CO_SPROCKETS_TAG_BOTH);
-	}
-
-	/**
 	 * Returns a select box of available tags, optionally filtered by module (ie. tags in use)
 	 *
 	 * @param string $action page to load on submit
