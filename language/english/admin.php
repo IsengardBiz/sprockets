@@ -25,6 +25,7 @@ define("_AM_SPROCKETS_TAGS", "Tags");
 define("_AM_SPROCKETS_TAGS_DSC", "All tags in the module");
 define("_AM_SPROCKETS_TAG_CREATE", "Add a tag");
 define("_AM_SPROCKETS_CATEGORY_CREATE", "Add a global category");
+define("_AM_SPROCKETS_CATEGORY_MODULE_CREATE", "Add a category");
 define("_AM_SPROCKETS_TAG", "Tag");
 define("_AM_SPROCKETS_TAG_CREATE_INFO", "Fill-out the following form to create a new tag.");
 define("_AM_SPROCKETS_TAG_EDIT", "Edit this tag");

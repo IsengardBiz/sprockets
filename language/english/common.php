@@ -14,7 +14,7 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS root path not defined");
 
 // tag
 define("_CO_SPROCKETS_TAG_TITLE", "Title");
-define("_CO_SPROCKETS_TAG_TITLE_DSC", " Name of this tag (subject).");
+define("_CO_SPROCKETS_TAG_TITLE_DSC", " Name of this tag (subject) or category.");
 define("_CO_SPROCKETS_TAG_DESCRIPTION", "Description");
 define("_CO_SPROCKETS_TAG_DESCRIPTION_DSC", " Description of this tag (optional).");
 define("_CO_SPROCKETS_TAG_ICON", "Tag icon");
