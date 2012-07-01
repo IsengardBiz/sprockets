@@ -232,11 +232,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @param string $tag_var
 	 */
 
-	public function storeTagsForObject(& $obj, $label_type, $tag_var='tag') {
-		/**
-		 * @todo: check if tags have changed and if so don't do anything
-		 */
-		
+	public function storeTagsForObject(& $obj, $tag_var = 'tag', $label_type = '0')
+	{		
 		// Remove existing taglinks prior to saving the updated set
 		$this->deleteTagsForObject($obj, $label_type);
 		
@@ -275,7 +272,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @param obj $obj
 	 * @param int $label_type (0 = tags, 1 = categories) 
 	 */
-	public function deleteTagsForObject(& $obj, $label_type = '0')
+	public function deleteTagsForObject(& $obj, $label_type)
 	{
 		$criteria = $sprockets_tag_handler = $sprockets_taglink_handler = $moduleObj = '';
 		$tagObjArray = $taglinkObjArray = $taglinks_for_deletion = array();
