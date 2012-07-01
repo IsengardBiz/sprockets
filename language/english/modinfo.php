@@ -17,7 +17,7 @@ define("_MI_SPROCKETS_MD_NAME", "Sprockets");
 define("_MI_SPROCKETS_MD_DESC", "Utilities module providing shared components for IPF modules.");
 define("_MI_SPROCKETS_TAGS", "Tags");
 define("_MI_SPROCKETS_TAGLINKS", "Tag links");
-define("_MI_SPROCKETS_CATEGORIES", "Categories");
+define("_MI_SPROCKETS_CATEGORIES", "Global categories");
 define("_MI_SPROCKETS_RIGHTS", "Rights");
 define("_MI_SPROCKETS_ARCHIVE", "Archives");
 define("_MI_SPROCKETS_TEMPLATES", "Templates");

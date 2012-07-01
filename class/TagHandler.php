@@ -60,12 +60,38 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	public function getCategoryOptions($selected = '') {
 		include_once ICMS_ROOT_PATH . '/modules/sprockets/include/angry_tree.php';
 		
+		/////////////////////////////////////////////////
+		//////////////////// CAUTION ////////////////////
+		/////////////////////////////////////////////////
+		
+		// Detect the module that this method is *called* from, so that module-specific category
+		// trees can be constructed. Module ID (mid) is used as a criteria to filter the results. 
+		// It relies on the fact that the global $icmsModule contains data about the current 
+		// (ie. calling) module, rather than the resident module for the code. Seems to work - but 
+		// need to keep an eye on this for a while to make sure it is robust.
+		
+		global $icmsModule;
+		$module_id = $icmsModule->getVar('mid');
+		$dirname = $icmsModule->getVar('dirname');
+		
+		/////////////////////////////////////////////////
+		/////////////////////////////////////////////////
+		
 		$categoryTree = $parentCategoryOptions = '';
 		$categoryObjArray = array();
-		$criteria = new icms_db_criteria_Compo();
 		
-		// Select those that have category status (label_type = 1)
-		$criteria = icms_buildCriteria(array('label_type' => '1'));
+		// Select those that have category status (label_type = 1) and optionally filter by module.
+		// If the calling module is actually Sprockets (which manages global categories), then do 
+		// not use module ID as a filter, because global categories (those generated within the 
+		// Sprockets module itself) are not assigned a module ID. This is because if you are ever
+		// forced to reinstall Sprockets, it will probably have a different module ID the second 
+		// time and none of your global categories would be detected.
+		
+		if ($dirname == 'sprockets')
+		{
+			$module_id = 'NULL';
+		}
+		$criteria = icms_buildCriteria(array('label_type' => '1', 'mid' => $module_id));
 		$categoryObjArray = $this->getObjects($criteria);
 		
 		//IcmsPersistableTree(&$objectArr, $myId, $parentId, $rootId = null)

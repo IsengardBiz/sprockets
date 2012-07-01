@@ -184,8 +184,8 @@ if (icms_get_module_status("sprockets"))
 				}
 			}
 
-			// Restrict content to categories only (no tags)
-			$criteria = icms_buildCriteria(array('label_type' => '1'));
+			// Restrict content to GLOBAL categories only (no module ID) and NO tags
+			$criteria = icms_buildCriteria(array('label_type' => '1', 'mid' => 'NULL'));
 
 			$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria, $actions = array());
 			$objectTable->addCustomAction('edit_category_action');
@@ -198,7 +198,7 @@ if (icms_get_module_status("sprockets"))
 			$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, 
 					'category_admin_rss', basename(dirname(dirname(__FILE__))),
 					_AM_SPROCKETS_TAG_RSS_FEED));
-			$objectTable->addFilter('mid', 'module_filter');
+			//$objectTable->addFilter('mid', 'module_filter');
 			$objectTable->addFilter('navigation_element', 'navigation_element_filter');
 			$objectTable->addfilter('rss', 'rss_filter');
 			$objectTable->addQuickSearch('title');
