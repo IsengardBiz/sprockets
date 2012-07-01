@@ -227,7 +227,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	}
 	
 	/**
-	 * Alters the category object navigation_element icon links to point at the category admin page
+	 * Alters the category object navigation_element icon links to point at the category.php admin page
 	 *
 	 * @return string
 	 */
@@ -251,7 +251,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	}
 	
 	/**
-	 * Alters the category object navigation_element icon links to point at the category admin page
+	 * Alters the category object navigation_element icon links to point at the category.php admin page
 	 *
 	 * @return string
 	 */
@@ -272,7 +272,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	}
 	
 	/**
-	 * Displays a custom edit action button, which links back to the CATEGORY admin page
+	 * Displays a custom edit action button, which links back to the category.php admin page
 	 * 
 	 * @return mixed
 	 */
@@ -287,7 +287,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	}
 	
 	/**
-	 * Displays a custom delete action button, which links back to the CATEGORY admin page
+	 * Displays a custom delete action button, which links back to the category.php admin page
 	 * 
 	 * @return mixed
 	 */
