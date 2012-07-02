@@ -24,6 +24,7 @@ define("_AM_SPROCKETS_REQUIREMENTS_SUPPORT", "Should you have any question or co
 define("_AM_SPROCKETS_TAGS", "Tags");
 define("_AM_SPROCKETS_TAGS_DSC", "All tags in the module");
 define("_AM_SPROCKETS_TAG_CREATE", "Add a tag");
+define("_AM_SPROCKETS_CATEGORY_CATEGORIES", "Categories");
 define("_AM_SPROCKETS_CATEGORY_CREATE", "Add a global category");
 define("_AM_SPROCKETS_CATEGORY_MODULE_CREATE", "Add a category");
 define("_AM_SPROCKETS_TAG", "Tag");

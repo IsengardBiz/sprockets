@@ -81,7 +81,7 @@ function edittag($tag_id = 0)
 	$tagObj->setVar('label_type', '1');
 	$tagObj->hideFieldFromForm('label_type');
 	$tagObj->hideFieldFromForm('mid');
-	$tagObj->showFieldOnForm('navigation_element');
+	$tagObj->hideFieldFromForm('navigation_element');
 		
 	if (!$tagObj->isNew()){
 				
@@ -90,6 +90,7 @@ function edittag($tag_id = 0)
 		$sform->assign($icmsAdminTpl);
 
 	} else {
+		$tagObj->setVar('navigation_element', '0');
 		$sprocketsModule->displayAdminMenu(1, _AM_SPROCKETS_TAGS . " > " . _CO_ICMS_CREATINGNEW);
 		$sform = $tagObj->getForm(_AM_SPROCKETS_TAG_CREATE, 'addtag');
 		$sform->assign($icmsAdminTpl);
@@ -108,7 +109,7 @@ if (icms_get_module_status("sprockets"))
 	$clean_op = '';
 
 	/** Create a whitelist of valid values */
-	$valid_op = array ('mod','changedField','addtag', 'toggleStatus', 'toggleNavigationElement', 'del',
+	$valid_op = array ('mod','changedField','addtag', 'toggleStatus', 'del',
 		'');
 
 	if (isset($_GET['op'])) $clean_op = htmlentities($_GET['op']);
@@ -146,18 +147,6 @@ if (icms_get_module_status("sprockets"))
 
 			break;
 
-		case "toggleNavigationElement":
-			$status = $ret = '';
-			$status = $sprockets_tag_handler->toggleStatus($clean_tag_id, 'navigation_element');
-			$ret = '/modules/' . basename(dirname(dirname(__FILE__))) . '/admin/category.php';
-			if ($status == 0) {
-				redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_NAVIGATION_DISABLED);
-			} else {
-				redirect_header(ICMS_URL . $ret, 2, _AM_SPROCKETS_TAG_NAVIGATION_ENABLED);
-			}
-
-			break;
-
 		case "del":
 
 			$controller = new icms_ipf_Controller($sprockets_tag_handler);
@@ -192,14 +181,9 @@ if (icms_get_module_status("sprockets"))
 			$objectTable->addCustomAction('delete_category_action');
 			$objectTable->addColumn(new icms_ipf_view_Column('title', 'left', FALSE,
 					'category_admin_titles', basename(dirname(dirname(__FILE__)))));
-			$objectTable->addColumn(new icms_ipf_view_Column('mid'));
-			$objectTable->addcolumn(new icms_ipf_view_Column('navigation_element', 'left', FALSE,
-					'category_admin_navigation_element', basename(dirname(dirname(__FILE__)))));
 			$objectTable->addcolumn(new icms_ipf_view_Column('rss', 'left', FALSE, 
 					'category_admin_rss', basename(dirname(dirname(__FILE__))),
 					_AM_SPROCKETS_TAG_RSS_FEED));
-			//$objectTable->addFilter('mid', 'module_filter');
-			$objectTable->addFilter('navigation_element', 'navigation_element_filter');
 			$objectTable->addfilter('rss', 'rss_filter');
 			$objectTable->addQuickSearch('title');
 			$objectTable->addIntroButton('addtag', 'category.php?op=mod', _AM_SPROCKETS_CATEGORY_CREATE);
