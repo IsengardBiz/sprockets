@@ -67,18 +67,21 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * retrieve tag_ids for an object
+	 * Retrieve tag_ids for an object (either tag or category label_type, but not both)
 	 *
 	 * Based on code from ImTagging: author marcan aka Marc-André Lanciault <marcan@smartfactory.ca>
 	 *
 	 * @param int $iid id of the related object
 	 * @param object IcmsPersistableHandler
+	 * @param int $label_type: 0 = tags, 1 = categories
 	 * @return array $ret
 	 */
-    public function getTagsForObject($iid, &$handler) {
+    public function getTagsForObject($iid, &$handler, $label_type = '0') {
 		
+		$tagList = $resultList = array();
 		$moduleObj = icms_getModuleInfo($handler->_moduleName);
 
+		// Get a list of tags and categories for this object
     	$criteria = new icms_db_criteria_Compo();
     	$criteria->add(new icms_db_criteria_Item('mid', $moduleObj->getVar('mid')));
     	$criteria->add(new icms_db_criteria_Item('item', $handler->_itemname));
@@ -89,7 +92,26 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
     	foreach($rows as $row) {
     		$ret[] = $row['tid'];
     	}
-    	return $ret;
+		
+		// Need to discard either the categories or tags from the results, depending on the 
+		// label_type that was requested:
+		// Read a reference buffer of all tags with key as ID
+		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))),
+				'sprockets');
+		$criteria = icms_buildCriteria(array('label_type', $label_type));
+		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);	
+		
+		// For each of the object's tags, check if the array_key_exists in the reference $tagList.
+		// If so, then it is the right kind of tag and can be appended to the results:
+		foreach ($ret as $key => $value)
+		{
+			if (array_key_exists($value, $tagList))
+			{
+				$resultList[] = $value;
+			}
+		}
+		
+    	return $resultList;
     }
 	
 	/**
@@ -249,12 +271,16 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		if (count($tag_array) > 0) {
 
 			foreach($tag_array as $tag) {
-				$taglinkObj = $this->create();
-				$taglinkObj->setVar('mid', $moduleObj->getVar('mid'));
-				$taglinkObj->setVar('item', $obj->handler->_itemname);
-				$taglinkObj->setVar('iid', $obj->id());
-				$taglinkObj->setVar('tid', $tag);
-				$this->insert($taglinkObj);
+				// Do not allow the select box zero message to be stored as a tag!
+				if ($tag != '0')
+				{
+					$taglinkObj = $this->create();
+					$taglinkObj->setVar('mid', $moduleObj->getVar('mid'));
+					$taglinkObj->setVar('item', $obj->handler->_itemname);
+					$taglinkObj->setVar('iid', $obj->id());
+					$taglinkObj->setVar('tid', $tag);
+					$this->insert($taglinkObj);
+				}
 			}
 		}
     }
@@ -275,7 +301,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	public function deleteTagsForObject(& $obj, $label_type)
 	{
 		$criteria = $sprockets_tag_handler = $sprockets_taglink_handler = $moduleObj = '';
-		$tagObjArray = $taglinkObjArray = $taglinks_for_deletion = array();
+		$tagList = $taglinkObjArray = $taglinks_for_deletion = array();
 		
 		// Taglinks know the tag id, module id, item id and item type.
 		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))), 
@@ -285,7 +311,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		// Read a buffer of ALL tags OR categories on the system (one or the other)
 		$criteria = icms_buildCriteria(array('label_type' => $label_type));
-		$tagObjArray = $sprockets_tag_handler->getObjects($criteria, TRUE);
+		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);
 		unset($criteria);
 		
 		// Read a buffer of ALL taglinks for THIS OBJECT
@@ -299,7 +325,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Check if each taglink tid is one of the target tag/category IDs. If so, mark the taglink_id for deletion
 		foreach ($taglinkObjArray as $taglink)
 		{
-			if (array_key_exists($taglink->getVar('tid'), $tagObjArray))
+			if (array_key_exists($taglink->getVar('tid'), $tagList))
 			{
 				$taglinks_for_deletion[] = $taglink->getVar('taglink_id');
 			}
@@ -308,7 +334,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Delete marked taglinks
 		if (!empty($taglinks_for_deletion))
 		{
-			$taglinks_for_deletion = '(' . implode($taglinks_for_deletion) . ')';
+			$taglinks_for_deletion = '(' . implode(',', $taglinks_for_deletion) . ')';
 			$criteria = new icms_db_criteria_Compo();
 			$criteria->add(new icms_db_criteria_Item('taglink_id', $taglinks_for_deletion, 'IN'));
 			$this->deleteAll($criteria);
