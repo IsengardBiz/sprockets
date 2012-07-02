@@ -98,8 +98,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Read a reference buffer of all tags with key as ID
 		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))),
 				'sprockets');
-		$criteria = icms_buildCriteria(array('label_type', $label_type));
-		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);	
+		$criteria = icms_buildCriteria(array('label_type' => $label_type));
+		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);
 		
 		// For each of the object's tags, check if the array_key_exists in the reference $tagList.
 		// If so, then it is the right kind of tag and can be appended to the results:
