@@ -119,6 +119,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		
 		if ($navigation_elements_only) {
 			$criteria = icms_buildCriteria(array('label_type' => '0', 'navigation_element' => '1'));
+		} else {
+			$criteria = icms_buildCriteria(array('label_type' => '0'));
 		}
 		
 		$tagList = $this->getList($criteria);
