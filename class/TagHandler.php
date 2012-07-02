@@ -45,7 +45,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 
 	public function getTags() {
-		$tagList = $this->getList();
+		$criteria = icms_buildCriteria(array('label_type' => '0'));
+		$tagList = $this->getList($criteria);
 		asort($tagList);
 		return $tagList;
 	}
