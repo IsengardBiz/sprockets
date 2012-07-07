@@ -113,23 +113,26 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	}
 	
 	/**
-	 * Converts mid into a human readable icon (yes/no)
+	 * Converts mid into a human readable module name
 	 *
+	 * As 
+	 * 
 	 * @return string
 	 */
 	public function mid()
 	{
-		$mid = $this->getVar('mid', 'e');
 		$moduleObj = $moduleName = '';
+		$mid = $this->getVar('mid', 'e');
 		
-		if ($mid)
+		if (!empty($mid))
 		{
 			// Get the module object and retrieve its name
 			$module_handler = icms::handler('icms_module');
 			$moduleObj = $module_handler->get($mid);
 			$moduleName = $moduleObj->getVar('name');
+			return $moduleName;
 		}
-		return $moduleName;
+		return FALSE;
 	}
 	
 	
