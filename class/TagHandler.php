@@ -29,8 +29,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 
 	function getTagName($tag_id) {
-    	$icms_persistable_registry = IcmsPersistableRegistry::getInstance();
-    	$tagObj = $icms_persistable_registry->getSingleObject('tag', $tag_id, 'sprockets');
+    	$icms_persistable_registry_handler = icms_ipf_registry_Handler::getInstance();
+    	$tagObj = $icms_persistable_registry_handler->getSingleObject('tag', $tag_id, 'sprockets');
     	if ($tagObj && !$tagObj->isNew()) {
     		return $tagObj->getVar('title');
     	} else {

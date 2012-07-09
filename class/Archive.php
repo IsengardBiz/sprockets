@@ -434,7 +434,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				$content = $contentObj->toArray();
 				
 				// we need the date to remain as a timestamp though...so put it back!
-				$content['date'] = $contentObj->getVar('date', 'e');
+				//$content['date'] = $contentObj->getVar('date', 'e');
 
 				// lookup human readable equivalents of the keys
 				// the dc_identifer must be a URL pointing at the source repository record
@@ -445,7 +445,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 				// format
 				if ($content['format']) {
-					$content['format'] = $contentObj->get_mimetype();
+					$extension = $contentObj->getVar('format', 'e');
+					$content['format'] = $this->handler->get_mimetype($extension);
+					//$content['format'] = $contentObj->get_mimetype();
 				}
 
 				// rights
@@ -515,7 +517,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			$contentObjArray = $rightsObjArray = $formatObjArray = array();
 			$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
 
-			// prepare lookup arrays for converting soundtrack keys to human readable values
+			// prepare lookup arrays for converting object keys to human readable values
 			// doing this outside of the main loop avoids massive numbers of redundant queries
 			// objects use their ids as keys in the arrays for easy lookup
 
@@ -531,20 +533,20 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 			// process each publication and generate XML output
 			foreach($contentArray as $contentObj) {
-
+				
 				$content = $contentObj->toArray();
 				
 				// we need the date to remain as a timestamp though...so put it back!
-				$content['date'] = $contentObj->getVar('date', 'e');
+				//$content['date'] = $contentObj->getVar('date', 'e');
 
 				// convert fields to human readable
-				$content = $this->convert_shared_fields($content, $contentObj);
+				$content = $this->convert_shared_fields($content, $contentObj);				
 
 				// format
 				if ($content['format']) {
-					$mimetypeObj = $mimetypeObjArray[$content['format']];
-					$extension = $mimetypeObj->getVar('extension', 'e');
-					$content['format'] = $mimetype_list[$extension];
+					$format_extension = $contentObj->getVar('format');
+					$format_extension = ltrim($format_extension, '.');
+					$content['format'] = $mimetype_list[$format_extension];
 				}
 
 				// rights
@@ -832,19 +834,31 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return mixed Array $content
 	 */
 	public function convert_shared_fields($content, $contentObj) {
+		
+		// oai_identifier
+		$content['oai_identifier'] = $contentObj->getVar('oai_identifier', 'e');
 
 		// dc_identifier - a URL back to the original resource / source archive
 		$content['identifier'] = $content['itemUrl'];
 
 		// timestamp
-		$content['submission_time'] = strtotime($content['submission_time']);
+		$content['submission_time'] = $contentObj->getVar('submission_time', 'e');
 
 		// creator
 		if ($content['creator']) {
+			$creators = array();
 			$creators = $contentObj->getVar('creator', 'e');
 			$creators = explode('|', $creators);
 			$content['creator'] = $creators;
 		}
+		
+		// source - construct link by convention as getVar() override with link is to useful to dump
+		if ($content['source']) {
+			$moduleName = $contentObj->handler->_moduleName;
+			$objectName = $contentObj->handler->_itemname;
+			$content['source'] = ICMS_URL . '/modules/' . $moduleName . '/' . $objectName . '.php?' . $objectName . '_id=' . $contentObj->getVar('source', 'e');
+		}
+		
 
 		// language - ISO 639-1 two letter codes
 		if ($content['language']) {
@@ -915,7 +929,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string 
 	 */
 	public function record_to_xml($record) {
-
+		
 		// initialise
 		$xml = $datestamp = '';
 		$dublin_core_fields = array(
@@ -936,7 +950,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 		// adjust the datestamp to match the OAI spec
 		//$datestamp = $record['submission_time'];
-		$datestamp = $this->timestamp_to_oaipmh_time($record['date']);
+		$datestamp = $this->timestamp_to_oaipmh_time($record['submission_time']);
 
 		// add a trailing space before closing paragraph tags to separate sentences when tags removed
 		$record['description'] = str_replace('.<', '. <', $record['description']);
@@ -946,8 +960,15 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 		// encode entities before sending to XML processing
 		foreach ($record as $key => &$value) {
+			if (is_array($value)) {
+				foreach ($value as $subvalue) {
+					$subvalue = htmlspecialchars(html_entity_decode($subvalue, ENT_QUOTES, 'UTF-8'),
+						ENT_NOQUOTES, 'UTF-8');
+				}
+			} else {
 				$value = htmlspecialchars(html_entity_decode($value, ENT_QUOTES, 'UTF-8'),
 						ENT_NOQUOTES, 'UTF-8');
+			}
 		}
 		
 		// build and populate template
@@ -965,7 +986,6 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			http://www.openarchives.org/OAI/2.0/oai_dc.xsd">';
 
 		////////// iterate through optional and repeatable Dublic Core fields //////////
-
 		foreach($dublin_core_fields as $dc_field) {
 			$dc_value = '';
 			$dc_value = $record[$dc_field];

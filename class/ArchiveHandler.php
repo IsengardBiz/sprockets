@@ -258,6 +258,28 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		
 		return $status;
 	}
+	
+	/**
+	 * Returns a mimetypes but using the ICMS include but NOT using the core mimetype handler
+	 *
+	 * @param string $format_extension - the filetype extension of a publication object
+	 * @return string $mimetype
+	 */
+	public function get_mimetype($format_extension) {
+		// There is a core file that has a nice list of mimetypes, but some podcast clients don't observe the standard
+		$mimetype_list = icms_Utils::mimetypes();
+
+		// Need to trim the damn dot off, if present
+		$format_extension = ltrim($format_extension, '.');
+
+		// Should probably handle exception where the mimetype isn't in the list, should be a rare event though
+		$mimetype = $mimetype_list[$format_extension];
+		if ($mimetype) {
+			return $mimetype;
+		} else {
+			return; // Null
+		}
+	}
 
 	/**
 	 * Prevents more than one archive object being created per client module (only one is needed)
