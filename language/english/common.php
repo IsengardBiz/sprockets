@@ -144,4 +144,21 @@ define("_CO_SPROCKETS_ONLY_ONE_ARCHIVE", "Only one archive is permitted for each
 // warnings
 define("_CO_SPROCKETS_ONLY_ONE_ARCHIVE_PER_MODULE", "<strong>Please note</strong>: Only one archive 
 	object is permitted per target module.");
-//define("", "");
+
+
+// OAI info for client modules OAI page
+
+define("_CO_SPROCKETS_IMPLEMENTS_OAI", "This website implements the <a href=\"http://www.openarchives.org/pmh/\">
+	Open Archives Initiative Protocol for Metadata Harvesting</a> (OAIPMH). Compliant harvesters 
+	can access our publication metadata from the OAIPMH target below. OAIPMH queries should be 
+	directed to the Base URL specified below.");
+define("_CO_SPROCKETS_REPOSITORY_NAME", "Repository name");
+define("_CO_SPROCKETS_METADATA_PREFIX", "Metadata prefix");
+define("_CO_SPROCKETS_GRANULARITY", "Granualarity");
+define("_CO_SPROCKETS_DELETED_RECORD", "Deleted record support");
+define("_CO_SPROCKETS_EARLIEST_DATE_STAMP", "Earliest date stamp");
+define("_CO_SPROCKETS_ADMIN_EMAIL", "Admin email");
+define("_CO_SPROCKETS_PROTOCOL_VERSION", "Protocol version");
+define("_CO_SPROCKETS_BASE_URL", "Base URL");
+define("_CO_SPROCKETS_COMPRESSION", "Compression");
+define("_CO_SPROCKETS_ARCHIVE_NOT_ENABLED", "Sorry, open archives initiative functionality is not presently enabled for this module.");
