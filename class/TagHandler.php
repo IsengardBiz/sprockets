@@ -210,7 +210,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 					$form .= '<option value="' . $key . '">' . $value . '</option>';
 				}
 			}
-			$form .= '</select></form></div>';
+			$form .= '</select><input type="hidden" value="1" name="label_type" /></form></div>';
 
 			return $form;
 			
