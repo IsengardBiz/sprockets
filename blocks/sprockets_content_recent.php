@@ -37,6 +37,7 @@ function sprockets_content_recent_show($options) {
 	
 	// Note: Spotlighted articles are loaded separately, in order to keep things simple.
 	// Otherwise the whole tag filtering business creates headaches and complications.
+	// At present, this block can only be filtered by TAG. Category support will be added later	
 	$criteria = new icms_db_criteria_Compo();
 	if ($options[1]) {
 		$criteria->add(new icms_db_criteria_Item('tid', $options[1]));
@@ -179,8 +180,13 @@ function sprockets_content_recent_show($options) {
 		$date = $content->getVar('date', 'e');
 		$date = date($options[2], $date);
 		
+		// Adjust fields for user-side display
 		$content = $content->toArray();
 		$content['date'] = $date;
+		if ($content['short_url']) { // Add SEO friendly URL
+			$content['itemLink'] = '<a href="' . $content['itemUrl'] . '&amp;title=' 
+					. $content['short_url'] . '">' . $content['title'] . '</a>';
+		}
 	}
 
 	return $block;
@@ -211,7 +217,9 @@ function sprockets_content_recent_edit($options) {
 		$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_RECENT_TAG . '</td>';
 		// Parameters icms_form_elements_Select: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
 		$form_select = new icms_form_elements_Select('', 'options[]', $options[1], '1', FALSE);
-		$tagList = $sprockets_tag_handler->getList();
+		$criteria = icms_buildCriteria(array('label_type' => '0'));
+		$tagList = $sprockets_tag_handler->getList($criteria);
+		unset($criteria);
 		$tagList = array(0 => 'All') + $tagList;
 		$form_select->addOptionArray($tagList);
 		$form .= '<td>' . $form_select->render() . '</td></tr>';

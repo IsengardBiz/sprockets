@@ -25,7 +25,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		icms_ipf_object::__construct($handler);
 
 		$this->quickInitVar('tag_id', XOBJ_DTYPE_INT, TRUE);
-		$this->quickInitVar('label_type', XOBJ_DTYPE_INT, TRUE, FALSE, FALSE, 0);
+		$this->quickInitVar('label_type', XOBJ_DTYPE_INT, TRUE, FALSE, FALSE, 0); // 0 = tag, 1 = category
 		$this->quickInitVar('mid', XOBJ_DTYPE_INT, FALSE);
 		$this->quickInitVar('title', XOBJ_DTYPE_TXTBOX, TRUE);
 		$this->quickInitVar('parent_id', XOBJ_DTYPE_INT, FALSE, FALSE, FALSE, 0);
