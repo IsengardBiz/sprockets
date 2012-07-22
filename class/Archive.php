@@ -595,31 +595,36 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		/**
 		 * Retrieves content objects from the database on behalf of GetRecord() and ListRecords()
 		 *
-		 * @param <type> $content_handler
-		 * @param <type> $requestVerb
-		 * @param <type> $response
-		 * @param <type> $metadataPrefix
-		 * @param <type> $from
-		 * @param <type> $until
-		 * @param <type> $set
-		 * @param <type> $resumptionToken
-		 * @return <type>
+		 * @param object $content_handler
+		 * @param string $requestVerb
+		 * @param string $response
+		 * @param string $metadataPrefix
+		 * @param string $from
+		 * @param string $until
+		 * @param string $set
+		 * @param string $resumptionToken
+		 * @return array mixed
 		 */
 		public function lookupRecords($content_handler, $requestVerb, &$response,
 				$metadataPrefix = null, $from = null, $until = null, $set = null,
 				$resumptionToken = null, $cursor = null) {
+			
+		// Sanitise parameters used to build query strings
+		$clean_from = ctype_digit($from) ? $from : null;
+		$clean_until = ctype_digit($until) ? $until : null;		
+		$clean_cursor = isset($cursor) ? intval($cursor) : null;
 			
 		$sprocketsConfig = icms_getModuleConfig(basename(dirname(dirname(__FILE__))));
 
 		$valid = TRUE; // if any part of the request is invalid, this will be set to FALSE => exit
 		$response .= '<request verb="' . $requestVerb . '" metadataPrefix="' . $metadataPrefix . '"';
 
-		if (!empty($from)) {
-			$response .= ' from="' . $from . '"';
+		if (!empty($clean_from)) {
+			$response .= ' from="' . $clean_from . '"';
 		}
 
-		if (!empty($until)) {
-			$response .= ' until="' . $until . '"';
+		if (!empty($clean_until)) {
+			$response .= ' until="' . $clean_until . '"';
 		}
 
 		if (!empty($set)) {
@@ -659,19 +664,19 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		}
 
 		// validate from
-		if (!empty($from)) {
+		if (!empty($clean_from)) {
 			$valid_timestamp = '';
-			$from = str_replace('Z', '', $from);
-			$from = str_replace('T', ' ', $from);
+			$clean_from = str_replace('Z', '', $clean_from);
+			$clean_from = str_replace('T', ' ', $clean_from);
 
-			$valid_timestamp = $this->validate_datetime($from);
+			$valid_timestamp = $this->validate_datetime($clean_from);
 
 			if ($valid_timestamp == FALSE) {
 				$valid = $FALSE;
 				$response .= $this->throw_error('badArgument', 'Invalid datetime: from');
 			} else {
 				$valid_timestamp = $time = '';
-				$time = $from;
+				$time = $clean_from;
 				$valid_timestamp = $this->not_before_earliest_datestamp($time);
 				if ($valid_timestamp == FALSE) {
 					$valid = FALSE;
@@ -683,16 +688,16 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		}
 
 		// validate until
-		if (!empty($until)) {
-			$until = str_replace('Z', '', $until);
-			$until = str_replace('T', ' ', $until);
-			$valid_timestamp = $this->validate_datetime($until);
+		if (!empty($clean_until)) {
+			$clean_until = str_replace('Z', '', $clean_until);
+			$clean_until = str_replace('T', ' ', $clean_until);
+			$valid_timestamp = $this->validate_datetime($clean_until);
 			if ($valid_timestamp == FALSE) {
 				$valid = $FALSE;
 				$response .= $this->throw_error('badArgument', 'Invalid datetime: until');
 			} else {
 				$valid_timestamp = $time = '';
-				$time = $until;
+				$time = $clean_until;
 				$valid_timestamp = $this->not_before_earliest_datestamp($time);
 				if ($valid_timestamp == FALSE) {
 					$valid = FALSE;
@@ -704,9 +709,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		}
 
 		// check that from precedes until
-		if (!empty($from) && !empty($until)) {
+		if (!empty($clean_from) && !empty($clean_until)) {
 			$valid_timestamp = '';
-			$valid_timestamp = $this->from_precedes_until($from, $until);
+			$valid_timestamp = $this->from_precedes_until($clean_from, $clean_until);
 			if ($valid_timestamp == FALSE) {
 				$valid = FALSE;
 				$response .= $this->throw_error('badArgument', 'Invalid datetime: until parameter '
@@ -717,8 +722,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		// lookup all records within the specified time range / cursor offset limit
 		// if there is a $resumptionToken, need to look at the cursor position to see where to start
 		if ($valid == TRUE) {
-			$from = strtotime($from);
-			$until = strtotime($until);
+			$clean_from = strtotime($clean_from);
+			$clean_until = strtotime($clean_until);
 			$sql = $rows = $fields = '';
 
 			if ($requestVerb == 'ListRecords') {
@@ -736,15 +741,15 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			$sql = "SELECT " . $fields . " from " . $content_handler->table . " WHERE";
 			$count_sql = "SELECT count(*) from " . $content_handler->table . " WHERE";
 			
-			if (!empty($from) || !empty($until)) {
-				if (!empty($from)) {
-					$shared_sql .= " `date` >= '" . $from . "'";
+			if (!empty($clean_from) || !empty($clean_until)) {
+				if (!empty($clean_from)) {
+					$shared_sql .= " `date` >= '" . $clean_from . "'";
 				}
-				if (!empty($from) && !empty($until)) {
+				if (!empty($clean_from) && !empty($clean_until)) {
 					$shared_sql .= " AND";
 				}
-				if (!empty ($until)) {
-					$shared_sql .= " `date` <= '" . $until . "'";
+				if (!empty ($clean_until)) {
+					$shared_sql .= " `date` <= '" . $clean_until . "'";
 				}
 				$shared_sql .= " AND";
 			}
@@ -779,11 +784,11 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				if ($metadataPrefix) {
 					$token['metadataPrefix'] = $metadataPrefix;
 				}
-				if ($from) {
-					$token['from'] = $from;
+				if ($clean_from) {
+					$token['from'] = $clean_from;
 				}
-				if ($until) {
-					$token['until'] = $until;
+				if ($clean_until) {
+					$token['until'] = $clean_until;
 				}
 				if ($set) {
 					$token['set'] = $set;
@@ -800,6 +805,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			
 			$sql .= $shared_sql . " LIMIT " . $cursor . ", "
 					. $sprocketsConfig['resumption_token_cursor_offset'];
+			
+			// Escape the query string
+			$sql = mysql_real_escape_string($sql);
 
 			$contentArray = array();
 

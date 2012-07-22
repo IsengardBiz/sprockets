@@ -97,7 +97,7 @@ function icms_module_install_sprockets($module) {
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_tag')
 		. " (`title`, `description`) values ('Example', 'For testing purposes, replace this with your own tags.')";
 
-	// some common licenseS
+	// some common licenses
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`) values ('Copyright, all rights reserved',
                 'This work is subject to copyright and all rights are reserved. Contact the creators for permission if you wish to modify or distribute this work.')";

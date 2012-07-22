@@ -117,6 +117,10 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$form = $criteria = '';
 		$tagList = $tag_ids = array();
 		
+		// Sanitise parameters used to build query in case a client module passes in bad data
+		$clean_module_id = isset($module_id) ? intval($module_id): 0 ;
+		$clean_item = mysql_real_escape_string($item);
+		
 		if ($navigation_elements_only) {
 			$criteria = icms_buildCriteria(array('label_type' => '0', 'navigation_element' => '1'));
 		} else {
@@ -135,10 +139,11 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			
 			$query = $rows = $tag_ids = '';
 			$query = "SELECT DISTINCT `tid` FROM " . $sprockets_taglink_handler->table
-					. " WHERE `mid` = '" . $module_id . "'";
-			if ($item) {
-					$query .= " AND `item` = '" . $item . "'";
+					. " WHERE `mid` = '" . $clean_module_id . "'";
+			if ($clean_item) {
+					$query .= " AND `item` = '" . $clean_item . "'";
 			}
+			
 			$result = icms::$xoopsDB->query($query);
 			if (!$result) {
 				echo 'Error';
@@ -190,7 +195,10 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	
 	public function getCategorySelectBox($action, $selected = null, $zero_option_message = '---',
 			$module_id = null, $item = null) 
-	{		
+	{	
+		$clean_module_id = isset($module_id) ? intval($module_id): null ;
+		$clean_item = mysql_real_escape_string($item);
+		
 		$categoryList = $this->getCategoryOptions();
 		if (!empty($categoryList)) {
 			$form = '<div><form name="tag_selection_form" action="' . $action . '" method="get">';

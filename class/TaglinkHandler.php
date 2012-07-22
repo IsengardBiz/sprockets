@@ -28,7 +28,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	
 	public function getTaglinkModules() {
 		
-		
 		$module_list = array();
 		$module_handler = icms::handler('icms_module');
 		
@@ -36,6 +35,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$criteria->add(new icms_db_criteria_Item('label_type', '1', '!='));
 		
 		$sql = "SELECT DISTINCT `mid` FROM " . $this->table;
+		$sql = mysql_real_escape_string($sql);
 		
 		$rows = $this->query($sql, $criteria);
 		foreach ($rows as $key => $mid) {			
@@ -57,6 +57,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$criteria = '';
 		
 		$sql = "SELECT DISTINCT `item` FROM " . $this->table;
+		$sql = mysql_real_escape_string($sql);
 		
 		$rows = $this->query($sql, $criteria);
 		foreach ($rows as $key => $item) {
@@ -80,13 +81,18 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$tagList = $resultList = array();
 		$moduleObj = icms_getModuleInfo($handler->_moduleName);
+		
+		// Sanitise parameters used in queries
+		$clean_iid = isset($iid) ? intval($iid) : 0;
+		$clean_label_type = isset($label_type) ? intval($label_type): 0 ;
 
 		// Get a list of tags and categories for this object
     	$criteria = new icms_db_criteria_Compo();
     	$criteria->add(new icms_db_criteria_Item('mid', $moduleObj->getVar('mid')));
     	$criteria->add(new icms_db_criteria_Item('item', $handler->_itemname));
-    	$criteria->add(new icms_db_criteria_Item('iid', $iid));
-    	$sql = 'SELECT tid FROM ' . $this->table;
+    	$criteria->add(new icms_db_criteria_Item('iid', $clean_iid));
+    	$sql = 'SELECT `tid` FROM ' . $this->table;
+		$sql = mysql_real_escape_string($sql);
     	$rows = $this->query($sql, $criteria);
     	$ret = array();
     	foreach($rows as $row) {
@@ -98,7 +104,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Read a reference buffer of all tags with key as ID
 		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))),
 				'sprockets');
-		$criteria = icms_buildCriteria(array('label_type' => $label_type));
+		$criteria = icms_buildCriteria(array('label_type' => $clean_label_type));
 		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);
 		
 		// For each of the object's tags, check if the array_key_exists in the reference $tagList.
