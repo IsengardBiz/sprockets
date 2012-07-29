@@ -16,3 +16,12 @@ Version 1.1
 Version 1.11
 ------------
 * Fix slow index page load when gzip enabled on ICMS 1.3.2.
+
+Version 2.0 BETA (29/7/2012)
+----------------------------
+* Added support for module-specific category trees. Modules can now use Sprockets to maintain their 
+own independent category tree. See Contact V1.04 or Library_ipf V1.0 for examples of integration.
+
+* NB: This breaks compatibility of Sprockets with other client modules; however the fixes required 
+to restore functionality are minor and updates for all client modules will be issued together with
+the final version of Sprockets 2.

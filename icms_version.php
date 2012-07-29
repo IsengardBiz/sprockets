@@ -32,9 +32,9 @@ $modversion = array(
   'image'=> "images/icon_big.png", /* for backward compatibility */
 
 /**  Development information */
-  'status_version'=> "1.2",
-  'status'=> "Experimental",
-  'date'=> "23/6/2012",
+  'status_version'=> "2.0",
+  'status'=> "BETA",
+  'date'=> "29/7/2012",
   'author_word'=> "This version of Sprockets is compatible with ImpressCMS V1.3.x and V2.0.",
 
 /** Contributors */
