@@ -219,6 +219,22 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			return FALSE;
 		}
 	}
+	
+	/**
+	 * Checks if the given tag (category) is a parent
+	 * @param type $id
+	 * @return type 
+	 */
+	public function check_is_parent($id) {
+		$is_parent = FALSE;
+		$criteria = icms_buildCriteria(array('parent_id' => $id, 'label_type' => '1'));
+		$is_parent = $this->getList($criteria);
+		if ($is_parent) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
 
 	/**
 	 * Returns an array of parent category titles for a given list of tag objects, optionally with links

@@ -122,13 +122,12 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	public function mid()
 	{
 		$moduleObj = $moduleName = '';
-		$mid = $this->getVar('mid', 'e');
 		
 		if (!empty($mid))
 		{
 			// Get the module object and retrieve its name
 			$module_handler = icms::handler('icms_module');
-			$moduleObj = $module_handler->get($mid);
+			$moduleObj = $module_handler->getByDirname("sprockets");
 			$moduleName = $moduleObj->getVar('name');
 			return $moduleName;
 		}
