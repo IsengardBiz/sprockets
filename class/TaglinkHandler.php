@@ -79,19 +79,19 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 */
     public function getTagsForObject($iid, &$handler, $label_type = '0') {
 		
-		$tagList = $resultList = array();
+		$tagList = $resultList = $ret = array();
 		$moduleObj = icms_getModuleInfo($handler->_moduleName);
+		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		
 		// Sanitise parameters used in queries
 		$clean_iid = isset($iid) ? intval($iid) : 0;
-		$clean_label_type = isset($label_type) ? intval($label_type): 0 ;
-
-		// Get a list of tags and categories for this object
+		$clean_label_type = isset($label_type) ? intval($label_type): 0 ;		
+		
     	$criteria = new icms_db_criteria_Compo();
     	$criteria->add(new icms_db_criteria_Item('mid', $moduleObj->getVar('mid')));
     	$criteria->add(new icms_db_criteria_Item('item', $handler->_itemname));
     	$criteria->add(new icms_db_criteria_Item('iid', $clean_iid));
-    	$sql = 'SELECT `tid` FROM ' . $this->table;
+    	$sql = 'SELECT DISTINCT `tid` FROM ' . $this->table;
 		$sql = mysql_real_escape_string($sql);
     	$rows = $this->query($sql, $criteria);
     	$ret = array();

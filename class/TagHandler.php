@@ -93,6 +93,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			$module_id = 'NULL';
 		}
 		$criteria = icms_buildCriteria(array('label_type' => '1', 'mid' => $module_id));
+		$criteria->setSort('title');
+		$criteria->setOrder('ASC');
 		$categoryObjArray = $this->getObjects($criteria);
 		
 		//IcmsPersistableTree(&$objectArr, $myId, $parentId, $rootId = null)
