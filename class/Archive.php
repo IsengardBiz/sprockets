@@ -515,7 +515,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			$records = $sql = $rows = '';
 			$haveResults = TRUE;
 			$contentObjArray = $rightsObjArray = $formatObjArray = array();
-			$sprocketsModule = icms_getModuleInfo(basename(dirname(dirname(__FILE__))));
+			$sprocketsModule = icms_getModuleInfo('sprockets');
 
 			// prepare lookup arrays for converting object keys to human readable values
 			// doing this outside of the main loop avoids massive numbers of redundant queries
@@ -805,9 +805,6 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			
 			$sql .= $shared_sql . " LIMIT " . $cursor . ", "
 					. $sprocketsConfig['resumption_token_cursor_offset'];
-			
-			// Escape the query string
-			$sql = mysql_real_escape_string($sql);
 
 			$contentArray = array();
 
