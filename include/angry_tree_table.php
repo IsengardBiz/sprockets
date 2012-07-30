@@ -154,9 +154,11 @@ class icms_ipf_view_Tree extends icms_ipf_view_Table {
 		
 		// Call the client module object, as we'll be needing to ask for dirnames etc
 		$first_object_id = key($this->_objects);
-		$first_object = $this->_objects[$first_object_id];
-		$client_module_id = $first_object->getVar('mid', 'e');
-		$this->clientModule = icms::handler("icms_module")->get($client_module_id);
+		if ($first_object_id) {
+			$first_object = $this->_objects[$first_object_id];
+			$client_module_id = $first_object->getVar('mid', 'e');
+			$this->clientModule = icms::handler("icms_module")->get($client_module_id);
+		}
 		
 		if (count($this->_objects) > 0) {
 			// Modified
