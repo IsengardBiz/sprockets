@@ -1,0 +1,160 @@
+Integrating tags from the Sprockets module into your module
+============================================================
+
+1. Add a non-persistable variable to your object class file:
+------------------------------------------------------------
+
+$this->initNonPersistableVar('tag', XOBJ_DTYPE_INT, 'tag', FALSE, FALSE, FALSE, TRUE);
+
+Set a control for this variable, using a selectmulti:
+
+// Only display the tag fields if the sprockets module is installed
+          $sprocketsModule = icms_getModuleInfo('sprockets');
+          if (icms_get_module_status("sprockets"))
+          {
+               $this->setControl('tag', array(
+               'name' => 'selectmulti',
+               'itemHandler' => 'tag',
+               'method' => 'getTags',
+               'module' => 'sprockets'));
+          }
+          else
+          {
+               $this->hideFieldFromForm('tag');
+               $this->hideFieldFromSingleView ('tag');
+          }
+
+Add matching language constants in /language/common.php:
+
+define("_CO_LIBRARY_PUBLICATION_TAG", "Tags");
+define("_CO_LIBRARY_PUBLICATION_TAG_DSC", "Select the tags (subjects) you wish to label this object with.");
+
+2. Add some code to your object handler class file, in the afterSave() method:
+------------------------------------------------------------------------------
+
+protected function afterSave(& $obj)
+     {         
+          $sprockets_taglink_handler = '';
+
+          $sprocketsModule = icms::handler("icms_module")->getByDirname("sprockets");
+         
+          // Only update the taglinks if the object is being updated from the add/edit form (POST).
+          // Database updates are not permitted from GET requests and will trigger an error
+          if ($_SERVER['REQUEST_METHOD'] == 'POST' && icms_get_module_status("sprockets")) {
+               $sprockets_taglink_handler = icms_getModuleHandler('taglink',
+                         $sprocketsModule->getVar('dirname'), $sprocketsModule->getVar('dirname'), 'sprockets');
+              
+               // Store tags
+               $sprockets_taglink_handler->storeTagsForObject($obj, 'tag', '0');
+          }
+    
+          return TRUE;
+     }
+
+3. Add some code to your object handler class file in the afterDelete() method:
+-------------------------------------------------------------------------------
+
+/**
+     * Deletes notification subscriptions and taglinks, called when an object is deleted
+     *
+     * @param object $obj object
+     * @return bool
+     */
+     protected function afterDelete(& $obj) {
+         
+          $sprocketsModule = $notification_handler = $module_handler = $module = $module_id
+                    = $tag= $item_id = '';
+         
+          $sprocketsModule = icms_getModuleInfo('sprockets');
+
+          // Delete taglinks
+          if (icms_get_module_status("sprockets")) {
+               $sprockets_taglink_handler = icms_getModuleHandler('taglink',
+                         $sprocketsModule->getVar('dirname'), 'sprockets');
+               $sprockets_taglink_handler->deleteAllForObject($obj);
+          }
+         
+          return TRUE;
+     }
+
+4. Add the loadTags() method to your object class:
+--------------------------------------------------
+
+/**
+     * Load tags linked to this publication
+     *
+     * @return void
+     */
+     public function loadTags() {
+          
+          $ret = array();
+          
+          // Retrieve the tags for this object
+          $sprocketsModule = icms_getModuleInfo('sprockets');
+          if (icms_get_module_status("sprockets")) {
+               $sprockets_taglink_handler = icms_getModuleHandler('taglink',
+                         $sprocketsModule->getVar('dirname'), 'sprockets');
+               $ret = $sprockets_taglink_handler->getTagsForObject($this->id(), $this->handler, '0'); // label_type = 0 means only return tags
+               $this->setVar('tag', $ret);
+          }
+     }
+
+5. Call loadTags() in your /admin/object.php class:
+---------------------------------------------------
+
+/**
+* Edit a Publication
+*
+* @param int $publication_id Publication id to be edited
+*/
+function editPublication($pubObj) 
+{
+     global $library_publication_handler, $icmsModule, $icmsAdminTpl;
+
+     if (!$pubObj->isNew()){
+          $pubObj->loadTags();
+          $icmsModule->displayAdminMenu(0, _AM_LIBRARY_PUBLICATIONS . " > " . _CO_ICMS_EDITING);
+          $sform = $pubObj->getForm(_AM_LIBRARY_PUBLICATION_EDIT, "addpublication");
+          $sform->assign($icmsAdminTpl);
+     } else { etc...
+
+6. Add a tag select box on your object admin page (or on the user side index page), to sort the contents:
+---------------------------------------------------------------------------------------------------------
+
+// Display tag select box
+if (icms_get_module_status("sprockets")) {
+     $tag_select_box = '';
+     $taglink_array = $tagged_message_list = array();
+     $sprockets_tag_handler = icms_getModuleHandler('tag', $sprocketsModule->getVar('dirname'),
+          'sprockets');
+     $sprockets_taglink_handler = icms_getModuleHandler('taglink', $sprocketsModule->getVar('dirname'), 'sprockets');
+     $tag_select_box = $sprockets_tag_handler->getTagSelectBox('message.php', 
+          $clean_tag_id,     _AM_CONTACT_MESSAGE_ALL_MESSAGES, icms::$module->getVar('mid'));
+     if (!empty($tag_select_box)) {
+          echo '<h3>' . _AM_CONTACT_MESSAGE_FILTER_BY_TAG . '</h3>';
+          echo $tag_select_box;
+     }
+}
+
+7. Check for a tag_id parameter on the page, which you will use as an additional $criteria to filter results
+-------------------------------------------------------------------------------------------------------------
+
+$clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : 0 ;
+
+...
+
+// Get a list of message IDs belonging to this tag
+$criteria = new icms_db_criteria_Compo();
+$criteria->add(new icms_db_criteria_Item('tid', $clean_tag_id));
+$criteria->add(new icms_db_criteria_Item('mid', $contactModule->getVar('mid')));
+$criteria->add(new icms_db_criteria_Item('item', 'message'));
+$taglink_array = $sprockets_taglink_handler->getObjects($criteria);
+foreach ($taglink_array as $taglink) {
+     $tagged_message_list[] = $taglink->getVar('iid');
+}
+// Use the tagged message IDs as a filter criteria
+$tagged_message_list = "('" . implode("','", $tagged_message_list) . "')";
+                    
+// Use the list as an additional criteria to filter the persistable table or your contents page...
+$criteria = new icms_db_criteria_Compo();
+$criteria->add(new icms_db_criteria_Item('message_id', $tagged_message_list, 'IN'));
