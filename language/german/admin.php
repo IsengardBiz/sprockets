@@ -24,6 +24,9 @@ define("_AM_SPROCKETS_REQUIREMENTS_SUPPORT", "Sollten sie irgendwelche Fragen od
 define("_AM_SPROCKETS_TAGS", "Tags");
 define("_AM_SPROCKETS_TAGS_DSC", "Alle Tags des Modules");
 define("_AM_SPROCKETS_TAG_CREATE", "Hinzufügen eines Tags");
+define("_AM_SPROCKETS_CATEGORY_CATEGORIES", "Kategorien");
+define("_AM_SPROCKETS_CATEGORY_CREATE", "Neue globale Kategorie");
+define("_AM_SPROCKETS_CATEGORY_MODULE_CREATE", "Erstelle Kategorie");
 define("_AM_SPROCKETS_TAG", "Tag");
 define("_AM_SPROCKETS_TAG_CREATE_INFO", "Bitte füllen Sie das folgende Formular aus, um ein neues Tag zu erstellen.");
 define("_AM_SPROCKETS_TAG_EDIT", "Tag bearbeiten");
@@ -39,6 +42,10 @@ define("_AM_SPROCKETS_TAG_RSS_DISABLED", "RSS feed ausschalten");
 define("_AM_SPROCKETS_TAG_RSS_FEED", "RSS feed?");
 define("_AM_SPROCKETS_TAG_NAVIGATION_ENABLED", "Navigationselemente einschalten");
 define("_AM_SPROCKETS_TAG_NAVIGATION_DISABLED", "Navigationselemente ausschalten");
+
+// Category
+define("_AM_SPROCKETS_CATEGORY_EDIT", "Bearbeiten");
+define("_AM_SPROCKETS_CATEGORY_DELETE", "Löschen");
 
 // Taglink
 define("_AM_SPROCKETS_TAGLINKS", "Taglinks");

@@ -15,11 +15,6 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS Hauptverzeichnis nicht definiert");
 // tag
 define("_CO_SPROCKETS_TAG_TITLE", "Titel");
 define("_CO_SPROCKETS_TAG_TITLE_DSC", " Name des tags (Subjekt).");
-define("_CO_SPROCKETS_TAG_LABEL_TYPE", "Label Typ");
-define("_CO_SPROCKETS_TAG_LABEL_TYPE_DSC", "Ist dies ein tag, eine Kategorie, oder beides?<br /><br />
-	<strong><font color=\"red\">Warunung:</font></strong> Wenn Sie eine Kategorie in ein Tag umwandeln, 
-	wird die Kategorie vom Kategoriebaum entfernt. Alle dazu gehöriegen Unterkategorien werden gelöscht. 
-	Inhalte, welche der Kategorie angehören, werden ebenfalls in das neue Tag übertragen.");
 define("_CO_SPROCKETS_TAG_DESCRIPTION", "Beschreibung");
 define("_CO_SPROCKETS_TAG_DESCRIPTION_DSC", " Beschreibung des Tags (optional).");
 define("_CO_SPROCKETS_TAG_ICON", "Tag icon");
@@ -27,6 +22,7 @@ define("_CO_SPROCKETS_TAG_ICON_DSC", "Sie können ein Logo bzw. Icon für das Ta
 define("_CO_SPROCKETS_TAG_PARENT_ID", "Eltern Kategorie");
 define("_CO_SPROCKETS_TAG_PARENT_ID_DSC", "Bitte bestimmen Sie die übergeordnete Kategorie, wenn es sich um eine Unterkategorie handelt. 
 	Eine Kategorie kann nicht selbst ihre eigene Oberkategorie sein.");
+define("_CO_SPROCKETS_TAG_MID", "Modul");
 define("_CO_SPROCKETS_TAG_RSS", "RSS feed");
 define("_CO_SPROCKETS_TAG_RSS_DSC", "Aktivieren Sie einen einheitlichen RSS feed für dieses Tag, welches Inhalte 
 	von ALLEN kompatieblen Modulen dieser Seite zusammen fasst.");
@@ -124,14 +120,17 @@ define("_CO_SPROCKETS_ARCHIVE_BASE_URL", "Base URL");
 define("_CO_SPROCKETS_ARCHIVE_BASE_URL_DSC", " Die Ziel-URL an welche ankommende OAIPMH Anfragen für
     dein Archive gesendet werden sollen.");
 define("_CO_SPROCKETS_ARCHIVE_COMPRESSION", "Komprimierung");
-define("_CO_SPROCKETS_ARCHIVE_COMPRESSION_DSC", " Schlüsselt auf, welche Kompressionsarten für dieses Archiv unterstützt werden. Momentan wird nur gzip unterstützt.");
+define("_CO_SPROCKETS_ARCHIVE_COMPRESSION_DSC", " Schlüsselt auf, welche Kompressionsarten für dieses Archiv unterstützt werden. 
+		Momentan wird nur gzip unterstützt.");
 define("_CO_SPROCKETS_ARCHIVE_ABOUT_THIS_ARCHIVE", "Unsere Punlikations Sammlung ist ein Open Archive");
 define("_CO_SPROCKETS_ARCHIVE_OAIPMH_TARGET", "Diese Website implementiert das 
     <a href=\"http://www.openarchives.org/pmh/\">Open Archives Initiative Protocol for Metadata
     Harvesting</a> (OAIPMH). Compliant harvesters can access our publication metadata from the
     OAIPMH target below. OAIPMH queries should be directed to the Base URL specified below.");
-define("_CO_SPROCKETS_ARCHIVE_NOT_AVAILABLE", "Sorry, die Open Archive funktionalität ist momentan ausgeschaltet.");
-define("_CO_SPROCKETS_ARCHIVE_NOT_CONFIGURED", "Sprockets ist gerade so eingestellt, dass ankommende OAIPMH-Anfragen abgewiesen werden, Entschuldigung");
+define("_CO_SPROCKETS_ARCHIVE_NOT_AVAILABLE", "Sorry, die Open Archive funktionalität ist 
+		momentan ausgeschaltet.");
+define("_CO_SPROCKETS_ARCHIVE_NOT_CONFIGURED", "Sprockets ist gerade so eingestellt, 
+		dass ankommende OAIPMH-Anfragen abgewiesen werden, Entschuldigung");
 define("_CO_SPROCKETS_ARCHIVE_ENABLED_YES", "Ja");
 define("_CO_SPROCKETS_ARCHIVE_ENABLED_NO", "Nein");
 define("_CO_SPROCKETS_ARCHIVE_SWITCH_ONLINE", "Online schalten");
@@ -145,4 +144,21 @@ define("_CO_SPROCKETS_ONLY_ONE_ARCHIVE", "Es ist nur ein Archiv je Modul erlaubt
 // warnings
 define("_CO_SPROCKETS_ONLY_ONE_ARCHIVE_PER_MODULE", "<strong>Hinweis</strong>: Nur ein Archivobjekt 
 		ist je Zielmodul erlaubt.");
-//define("", "");
+
+
+// OAI info for client modules OAI page
+
+define("_CO_SPROCKETS_IMPLEMENTS_OAI", "This website implements the <a href=\"http://www.openarchives.org/pmh/\">
+	Open Archives Initiative Protocol for Metadata Harvesting</a> (OAIPMH). Compliant harvesters 
+	can access our publication metadata from the OAIPMH target below. OAIPMH queries should be 
+	directed to the Base URL specified below.");
+define("_CO_SPROCKETS_REPOSITORY_NAME", "Repository Name");
+define("_CO_SPROCKETS_METADATA_PREFIX", "Metadata prefix");
+define("_CO_SPROCKETS_GRANULARITY", "Granualarity");
+define("_CO_SPROCKETS_DELETED_RECORD", "Deleted record support");
+define("_CO_SPROCKETS_EARLIEST_DATE_STAMP", "Earliest date stamp");
+define("_CO_SPROCKETS_ADMIN_EMAIL", "Admin email");
+define("_CO_SPROCKETS_PROTOCOL_VERSION", "Protocol version");
+define("_CO_SPROCKETS_BASE_URL", "Base URL");
+define("_CO_SPROCKETS_COMPRESSION", "Compression");
+define("_CO_SPROCKETS_ARCHIVE_NOT_ENABLED", "Sorry, open archives initiative functionality is not presently enabled for this module.");

@@ -14,9 +14,10 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS Hauptverzeichnis nicht definiert");
 
 // Module Info
 define("_MI_SPROCKETS_MD_NAME", "Sprockets");
-define("_MI_SPROCKETS_MD_DESC", "Module zur Bereitstellung n�tzlicher Dienste f�r IPF-Module.");
+define("_MI_SPROCKETS_MD_DESC", "Module zur Bereitstellung nützlicher Dienste für IPF-Module.");
 define("_MI_SPROCKETS_TAGS", "Tags");
 define("_MI_SPROCKETS_TAGLINKS", "Tag Links");
+define("_MI_SPROCKETS_CATEGORIES", "Globale Kategorien");
 define("_MI_SPROCKETS_RIGHTS", "Rechte");
 define("_MI_SPROCKETS_ARCHIVE", "Archive");
 define("_MI_SPROCKETS_TEMPLATES", "Templates");
@@ -24,7 +25,7 @@ define("_MI_SPROCKETS_CSS_EDITOR", "CSS Editor");
 
 // preferences
 define("_MI_SPROCKETS_DISPLAY_BREADCRUMB", "Breadcrumb anzeigen?");
-define("_MI_SPROCKETS_DISPLAY_BREADCRUMB_DSC", "Anzeigen, oder verstecken, der horizontalen Breadcrumb-Navigation �ber dem Modul.");
+define("_MI_SPROCKETS_DISPLAY_BREADCRUMB_DSC", "Anzeigen, oder verstecken, der horizontalen Breadcrumb-Navigation über dem Modul.");
 define("_MI_SPROCKETS_NUMBER_RSS_ITEMS", "Anzahl der Items in den RSS feeds?");
 define("_MI_SPROCKETS_NUMBER_RSS_ITEMS_DSC", "Empfohlen werden zwischen 5-10 Items. Diese Abfragen verursachen hohe Serverlasen, also passen Sie die Werte vorsichtig an.");
 define("_MI_SPROCKETS_RESUMPTION_TOKEN_CURSOR_OFFSET", "OAIMPH resumption token offset (records).");
