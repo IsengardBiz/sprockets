@@ -150,7 +150,7 @@ class icms_ipf_view_Tree extends icms_ipf_view_Table {
 		$this->_aObjects = array();
 		
 		// Construct a tree as it much better for handling tree operations
-		$this->realTree = new icms_ipf_Tree(& $this->_objects, 'tag_id', 'parent_id', $rootId = null);
+		$this->realTree = new icms_ipf_Tree($this->_objects, 'tag_id', 'parent_id', $rootId = null);
 		
 		// Call the client module object, as we'll be needing to ask for dirnames etc
 		$first_object_id = key($this->_objects);
