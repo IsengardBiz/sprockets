@@ -172,11 +172,15 @@ if (icms_get_module_status("sprockets"))
 					$tagObj->displaySingleObject();
 				}
 			}
+			
+			// Include the Angry Tree Table !!! (Don't ask).
+			include_once ICMS_ROOT_PATH . '/modules/' . $sprocketsModule->getVar('dirname')
+					. '/include/angry_tree_table.php';
 
 			// Restrict content to GLOBAL categories only (no module ID) and NO tags
 			$criteria = icms_buildCriteria(array('label_type' => '1', 'mid' => 'NULL'));
 
-			$objectTable = new icms_ipf_view_Table($sprockets_tag_handler, $criteria, $actions = array());
+			$objectTable = new icms_ipf_view_Tree($sprockets_tag_handler, $criteria, $actions = array());
 			$objectTable->addCustomAction('edit_category_action');
 			$objectTable->addCustomAction('delete_category_action');
 			$objectTable->addColumn(new icms_ipf_view_Column('title', 'left', FALSE,
