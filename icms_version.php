@@ -70,7 +70,7 @@ $modversion['onUpdate'] = "include/onupdate.inc.php";
 $modversion['hasSearch'] = 0;
 
 /** Menu information */
-$modversion['hasMain'] = 1;
+$modversion['hasMain'] = 0;
 
 $modversion['blocks'][1] = array(
   'file' => 'sprockets_content_recent.php',
