@@ -1,0 +1,33 @@
+<{includeq file='db:sprockets_header.html'}>
+
+<{if $sprockets_rights}>
+	<div id="sprockets_content_container">
+		<h2>
+			<{if $sprockets_rights.identifier}>
+					<a href="<{$sprockets_rights.identifier}>"><{$sprockets_rights.title}></a>
+			<{else}>
+				<div><{$sprockets_rights.title}></div>
+			<{/if}>
+		</h2>
+
+		<{if $sprockets_rights.description}>
+			<div class="sprockets_separator">
+				<p><{$sprockets_rights.description}></p>
+			</div>
+		<{/if}>
+		<{if $sprockets_rights.identifier}>
+			<div>
+				<p><a href="<{$sprockets_rights.identifier}>"><{$smarty.const._CO_SPROCKETS_RIGHTS_FULL_TERMS}></a></p>
+			</div>
+		<{/if}>
+	</div>
+<{/if}>
+
+<{if $sprockets_rights_table}>
+	<div id="sprockets_content_container">
+		<h2><{$sprockets_title}></h2>
+		<{$sprockets_rights_table}>
+	</div>
+<{/if}>
+
+<{includeq file='db:sprockets_footer.html'}>

@@ -1,0 +1,21 @@
+/**
+* Specific CSS for the module (RTL)
+*
+* @copyright	http://smartfactory.ca The SmartFactory
+* @license		http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL)
+* @since		1.1
+* @author	    Sina Asghari (aka stranger) <pesian_stranger@users.sourceforge.net>
+* @version		$Id$
+*/
+
+.sprockets_headertable {padding: 0; margin: 0; border-bottom: 1px solid; margin-bottom: 10px;}
+.sprockets_modulename {font-size: 0.8em; text-align: left; font-weight: bold; padding-right: 0.3em;	line-height: 18px;}
+.sprockets_breadcrumb {font-size: 0.8em; line-height: 18px;}
+.sprockets_adminlinks {padding-top: 15px; padding-bottom: 5px; font-size: 0.8em; text-align: center; line-height: 18px;}
+
+.sprockets_content_container {
+	margin-bottom: 35px;
+}
+
+/* used to vertically space elements to neaten up the display */
+.sprockets_separator{margin-bottom:1em;}
