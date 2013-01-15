@@ -26,6 +26,8 @@ own independent category tree. See Contact V1.04 or Library_ipf V1.0 for example
 to restore functionality are minor and updates for all client modules will be issued together with
 the final version of Sprockets 2.
 
-Version 2.0 final (11/1/2013)
+Version 2.0 final (15/1/2013)
 -----------------------------
-- No substantial changes from beta. Client modules need to be updated however.
+- Improve handling of recent content block (number of results returned still leaves a bit to be 
+desired).
+- Disabled spotlight function of recent content block. To be revisited in a future version.

@@ -90,6 +90,8 @@ function sprockets_content_recent_show($options) {
 		$id_field = $item_array[$module_name] . '_id';
 		$content_handler = icms_getModuleHandler($item_array[$module_name], $module_name,
 				$module_name);
+		
+		icms_loadLanguageFile($module_name, "common");
 
 		// Need to sort the taglinks into their respective modules and objects, in order to set up 
 		// queries. Taglinks know their module ID (mid), tag ID (tid), item ID (iid) and type 
