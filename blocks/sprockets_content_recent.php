@@ -24,6 +24,7 @@ function sprockets_content_recent_show($options) {
 	include_once(ICMS_ROOT_PATH . '/modules/' . basename(dirname(dirname(__FILE__)))
 		. '/include/common.php');
 
+	// Initialise and get handlers
 	$sql = $criteria = $spotlight_removed = FALSE;
 	$module_options = $taglink_object_array = $content_ids = $content_object_array = 
 		$combined_content_array = $rows = array();
@@ -38,22 +39,31 @@ function sprockets_content_recent_show($options) {
 	// Note: Spotlighted articles are loaded separately, in order to keep things simple.
 	// Otherwise the whole tag filtering business creates headaches and complications.
 	// At present, this block can only be filtered by TAG. Category support will be added later	
-	$criteria = new icms_db_criteria_Compo();
-	if ($options[1]) {
-		$criteria->add(new icms_db_criteria_Item('tid', $options[1]));
-	}
-	$criteria->setSort('taglink_id');
-	$criteria->setOrder('DESC');
-	$criteria->setLimit($options[0] + 1); // in case we need to delete the spotlight item
 	
-	$taglink_object_array = $sprockets_taglink_handler->getObjects($criteria, TRUE, TRUE);
-	unset($criteria);
+	// Retrieve the most recent taglink objects. Note that objects can have multiple tags/taglinks
+	// so the item and item_id pairs need to be unique, otherwise fewer results than expected will 
+	// be returned!
+	
+	//$limit = (int)($options[0] + 1); // in case we need to delete the spotlight item
+	$limit = (int)($options[0]);
+	
+	$sql = "SELECT * FROM  `" . $sprockets_taglink_handler->table . "`";
+	if ($options[1]) {
+		$sql .= " WHERE  `tid` =  " . $options[1];
+	} else {
+		$criteria = FALSE;
+	}
+	$sql .= " GROUP BY `item`, `iid` DESC ORDER BY `taglink_id` DESC";
+	$sql .= " LIMIT 0," . $limit;
+	
+	$taglink_object_array = $sprockets_taglink_handler->getObjects($criteria, TRUE, TRUE, $sql);	
+	unset($criteria, $sql);
 	
 	// check if the spotlight item has been retrieved, if so remove it, handled separately
-	if (array_key_exists($options[5], $taglink_object_array)) {
+	/*if (array_key_exists($options[5], $taglink_object_array)) {
 		unset($taglink_object_array[$options[5]]);
 		$spotlight_removed = TRUE;
-	}
+	}*/
 	
 	// get a list of compatible modules
 	$installed_modules = $sprockets_archive_handler->getModuleNames();
@@ -68,11 +78,12 @@ function sprockets_content_recent_show($options) {
 		'library' => 'publication',
 		'catalogue' => 'item',
 		'projects' => 'project',
-		'partners' => 'partner'
+		'partners' => 'partner',
+		'cms' => 'start'
 		);
 
 	foreach ($installed_modules as $module_key => $module_name) {
-		
+
 		// Initialise
 		$id_string = '';
 		$content_ids[$module_name] = array();
@@ -95,10 +106,10 @@ function sprockets_content_recent_show($options) {
 
 		// If the spotlighted item was NOT removed (and is not set as the most recent item),
 		// unset the last item on the array to keep the expected length
-		if ($options[5] > 0 && $spotlight_removed == FALSE)
+		/*if ($options[5] > 0 && $spotlight_removed == FALSE)
 		{
 			$removed = array_pop($taglink_object_array);
-		}
+		}*/
 		
 		// This is probably where the removed spotlight gets reinserted.
 		if (count($content_ids[$module_name]) >0) {
@@ -113,7 +124,6 @@ function sprockets_content_recent_show($options) {
 			$criteria->setSort('date');
 			$criteria->setOrder('DESC');
 			$criteria->setLimit($options[0]); // get more than we need, in case some is marked offline
-
 			$content_object_array[$module_name] = $content_handler->getObjects($criteria, TRUE, TRUE);
 
 			// Append the content objects to the combined content array
@@ -144,6 +154,7 @@ function sprockets_content_recent_show($options) {
 	
 	$block['sprockets_recent_content'] = $combined_content_array;
 
+	/*
 	// check if spotlight mode is active ($options[4])
 	if ($options[4])
 	{
@@ -165,7 +176,7 @@ function sprockets_content_recent_show($options) {
 			$block['sprockets_recent_content_spotlight_link'] = $spotlightObj->getItemLink();
 			$block['sprockets_recent_content_title'] = _MB_SPROCKETS_RECENT_CONTENT_TITLE;
 		}
-	}
+	}*/
 
 	// prepare for display
 	foreach ($block['sprockets_recent_content'] as &$content) {
@@ -235,7 +246,7 @@ function sprockets_content_recent_edit($options) {
 		. '" /></td></tr>';
 	
 	// activate spotlight feature
-	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_ACTIVATE_SPOTLIGHT . '</td>';
+	/*$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_ACTIVATE_SPOTLIGHT . '</td>';
 	$form .= '<td><input type="radio" name="options[4]" value="1"';
 		if ($options[4] == 1) {
 			$form .= ' checked="checked"';
@@ -264,9 +275,9 @@ function sprockets_content_recent_edit($options) {
 	$sprockets_archive_handler = icms_getModuleHandler('archive',
 			basename(dirname(dirname(__FILE__))), 'sprockets');
 	$installed_modules = $sprockets_archive_handler->getModuleNames();
-	
+	*/
 	$item_array = array('news' => 'article', 'podcast' => 'soundtrack', 'library' => 'publication',
-		'catalogue' => 'item', 'projects' => 'project', 'partners' => 'partner');
+		'catalogue' => 'item', 'projects' => 'project', 'partners' => 'partner', 'cms' => 'start');
 
 	/** 
 	 * Its simpler just to do a separate query for each module, perhaps a more efficient way
@@ -357,11 +368,11 @@ function sprockets_content_recent_edit($options) {
 	$content_array = array(0 => '-- Most recent article --') + $content_array;
 	
 	// build a select box of article titles
-	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_SPOTLIGHTED_ARTICLE . '</td>';
+	/*$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_SPOTLIGHTED_ARTICLE . '</td>';
 	// Parameters icms_form_elements_Select: ($caption, $name, $value = null, $size = 1, $multiple = FALSE)
 	$form_spotlight = new icms_form_elements_Select('', 'options[5]', $options[5], '1', FALSE);
 	$form_spotlight->addOptionArray($content_array);
-	$form .= '<td>' . $form_spotlight->render() . '</td></tr>';
+	$form .= '<td>' . $form_spotlight->render() . '</td></tr>';*/
 	$form .= '</table>';
 
 	return $form;

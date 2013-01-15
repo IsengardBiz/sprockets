@@ -97,6 +97,12 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 			$module_names[$projectsModule->getVar('mid')] = $projectsModule->getVar('dirname');
 		}
 		
+		// Add support for CMS module
+		if (icms_get_module_status("cms")) {
+			$cmsModule = $module_handler->getByDirname("cms");
+			$module_names[$cmsModule->getVar('mid')] = $cmsModule->getVar('dirname');
+		}
+		
 		return $module_names;
 	}
 	

@@ -78,8 +78,8 @@ $modversion['blocks'][1] = array(
   'description' => _MI_SPROCKETS_CONTENT_RECENTDSC,
   'show_func' => 'sprockets_content_recent_show',
   'edit_func' => 'sprockets_content_recent_edit',
-// date|tag|date format|max title length|spotlight|spotlight id|spotlight module name|spotlight type
-  'options' => '5|All|j/n/Y|90|0|0|0|0',
+// number of items|tag id|date format|max title length|spotlight|spotlight id|spotlight module name|spotlight type
+  'options' => '5|All|j/n/Y|90', //|0|0'0|0', disabled spotlight function for now
   'template' => 'sprockets_content_recent.html');
 
 /** Templates information */
