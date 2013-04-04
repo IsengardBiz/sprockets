@@ -17,7 +17,7 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS root path not defined");
 /**  General Information  */
 $modversion = array(
   'name'=> _MI_SPROCKETS_MD_NAME,
-  'version'=> '2.0',
+  'version'=> '2.01',
   'description'=> _MI_SPROCKETS_MD_DESC,
   'author'=> "Madfish (Simon Wilkinson)",
   'credits'=> "Skeleton code generated with ImBuilding. Module icon by David Lanham http://dlanham.com/",
@@ -32,9 +32,9 @@ $modversion = array(
   'image'=> "images/icon_big.png", /* for backward compatibility */
 
 /**  Development information */
-  'status_version'=> "2.0",
-  'status'=> "Final",
-  'date'=> "15/1/2013",
+  'status_version'=> "2.01",
+  'status'=> "Trunk",
+  'date'=> "4/4/2013",
   'author_word'=> "This version of Sprockets is compatible with ImpressCMS V1.3.x.",
 
 /** Contributors */

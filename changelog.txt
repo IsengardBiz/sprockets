@@ -31,3 +31,7 @@ Version 2.0 final (15/1/2013)
 - Improve handling of recent content block (number of results returned still leaves a bit to be 
 desired).
 - Disabled spotlight function of recent content block. To be revisited in a future version.
+
+Version 2.01 beta
+-----------------
+- Remove paragraph tags from description field of template. Should be entered *in* the description.

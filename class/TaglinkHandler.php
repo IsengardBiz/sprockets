@@ -270,7 +270,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		if (!is_array($tag_array) && !empty($tag_array))
 		{
 			$tag_array = array($tag_array);
-		}		
+		}
 		
 		$moduleObj = icms_getModuleInfo($obj->handler->_moduleName);
 
