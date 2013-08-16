@@ -100,7 +100,7 @@ function icms_module_install_sprockets($module) {
 	// some common licenses
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`) values ('Copyright, all rights reserved',
-                'This work is subject to copyright and all rights are reserved. Contact the creators for permission if you wish to modify or distribute this work.')";
+                'This work is subject to copyright and all rights are reserved. Contact the creators for permission if you wish to modify or distribute this work.')";	
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`, `identifier`) values ('Creative Commons Attribution',
                 'This license lets others distribute, remix, tweak, and build upon a work, even commercially, as long as they credit the author for the original creation. This is the most accommodating of licenses offered, in terms of what others can do with works licensed under Attribution.', 'http://creativecommons.org/licenses/by/3.0')";
@@ -119,6 +119,10 @@ function icms_module_install_sprockets($module) {
                 'http://creativecommons.org/licenses/by-nc-nd/3.0')";
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`) values ('Public domain', 'Works in the public domain are not subject to restrictions concerning their use or distribution.')";
+		$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
+		. " (`title`, `description`) values ('Copyright, the Publisher',
+                'The rights to this work are owned by a third party. Please contact the author/publisher for the terms of distribution, or permission to modify or distribute this work.')";
+		
 
 	foreach($queries as $query) {
 		$result = icms::$xoopsDB->query($query);

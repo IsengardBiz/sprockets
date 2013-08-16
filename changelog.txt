@@ -35,3 +35,5 @@ desired).
 Version 2.01 beta
 -----------------
 - Remove paragraph tags from description field of template. Should be entered *in* the description.
+- Add additional rights on installation: Copyright, the Publisher. Use this when republishing a work
+where the rights belong to an external agency.
