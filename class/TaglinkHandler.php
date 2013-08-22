@@ -194,6 +194,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		foreach ($module_ids as $key => $mid) {
 			$module_handler = icms::handler('icms_module');
 			$module_array[$mid] = $module_handler->get($mid);
+			$taglinks_by_module[$mid] = array(); // Fix bug
 		}
 
 		// IMPORTANT!! Sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
