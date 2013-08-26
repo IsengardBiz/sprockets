@@ -131,7 +131,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @global array $sprocketsConfig
 	 * @param int $tag_id
 	 * @param int $module_id
-	 * @param string $item_type
+	 * @param string $item_type // comma delimited string of object types
 	 * @param int $start
 	 * @param int $limit
 	 * @param string $sort
@@ -144,8 +144,16 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 		global $sprocketsConfig;
 		
+		$sql = '';
 		$content_id_array = $content_object_array = $taglink_object_array = $module_ids
 			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module = array();
+		
+		// Set up the query (had to do it this way as could not get setGroupby() to function??
+		$sql = "SELECT * FROM " . $this->table . " GROUP BY `mid`, `iid`";
+		
+		if ($item_type) {
+			$sql .= " HAVING `item` IN " . $item_type;
+		}
 		
 		// get content objects as per the supplied parameters
 		$criteria = new icms_db_criteria_Compo();
@@ -157,11 +165,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		if ($module_id) {
 			$criteria->add(new icms_db_criteria_Item('mid', $module_id));
 		}
-		
-		if ($item_type) {
-			$criteria->add(new icms_db_criteria_Item('item', $item_type));
-		}
-		
+				
 		if ($start) {
 			$criteria->setStart($start);
 		}
@@ -178,7 +182,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$criteria->setOrder($order);
 		}
 		
-		$taglink_object_array = $this->getObjects($criteria);
+		$taglink_object_array = $this->getObjects($criteria, TRUE, TRUE, $sql);
 		
 		// Get the required module object if parameter supplied, or build an array of module IDs from the taglinks
 		if($module_id) {
@@ -234,7 +238,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			}
 		}
 
-		// sort the combined module content by date
+		// sort the combined module content by date (not working?)
 		$sorted = $unsorted = array();
 
 		foreach ($content_object_array as $key => $contentObj) {
@@ -245,7 +249,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$sorted[$key] = $content_object_array[$key];
 		}
 		$content_object_array = $sorted;
-
+		
 		return $content_object_array;
 	}
 

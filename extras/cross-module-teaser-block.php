@@ -21,36 +21,61 @@ $items_to_display = '10';
 // Specify a tag_id if you want to filter the results by tag (FALSE for no filtering)
 $tag_id = FALSE;
 
-// What modules/objects do you want to draw content from?
-$modules_and_objects = array(
-	0 => array('news', 'article'),
-	1 => array('library' => 'publication')
+// What types of content do you want to include in the block?
+$object_types = array(
+	0 => 'item', // Catalogue module
+	1 => 'event', // Events module
+	2 => 'publication', // Library module
+	3 => 'article', // News module
+	4 => 'partner', // Partner module
+	5 => 'programme', // Programme module
+	6 => 'soundtrack', // Podcast module
+	7 => 'project' // Project module
 	);
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 
-// Initialise
-$sql = '';
-$content = array();
-$sprockets_taglink_handler = icms_getModuleHandler('taglink', 'sprockets', 'sprockets');
-
-// Retrieve last X objects from each module, using the taglink table to minimise queries.
-// tag_id is used as a quick and dirty proxy for chronological sorting, but it will work so long
-// as you don't go back and retrospectively add more tags to legacy content.
-$content = $sprockets_taglink_handler->getTaggedItems($tag_id, FALSE, FALSE, FALSE, $items_to_display, 
-		$sort = 'taglink_id', $order = 'DESC');
-
-// Generate output
-
-foreach ($content as $key => $value)
+// Check Sprockets is installed and active (otherwise do nothing)
+if (icms_get_module_status("sprockets"))
 {
-	echo '<div>';
-	echo '<div class="imgleft"><a href="' . $value['itemUrl'] . '" title="' . $value['title'] 
-			. '" alt="' . $value['title'] . '">' . $value['item'] . '</a>';
-	echo '</div>';
-	echo '<h3>' . $value['itemLink'] . '</h3>';
-	echo '<p>' . $value['description'] . '</p>';
-	echo '</div>';
+	// Initialise
+	$sql = '';
+	$content = array();
+	$sprockets_taglink_handler = icms_getModuleHandler('taglink', 'sprockets', 'sprockets');
+	
+	// Make an array of item types to pass to getTaggedItems() (easier for handling modules with more
+	// than one object type, such as podcast
+	if (!empty($object_types)) {
+			$object_types = "('" . implode("','", $object_types) . "')";
+	} else {
+		$object_types = FALSE;
+	}
+
+	// Retrieve last X objects from each module, using the taglink table to minimise queries.
+	// tag_id is used as a quick and dirty proxy for chronological sorting, but it will work so long
+	// as you don't go back and retrospectively add more tags to legacy content.
+	$content = $sprockets_taglink_handler->getTaggedItems($tag_id, FALSE, $object_types, FALSE, $items_to_display, 
+			$sort = 'taglink_id', $order = 'DESC');
+
+	// Generate output
+	foreach ($content as $key => $value)
+	{
+		$title = $value->getVar('title');
+		$description = $value->getVar('description');
+		$url = $value->getItemLink(TRUE);
+		$short_url = $value->getVar('short_url');
+		if (!empty($short_url)) {
+			$url .= '&amp;title=' . $short_url;
+		}
+		if ($title && $description) {
+			echo '<div>';
+			echo '<h3><a href="' . $url . '">' . $title . '</a></h3>';
+			if ($description) {
+				echo '<p>' . $description . '</p>';
+			}
+			echo '</div>';
+		}
+	}
 }

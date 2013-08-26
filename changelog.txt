@@ -37,3 +37,8 @@ Version 2.01 beta
 - Remove paragraph tags from description field of template. Should be entered *in* the description.
 - Add additional rights on installation: Copyright, the Publisher. Use this when republishing a work
 where the rights belong to an external agency.
+- Modified getTaggedItems() to allow it to return content for multiple (specified) modules. The 
+$item_type parameter now accepts a comma-delimited string of object types (eg article, publication)
+- Added an extras file for making a PHP block that can display a stream of mixed content from 
+across the Catalogue, Events, Library, News, Partner, Programme, Podcast and Project modules. This will 
+be incorporated as a formal block eventually (NB: See the block code for configuration options).
