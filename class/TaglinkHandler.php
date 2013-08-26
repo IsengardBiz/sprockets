@@ -149,22 +149,35 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module = array();
 		
 		// Set up the query (had to do it this way as could not get setGroupby() to function??
-		$sql = "SELECT * FROM " . $this->table . " GROUP BY `mid`, `iid`";
-		
-		if ($item_type) {
-			$sql .= " HAVING `item` IN " . $item_type;
-		}
-		
-		// get content objects as per the supplied parameters
+		$sql = "SELECT * FROM " . $this->table . " GROUP BY `mid`, `iid`";	
+				
+		// Set optional criteria, must be via 'having' as cannot use 'where' with a group by
 		$criteria = new icms_db_criteria_Compo();
 		
-		if ($tag_id) {
-			$criteria->add(new icms_db_criteria_Item('tid', $tag_id));
-		}
-		
-		if ($module_id) {
-			$criteria->add(new icms_db_criteria_Item('mid', $module_id));
-		}
+		if ($tag_id || $module_id || $item_type)
+		{
+			$sql .= " HAVING";
+			
+			if ($tag_id) {
+				//$criteria->add(new icms_db_criteria_Item('tid', $tag_id));
+				$sql .= " `tid` = " . $tag_id;
+				if ($module_id || $item_type) {
+					$sql .= " AND";
+				}
+			}
+
+			if ($module_id) {
+				//$criteria->add(new icms_db_criteria_Item('mid', $module_id));
+				$sql .= " `mid` = " . $module_id;
+				if ($item_type) {
+					$sql .= " AND";
+				}
+			}
+
+			if ($item_type) {
+				$sql .= " `item` IN " . $item_type;
+			}
+		}			
 				
 		if ($start) {
 			$criteria->setStart($start);

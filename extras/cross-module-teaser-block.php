@@ -33,6 +33,9 @@ $object_types = array(
 	7 => 'project' // Project module
 	);
 
+// Specify format to display dates in (see PHP manual date() function)
+$date_format = 'j F Y';
+
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -56,14 +59,16 @@ if (icms_get_module_status("sprockets"))
 	// Retrieve last X objects from each module, using the taglink table to minimise queries.
 	// tag_id is used as a quick and dirty proxy for chronological sorting, but it will work so long
 	// as you don't go back and retrospectively add more tags to legacy content.
-	$content = $sprockets_taglink_handler->getTaggedItems($tag_id, FALSE, $object_types, FALSE, $items_to_display, 
-			$sort = 'taglink_id', $order = 'DESC');
+	$content = $sprockets_taglink_handler->getTaggedItems($tag_id, FALSE, $object_types, FALSE, 
+			$items_to_display, $sort = 'taglink_id', 'DESC');
 
 	// Generate output
 	foreach ($content as $key => $value)
 	{
 		$title = $value->getVar('title');
 		$description = $value->getVar('description');
+		$date = date($date_format, $value->getVar('date', 'e'));
+		$counter = $value->getVar('counter');
 		$url = $value->getItemLink(TRUE);
 		$short_url = $value->getVar('short_url');
 		if (!empty($short_url)) {
@@ -72,6 +77,18 @@ if (icms_get_module_status("sprockets"))
 		if ($title && $description) {
 			echo '<div>';
 			echo '<h3><a href="' . $url . '">' . $title . '</a></h3>';
+			if ($date || $counter) {
+				echo '<div class="itemInfo">';
+				if ($date) {
+					echo 'Published: ' . $date;
+					if ($counter) {
+						echo ' | ' . $counter . ' views';
+					}
+				} else {
+					echo $counter . ' views';
+				}
+				echo '</div>';
+			}
 			if ($description) {
 				echo '<p>' . $description . '</p>';
 			}
