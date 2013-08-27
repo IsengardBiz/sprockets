@@ -1,0 +1,17 @@
+<{foreach item=content from=$content_array}>
+	<{if $content.title}>
+		<div>
+			<h3><a href="<{$content.$url}>"><{$content.title}></a></h3>
+			<{if $content.date || $content.$counter }>
+			<div class="itemInfo">
+				<{if $content.date}>_MB_SPROCKETS_CONTENT_TEASERS_PUBLISHED: <{$content.date}><{/if}><{if $content.counter}> | <{$content.counter}> _MB_SPROCKETS_CONTENT_TEASERS_VIEWS
+				<{else}>
+					<{$content.counter}> views
+				<{/if}>
+			</div>
+			<{if $content.description}>
+				<div><{$content.description}></div>
+			<{/if}>
+		</div>
+	<{/if}>
+<{/foreach}>

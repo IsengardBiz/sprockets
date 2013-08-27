@@ -82,6 +82,15 @@ $modversion['blocks'][1] = array(
   'options' => '5|All|j/n/Y|90', //|0|0'0|0', disabled spotlight function for now
   'template' => 'sprockets_content_recent.html');
 
+$modversion['blocks'][2] = array(
+  'file' => 'sprockets_content_teasers.php',
+  'name' => _MI_SPROCKETS_CONTENT_TEASERS,
+  'description' => _MI_SPROCKETS_CONTENT_TEASERSDSC,
+  'show_func' => 'sprockets_content_teasers_show',
+  'edit_func' => 'sprockets_content_teasers_edit',
+  'options' => '5|All|All|j/n/Y', // items to show | tags | objects | date format
+  'template' => 'sprockets_content_teasers.html');
+
 /** Templates information */
 $modversion['templates'][1] = array(
   'file' => 'sprockets_header.html',

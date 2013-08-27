@@ -56,3 +56,8 @@ define("_MI_SPROCKETS_RESUMPTION_TOKEN_THROTTLE_DSC", "To reduce server load fro
 // blocks
 define("_MI_SPROCKETS_CONTENT_RECENT", "Recent content");
 define("_MI_SPROCKETS_CONTENT_RECENTDSC", "Displays latest content across compatible modules.");
+
+// New in V2.01
+define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent teasers");
+define("_MI_SPROCKETS_CONTENT_TEASERSDSC", "Displays the description (teaser) for content across 
+	compatible modules");
