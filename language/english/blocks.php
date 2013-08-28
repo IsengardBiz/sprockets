@@ -27,6 +27,7 @@ define("_MB_SPROCKETS_RECENT_CONTENT_TITLE", "Recent content");
 // New in V2.01
 define("_MB_SPROCKETS_CONTENT_TEASERS_ALL", "--- All ---");
 define("_MB_SPROCKETS_CONTENT_TEASERS_ITEM", "Items (Catalogue)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_START", "Start (CMS)");
 define("_MB_SPROCKETS_CONTENT_TEASERS_EVENT", "Events (Events)");
 define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION", "Publications (Library)");
 define("_MB_SPROCKETS_CONTENT_TEASERS_ARTICLE", "Articles (News)");
