@@ -25,6 +25,14 @@ define("_MB_SPROCKETS_CONTENT_SPOTLIGHT_RECENT_ARTICLES", "Headlines");
 define("_MB_SPROCKETS_RECENT_CONTENT_TITLE", "Recent content");
 
 // New in V2.01
-define("_MB_SPROCKETS_CONTENT_TEASERS_ALL", "All");
+define("_MB_SPROCKETS_CONTENT_TEASERS_ALL", "--- All ---");
+define("_MB_SPROCKETS_CONTENT_TEASERS_ITEM", "Items (Catalogue)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_EVENT", "Events (Events)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION", "Publications (Library)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_ARTICLE", "Articles (News)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PARTNER", "Partners (Partners)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME", "Programmes (Podcast)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK", "Soundtracks (Podcast)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PROJECT", "Projects (Projects)");
 define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLISHED", "Published");
 define("_MB_SPROCKETS_CONTENT_TEASERS_VIEWS", "Views");

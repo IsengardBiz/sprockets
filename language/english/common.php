@@ -162,3 +162,5 @@ define("_CO_SPROCKETS_PROTOCOL_VERSION", "Protocol version");
 define("_CO_SPROCKETS_BASE_URL", "Base URL");
 define("_CO_SPROCKETS_COMPRESSION", "Compression");
 define("_CO_SPROCKETS_ARCHIVE_NOT_ENABLED", "Sorry, open archives initiative functionality is not presently enabled for this module.");
+
+// New in V2.01

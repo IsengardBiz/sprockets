@@ -67,4 +67,25 @@ function sprockets_getModuleName($withLink = TRUE, $forBreadCrumb = FALSE, $modu
  */
 function sprockets_getMonthNameById($month_id) {
 	return Icms_getMonthNameById($month_id);
-	}
+}
+
+/**
+ * List of object/module options for the recent teasers block
+ * 
+ * @return array $options
+ */
+function sprockets_get_object_options() {
+	$options = array(
+		0 => _MB_SPROCKETS_CONTENT_TEASERS_ALL, // All modules
+		'item' => _MB_SPROCKETS_CONTENT_TEASERS_ITEM, // Catalogue module
+		'event' => _MB_SPROCKETS_CONTENT_TEASERS_EVENT, // Events module
+		'publication' => _MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION, // Library module
+		'article' => _MB_SPROCKETS_CONTENT_TEASERS_ARTICLE, // News module
+		'partner' => _MB_SPROCKETS_CONTENT_TEASERS_PARTNER, // Partner module
+		'programme' => _MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME, // Programme module
+		'soundtrack' => _MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK, // Podcast module
+		'project' => _MB_SPROCKETS_CONTENT_TEASERS_PROJECT // Project module
+	);
+	
+	return $options;
+}
