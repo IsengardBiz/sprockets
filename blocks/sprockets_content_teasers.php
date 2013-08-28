@@ -33,8 +33,10 @@ function sprockets_content_teasers_show($options) {
 		
 		// options[0]: Number teasers to show
 		// options[1]: Tag to filter
-		// options[2] Object filter
-		// options[3] Date format
+		// options[2]: Object filter
+		// options[3]: Date format
+		// options[4]: Position of teaser image (0 = no image, 1 = left, 2 = right)
+		// options[5]: Size of teaser image (pixels)
 		if (empty($options[2])) {
 			$options[2] = sprockets_get_object_options();
 			$options[2] = array_keys($options[2]);
@@ -64,11 +66,27 @@ function sprockets_content_teasers_show($options) {
 			if (!empty($short_url)) {
 				$content['url'] .= '&amp;title=' . $short_url;
 			}
+			if ($options[4]) {
+				// Handle non-standard image field names.
+				if (property_exists($object, 'image')) {  // Standard name, best practice
+					$content['image'] = $object->getVar('image', 'e');
+				} elseif (property_exists($object, 'lead_image')) { // Legacy News module
+					$content['image'] = $object->getVar('lead_image', 'e');
+				} elseif (property_exists($object, 'cover')) { // Podcast module
+					$content['image'] = $object->getVar('cover');
+				} else {
+					$content['image'] = FALSE;
+				}
+			} else {
+				$content['image'] = FALSE;
+			}			
 			$content_array[] = $content; 
 		}
 		
 		// Assign to template
 		$block['content_array'] = $content_array;
+		$block['sprockets_teaser_image_position'] = $options[4];
+		$block['sprockets_teaser_image_size'] = $options[5];
 	}
 	
 	return $block;
@@ -77,7 +95,7 @@ function sprockets_content_teasers_show($options) {
 /**
  * Edit and set options for the recent teasers block
  *
- * @param arrau $options
+ * @param array $options
  * @return string
  */
 
@@ -90,7 +108,7 @@ function sprockets_content_teasers_edit($options) {
 	$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 	icms_loadLanguageFile('sprockets', 'block');
 	
-	// Parameters: number teasers to show | tag | object | date format
+	// Parameters: number teasers to show | tag | object | date format | image position | image size
 	
 	// Number of teasers to show
 	$form = '<table>';
@@ -116,8 +134,18 @@ function sprockets_content_teasers_edit($options) {
 
 	// Date format, as per PHP's date() method
 	$form .= '<tr><td>Date format (as per PHP date() function): </td>';	
-	$form .= '<td>' . '<input type="text" name="options[3]" value="' . $options[3]
-		. '" /></td></tr>';
+	$form .= '<td><input type="text" name="options[3]" value="' . $options[3] . '" /></td></tr>';
+	
+	// Position of teaser images
+	$form .= '<tr><td>Position of teaser images: </td>';
+	$form_select3 = new icms_form_elements_Select('', 'options[4]', $options[4], '1', FALSE);
+	$form->select3->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_TEASERS_NO, 
+		1 => _MB_SPROCKETS_CONTENT_TEASERS_LEFT, 2 => _MB_SPROCKETS_CONTENT_TEASERS_RIGHT));
+	$form .= '<td>' . $form_select3->render() . '</td></tr>';
+	
+	// Size of teaser image (automatically resized and cached by Smarty plugin)
+	$form .= '<tr><td>Width of teaser image (pixels): </td>';
+	$form .= '<td><input type="text" name="options[5]" value="' . $options[5] . '" /></td></tr>';
 	$form .= '</table>';
 
 	return $form;

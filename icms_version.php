@@ -88,7 +88,7 @@ $modversion['blocks'][2] = array(
   'description' => _MI_SPROCKETS_CONTENT_TEASERSDSC,
   'show_func' => 'sprockets_content_teasers_show',
   'edit_func' => 'sprockets_content_teasers_edit',
-  'options' => '5|All|All|j/n/Y', // items to show | tags | objects | date format
+  'options' => '5|All|All|j/n/Y|1|150', // items to show | tags | objects | date format | image position |image size
   'template' => 'sprockets_content_teasers.html');
 
 /** Templates information */
