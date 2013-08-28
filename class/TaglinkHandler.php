@@ -131,7 +131,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @global array $sprocketsConfig
 	 * @param int $tag_id
 	 * @param int $module_id
-	 * @param string $item_type // comma delimited string of object types
+	 * @param array $item_type // list of object types as strings
 	 * @param int $start
 	 * @param int $limit
 	 * @param string $sort
@@ -148,6 +148,24 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$content_id_array = $content_object_array = $taglink_object_array = $module_ids
 			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module = array();
 		
+		// Parameters to public methods should be sanitised
+		$tag_id = isset($tag_id) ? intval($tag_id) : 0;
+		$module_id = isset($module_id) ? intval($module_id) : 0;
+		$item_type_whitelist = array_keys(sprockets_get_object_options());
+		$item_type = is_array($item_type) ? $item_type : array();
+		foreach ($item_type as &$type) {
+			if (in_array($type, $item_type_whitelist)) {
+				unset($type);
+			}
+		}
+		$start = isset($start) ? intval($start) : 0;
+		$limit = isset($limit) ? intval($limit) : 0;
+		$sort_whitelist = array('taglink_id', 'tid', 'mid', 'item', 'iid');
+		$sort = in_array($sort, $sort_whitelist) ? $sort : 'taglink_id';
+		if ($order != 'ASC') {
+			$order = 'DESC';
+		}
+		
 		// Set up the query (had to do it this way as could not get setGroupby() to function??
 		$sql = "SELECT * FROM " . $this->table . " GROUP BY `mid`, `iid`";	
 				
@@ -159,7 +177,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$sql .= " HAVING";
 			
 			if ($tag_id) {
-				//$criteria->add(new icms_db_criteria_Item('tid', $tag_id));
 				$sql .= " `tid` = " . $tag_id;
 				if ($module_id || $item_type) {
 					$sql .= " AND";
@@ -167,17 +184,17 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			}
 
 			if ($module_id) {
-				//$criteria->add(new icms_db_criteria_Item('mid', $module_id));
 				$sql .= " `mid` = " . $module_id;
 				if ($item_type) {
 					$sql .= " AND";
 				}
 			}
 
-			if ($item_type) {
+			if ($item_type && is_array($item_type)) {
+				$item_type = "('" . implode("', '", $item_type) . "')";
 				$sql .= " `item` IN " . $item_type;
 			}
-		}			
+		}
 				
 		if ($start) {
 			$criteria->setStart($start);

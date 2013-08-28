@@ -38,10 +38,9 @@ function sprockets_content_teasers_show($options) {
 		if (empty($options[2])) {
 			$options[2] = sprockets_get_object_options();
 			$options[2] = array_keys($options[2]);
-			array_shift($options[2]);
-			$options[2] = "('" . implode("', '", $options[2]) . "')";
+			array_shift($options[2]); // Get rid of the null option
 		} else {
-			$options[2] = "('" . $options[2] . "')";
+			$options[2] = array(0 => $options[2]);
 		}
 			
 		// Retrieve last X objects from each module, using the taglink table to minimise queries.
