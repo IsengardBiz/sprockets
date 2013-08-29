@@ -70,7 +70,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	/**
 	 * Retrieve tag_ids for an object (either tag or category label_type, but not both)
 	 *
-	 * Based on code from ImTagging: author marcan aka Marc-André Lanciault <marcan@smartfactory.ca>
+	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
 	 *
 	 * @param int $iid id of the related object
 	 * @param object IcmsPersistableHandler
@@ -232,6 +232,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
 
 		// IMPORTANT!! Sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
+		// But this will screw up the sorting by taglink_id!
 		foreach ($taglink_object_array as $key => $taglink) {
 			if (!array_key_exists($taglink->getItem(), $taglinks_by_module[$taglink->getVar('mid')])) {
 				$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()] = array();
@@ -268,17 +269,12 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			}
 		}
 
-		// sort the combined module content by date (not working?)
-		$sorted = $unsorted = array();
-
-		foreach ($content_object_array as $key => $contentObj) {
-			$unsorted[$key] = $contentObj->getVar('date', 'e');
+		// Sort the combined module content by date (not working?)
+		$tmp = array();
+		foreach($content_object_array as $key => &$obj) {
+			$tmp[] = &$obj->getVar('date', 'e');
 		}
-		asort($unsorted);
-		foreach ($unsorted as $key => $value) {
-			$sorted[$key] = $content_object_array[$key];
-		}
-		$content_object_array = $sorted;
+		array_multisort($tmp, SORT_DESC, $content_object_array);
 		
 		return $content_object_array;
 	}
@@ -289,7 +285,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * need to call this method TWICE with different label_type (0 = tag, 1 = category) in order to 
 	 * update them both.
 	 *
-	 * Based on code from ImTagging: author marcan aka Marc-André Lanciault <marcan@smartfactory.ca>
+	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
 	 * 
 	 * @param object $obj
 	 * @param string $tag_var
@@ -387,7 +383,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	/**
 	 * Cleans up taglinks after an object is deleted
 	 * 
-	 * Based on code from ImTagging: author marcan aka Marc-André Lanciault <marcan@smartfactory.ca>
+	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
 	 *
 	 * @param object $obj
 	 */

@@ -83,7 +83,7 @@ function sprockets_get_object_options() {
 		'publication' => _MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION, // Library module
 		'article' => _MB_SPROCKETS_CONTENT_TEASERS_ARTICLE, // News module
 		'partner' => _MB_SPROCKETS_CONTENT_TEASERS_PARTNER, // Partner module
-		'programme' => _MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME, // Programme module
+		//'programme' => _MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME, // Programme module
 		'soundtrack' => _MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK, // Podcast module
 		'project' => _MB_SPROCKETS_CONTENT_TEASERS_PROJECT // Project module
 	);
