@@ -79,7 +79,7 @@ function sprockets_get_object_options() {
 		0 => _MB_SPROCKETS_CONTENT_TEASERS_ALL, // All modules
 		'item' => _MB_SPROCKETS_CONTENT_TEASERS_ITEM, // Catalogue module
 		'start' => _MB_SPROCKETS_CONTENT_TEASERS_START, // CMS module
-		'event' => _MB_SPROCKETS_CONTENT_TEASERS_EVENT, // Events module
+		//'event' => _MB_SPROCKETS_CONTENT_TEASERS_EVENT, // Events module
 		'publication' => _MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION, // Library module
 		'article' => _MB_SPROCKETS_CONTENT_TEASERS_ARTICLE, // News module
 		'partner' => _MB_SPROCKETS_CONTENT_TEASERS_PARTNER, // Partner module

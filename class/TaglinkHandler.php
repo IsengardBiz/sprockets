@@ -278,7 +278,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		return $content_object_array;
 	}
-
+	
 	/**
 	 * Saves tags for an object by creating taglinks. NB: If you are saving categories, you need to
 	 * pass in the category key. Also note: If your object has both tags and categories, then you 
