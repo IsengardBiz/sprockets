@@ -20,21 +20,3 @@
 
 /* used to vertically space elements to neaten up the display */
 .sprockets_separator{margin-bottom:1em;}
-
-/* Used to display teaser block images, floated to the right */
-.sprockets_float_right {
-	float:right;
-	margin: 0em 0em 1em 1em;
-	border-style:solid;
-	border-width:1px;
-	border-color:black;
-}
-
-/* Used to display teaser block images, floated to the left */
-.sprockets_float_left {
-	float:left;
-	margin: 0em 1em 1em 0em;
-	border-style:solid;
-	border-width:1px;
-	border-color:black;
-}

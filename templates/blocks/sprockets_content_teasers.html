@@ -2,16 +2,23 @@
 	<{if $content.title}>
 		<div>
 			<h3><a href="<{$content.url}>"><{$content.title}></a></h3>
-			<{if $content.date || $content.$counter }>
+			<{if $content.date || $content.counter || $content.tags}>
 				<div class="itemInfo">
 					<{if $content.date}><{$smarty.const._MB_SPROCKETS_CONTENT_TEASERS_PUBLISHED}>: <{$content.date}><{/if}><{if $content.counter}> | <{$content.counter}> <{$smarty.const._MB_SPROCKETS_CONTENT_TEASERS_VIEWS}>
 					<{else}>
 						<{if $content.counter}><{$content.counter}> <{$smarty.const._MB_SPROCKETS_TEASERS_VIEWS}><{/if}>
 					<{/if}>
+					<{if $content.tags}>
+						<{if $content.date || $content.counter}> | 
+							<{$content.tags}>
+						<{else}>
+							<{$content.tags}>
+						<{/if}>
+					<{/if}>
 				</div>
 			<{/if}>
-			<{if $content.image}>
-				<div class="<{$sprockets_teaser_image_position}>">
+			<{if $content.image && $content.description}>
+				<div style="<{$block.sprockets_teaser_image_position}>">
 					<a href="<{$content.url}>"><{resized_image file=$content.image width=$block.sprockets_teaser_image_size height="999" fit="inside"}></a>
 				</div>
 			<{/if}>

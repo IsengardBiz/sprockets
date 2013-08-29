@@ -29,7 +29,12 @@ function sprockets_content_teasers_show($options) {
 		// Initialise
 		$sql = '';
 		$block = $content_objects = $content_array = array();
+		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		$sprockets_taglink_handler = icms_getModuleHandler('taglink', 'sprockets', 'sprockets');
+		
+		// Get a tag buffer to minimise queries
+		$criteria = icms_buildCriteria(array('label_type' => 0));
+		$tagList = $sprockets_tag_handler->getList($criteria);
 		
 		// options[0]: Number teasers to show
 		// options[1]: Tag to filter
@@ -56,7 +61,8 @@ function sprockets_content_teasers_show($options) {
 		// Generate output
 		foreach ($content_objects as $key => $object)
 		{
-			$content = array();
+			$type = '';
+			$content = $tags = $tagLinks = array();
 			$content['title'] = $object->getVar('title');
 			$content['description'] = $object->getVar('description');
 			$content['date'] = date($options[3], $object->getVar('date', 'e'));
@@ -66,26 +72,53 @@ function sprockets_content_teasers_show($options) {
 			if (!empty($short_url)) {
 				$content['url'] .= '&amp;title=' . $short_url;
 			}
-			if ($options[4]) {
-				// Handle non-standard image field names.
-				if (property_exists($object, 'image')) {  // Standard name, best practice
-					$content['image'] = $object->getVar('image', 'e');
-				} elseif (property_exists($object, 'lead_image')) { // Legacy News module
-					$content['image'] = $object->getVar('lead_image', 'e');
-				} elseif (property_exists($object, 'cover')) { // Podcast module
-					$content['image'] = $object->getVar('cover');
-				} else {
-					$content['image'] = FALSE;
-				}
-			} else {
+			
+			// Images
+			if ($options[4])
+			{
+				$type = $object->handler->_itemname;
+				switch ($type)
+				{						
+					case "start":				
+					case "project":
+					case "partner":
+						$content['image'] = $object->getImageDir() . $object->getVar('logo', 'e');
+						break;
+					case "programme":
+						$content['image'] = $object->getImageDir() . $object->getVar('cover', 'e');
+						break;
+					case "soundtrack":
+						$content['image'] = $object->getImageDir() . $object->getVar('poster_image', 'e');
+						break;
+					default: // 'image', used by News 1.17+, Library, Catalogue
+						$content['image'] = $object->getImageDir() . $object->getVar('image', 'e');
+						break;
+				}		
+			}
+			else
+			{
 				$content['image'] = FALSE;
-			}			
-			$content_array[] = $content; 
+			};
+			
+			// Tags. Query efficiency could be improved later, but with block caching its not too bad
+			$tags = $sprockets_taglink_handler->getTagsForObject($object->id(), $object->handler, 0);
+			if ($tags) {
+				foreach ($tags as $tag) {
+					$tagLinks[] = '<a href="' . $object->handler->_moduleUrl . $object->handler->_page . '?tag_id=' 
+							. $tag . '">' . $tagList[$tag] . '</a>';
+				}
+				$content['tags'] = implode(", ", $tagLinks);
+			}
+			$content_array[] = $content;
 		}
 		
 		// Assign to template
 		$block['content_array'] = $content_array;
-		$block['sprockets_teaser_image_position'] = $options[4];
+		if ($options[4] == 1) {
+			$block['sprockets_teaser_image_position'] = 'float:left;margin:0em 1em 1em 0em;';
+		} elseif ($options[4] == 2) {
+			$block['sprockets_teaser_image_position'] = 'float:right;margin:0em 0em 1em 1em;';
+		}
 		$block['sprockets_teaser_image_size'] = $options[5];
 	}
 	
@@ -139,8 +172,8 @@ function sprockets_content_teasers_edit($options) {
 	// Position of teaser images
 	$form .= '<tr><td>Position of teaser images: </td>';
 	$form_select3 = new icms_form_elements_Select('', 'options[4]', $options[4], '1', FALSE);
-	$form->select3->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_TEASERS_NO, 
-		1 => _MB_SPROCKETS_CONTENT_TEASERS_LEFT, 2 => _MB_SPROCKETS_CONTENT_TEASERS_RIGHT));
+	$form_select3->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_RECENT_NONE, 
+		1 => _MB_SPROCKETS_CONTENT_RECENT_LEFT, 2 => _MB_SPROCKETS_CONTENT_RECENT_RIGHT));
 	$form .= '<td>' . $form_select3->render() . '</td></tr>';
 	
 	// Size of teaser image (automatically resized and cached by Smarty plugin)
