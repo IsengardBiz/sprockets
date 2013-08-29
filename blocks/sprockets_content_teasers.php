@@ -82,16 +82,28 @@ function sprockets_content_teasers_show($options) {
 					case "start":				
 					case "project":
 					case "partner":
-						$content['image'] = $object->getImageDir() . $object->getVar('logo', 'e');
+						$image = $object->getVar('logo', 'e');
+						if (!empty($image)) {
+							$content['image'] = $object->getImageDir() . $image;
+						}
 						break;
-					case "programme":
-						$content['image'] = $object->getImageDir() . $object->getVar('cover', 'e');
-						break;
+					//case "programme":
+					//	$image = $object->getVar('image', 'e');
+					//	if (!empty($image) {
+					//		$content['image'] = $object->getImageDir() . $image;
+					//	}
+					//	break;
 					case "soundtrack":
-						$content['image'] = $object->getImageDir() . $object->getVar('poster_image', 'e');
+						$image = $object->getVar('poster_image', 'e');
+						if (!empty($image)) {
+							$content['image'] = $object->getImageDir() . $image;
+						}
 						break;
 					default: // 'image', used by News 1.17+, Library, Catalogue
-						$content['image'] = $object->getImageDir() . $object->getVar('image', 'e');
+						$image = $object->getVar('image', 'e');
+						if (!empty($image)) {
+							$content['image'] = $object->getImageDir() . $image;
+						}
 						break;
 				}		
 			}
