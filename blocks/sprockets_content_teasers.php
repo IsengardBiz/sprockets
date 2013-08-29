@@ -59,69 +59,87 @@ function sprockets_content_teasers_show($options) {
 				$options[0], $sort = 'taglink_id', 'DESC');
 		
 		// Generate output
-		foreach ($content_objects as $key => $object)
+		if ($options[6]) // Display in teaser mode
 		{
-			$type = '';
-			$content = $tags = $tagLinks = array();
-			$content['title'] = $object->getVar('title');
-			$content['description'] = $object->getVar('description');
-			$content['date'] = date($options[3], $object->getVar('date', 'e'));
-			$content['counter'] = $object->getVar('counter');
-			$content['url'] = $object->getItemLink(TRUE);
-			$short_url = $object->getVar('short_url');
-			if (!empty($short_url)) {
-				$content['url'] .= '&amp;title=' . $short_url;
-			}
-			
-			// Images
-			if ($options[4])
+			foreach ($content_objects as $key => $object)
 			{
-				$type = $object->handler->_itemname;
-				switch ($type)
-				{						
-					case "start":				
-					case "project":
-					case "partner":
-						$image = $object->getVar('logo', 'e');
-						if (!empty($image)) {
-							$content['image'] = $object->getImageDir() . $image;
-						}
-						break;
-					//case "programme":
-					//	$image = $object->getVar('image', 'e');
-					//	if (!empty($image) {
-					//		$content['image'] = $object->getImageDir() . $image;
-					//	}
-					//	break;
-					case "soundtrack":
-						$image = $object->getVar('poster_image', 'e');
-						if (!empty($image)) {
-							$content['image'] = $object->getImageDir() . $image;
-						}
-						break;
-					default: // 'image', used by News 1.17+, Library, Catalogue
-						$image = $object->getVar('image', 'e');
-						if (!empty($image)) {
-							$content['image'] = $object->getImageDir() . $image;
-						}
-						break;
-				}		
-			}
-			else
-			{
-				$content['image'] = FALSE;
-			};
-			
-			// Tags. Query efficiency could be improved later, but with block caching its not too bad
-			$tags = $sprockets_taglink_handler->getTagsForObject($object->id(), $object->handler, 0);
-			if ($tags) {
-				foreach ($tags as $tag) {
-					$tagLinks[] = '<a href="' . $object->handler->_moduleUrl . $object->handler->_page . '?tag_id=' 
-							. $tag . '">' . $tagList[$tag] . '</a>';
+				$type = '';
+				$content = $tags = $tagLinks = array();
+				$content['title'] = $object->getVar('title');
+				$content['description'] = $object->getVar('description');
+				$content['date'] = date($options[3], $object->getVar('date', 'e'));
+				$content['counter'] = $object->getVar('counter');
+				$content['url'] = $object->getItemLink(TRUE);
+				$short_url = $object->getVar('short_url');
+				if (!empty($short_url)) {
+					$content['url'] .= '&amp;title=' . $short_url;
 				}
-				$content['tags'] = implode(", ", $tagLinks);
+
+				// Images
+				if ($options[4])
+				{
+					$type = $object->handler->_itemname;
+					switch ($type)
+					{						
+						case "start":				
+						case "project":
+						case "partner":
+							$image = $object->getVar('logo', 'e');
+							if (!empty($image)) {
+								$content['image'] = $object->getImageDir() . $image;
+							}
+							break;
+						//case "programme":
+						//	$image = $object->getVar('image', 'e');
+						//	if (!empty($image) {
+						//		$content['image'] = $object->getImageDir() . $image;
+						//	}
+						//	break;
+						case "soundtrack":
+							$image = $object->getVar('poster_image', 'e');
+							if (!empty($image)) {
+								$content['image'] = $object->getImageDir() . $image;
+							}
+							break;
+						default: // 'image', used by News 1.17+, Library, Catalogue
+							$image = $object->getVar('image', 'e');
+							if (!empty($image)) {
+								$content['image'] = $object->getImageDir() . $image;
+							}
+							break;
+					}		
+				}
+				else
+				{
+					$content['image'] = FALSE;
+				};
+
+				// Tags. Query efficiency could be improved later, but with block caching its not too bad
+				$tags = $sprockets_taglink_handler->getTagsForObject($object->id(), $object->handler, 0);
+				if ($tags) {
+					foreach ($tags as $tag) {
+						$tagLinks[] = '<a href="' . $object->handler->_moduleUrl . $object->handler->_page . '?tag_id=' 
+								. $tag . '">' . $tagList[$tag] . '</a>';
+					}
+					$content['tags'] = implode(", ", $tagLinks);
+				}
+				$content_array[] = $content;
 			}
-			$content_array[] = $content;
+		}
+		else // Display in simple list mode
+		{
+			foreach ($content_objects as $key => $object)
+			{
+				$content = array();
+				$content['title'] = $object->getVar('title');
+				$content['date'] = date($options[3], $object->getVar('date', 'e'));
+				$content['url'] = $object->getItemLink(TRUE);
+				$short_url = $object->getVar('short_url');
+				if (!empty($short_url)) {
+					$content['url'] .= '&amp;title=' . $short_url;
+				}
+				$content_array[] = $content;
+			}
 		}
 		
 		// Assign to template
@@ -132,6 +150,7 @@ function sprockets_content_teasers_show($options) {
 			$block['sprockets_teaser_image_position'] = 'float:right;margin:0em 0em 1em 1em;';
 		}
 		$block['sprockets_teaser_image_size'] = $options[5];
+		$block['sprockets_teaser_display_mode'] = $options[6];
 	}
 	
 	return $block;
@@ -191,6 +210,12 @@ function sprockets_content_teasers_edit($options) {
 	// Size of teaser image (automatically resized and cached by Smarty plugin)
 	$form .= '<tr><td>Width of teaser image (pixels): </td>';
 	$form .= '<td><input type="text" name="options[5]" value="' . $options[5] . '" /></td></tr>';
+	
+	// Display mode (teasers vs simple list)
+	$form .= '<tr><td>Display mode: </td>';
+	$form_select4 = new icms_form_elements_Select('', 'options[6]', $options[6], '1', FALSE);
+	$form_select4->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_RECENT_LIST, 1 => _MB_SPROCKETS_CONTENT_RECENT_TEASERS));
+	$form .= '<td>' . $form_select4->render() . '</td></tr>';
 	$form .= '</table>';
 
 	return $form;
