@@ -72,16 +72,6 @@ $modversion['hasSearch'] = 0;
 /** Menu information */
 $modversion['hasMain'] = 0;
 
-$modversion['blocks'][1] = array(
-  'file' => 'sprockets_content_recent.php',
-  'name' => _MI_SPROCKETS_CONTENT_RECENT,
-  'description' => _MI_SPROCKETS_CONTENT_RECENTDSC,
-  'show_func' => 'sprockets_content_recent_show',
-  'edit_func' => 'sprockets_content_recent_edit',
-// number of items|tag id|date format|max title length|spotlight|spotlight id|spotlight module name|spotlight type
-  'options' => '5|All|j/n/Y|90', //|0|0'0|0', disabled spotlight function for now
-  'template' => 'sprockets_content_recent.html');
-
 $modversion['blocks'][2] = array(
   'file' => 'sprockets_content_teasers.php',
   'name' => _MI_SPROCKETS_CONTENT_TEASERS,
