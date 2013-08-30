@@ -72,7 +72,7 @@ $modversion['hasSearch'] = 0;
 /** Menu information */
 $modversion['hasMain'] = 0;
 
-$modversion['blocks'][2] = array(
+$modversion['blocks'][1] = array(
   'file' => 'sprockets_content_teasers.php',
   'name' => _MI_SPROCKETS_CONTENT_TEASERS,
   'description' => _MI_SPROCKETS_CONTENT_TEASERSDSC,
