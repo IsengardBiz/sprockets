@@ -42,3 +42,7 @@ $item_type parameter now accepts a comma-delimited string of object types (eg ar
 - Added an extras file for making a PHP block that can display a stream of mixed content from 
 across the Catalogue, Events, Library, News, Partner, Programme, Podcast and Project modules. This will 
 be incorporated as a formal block eventually (NB: See the block code for configuration options).
+- Added a "recent teasers" block. This draws content from across Gone Native modules, displaying a 
+teaser and thumbnail image (auto-resized) if available. Can provide a blog-style stream of mixed 
+content. Filter by tag, content (item) type, optional simple list mode.
+- Deleted the broken "recent content" block, which is redundant.
