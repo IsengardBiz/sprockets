@@ -57,3 +57,33 @@ define("_MI_SPROCKETS_RESUMPTION_TOKEN_THROTTLE_DSC", "To reduce server load fro
 define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content");
 define("_MI_SPROCKETS_CONTENT_TEASERSDSC", "Displays the description (teaser) for content across 
 	compatible modules");
+
+// New in V2.02
+define("_MI_SPROCKETS_THUMBNAIL_WIDTH", "Thumbnail width");
+define("_MI_SPROCKETS_THUMBNAIL_WIDTHDSC", "Thumbnails are the teaser images accompanying a content 
+	item (except for 'image' type publications, which are displayed at a considerably larger size 
+	by default). This value is used to scale the width that images are displayed at. Aspect ratio 
+	will be preserved, so it will be the largest of the width and height preferences that is the 
+	constraint.");
+define("_MI_SPROCKETS_THUMBNAIL_HEIGHT", "Thumbnail height");
+define("_MI_SPROCKETS_THUMBNAIL_HEIGHTDSC", "Thumnails are the teaser images accompanying a content 
+	item (except for 'image' type publications, which are displayed at a considerably larger size 
+	by default). This value is used to scale the width that images are displayed at. Aspect ratio 
+	will be preserved, so it will be the largest of the width and height preferences that is the 
+	constraint.");
+define("_MI_SPROCKETS_IMAGE_WIDTH", "Image width");
+define("_MI_SPROCKETS_IMAGE_WIDTHDSC", "The width that image-type content items will be displayed at. 
+	Images will be scaled with aspect ratio preserved, according to the largest dimension specified 
+	(width or height). So in reality, image scaling will be constrained by either the width or 
+	height you have specified, but not both.");
+define("_MI_SPROCKETS_IMAGE_HEIGHT", "Image height");
+define("_MI_SPROCKETS_IMAGE_HEIGHTDSC", "The height that image-type content items will be displayed 
+	at. Images will be scaled with aspect ratio preserved, according to the largest dimension 
+	specified (width or height). So in reality, image scaling will be constrained by either the 
+	width or height you have specified, but not both.");
+define("_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS", "Active client modules");
+define("_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS_DSC", "Select which modules you wish to include results 
+	from in in the cross-module content page tag.php. If you do not select any modules, all will 
+	be included by default.");
+define("_MI_SPROCKETS_PAGINATION", "Pagination limit on tag.php");
+define("_MI_SPROCKETS_PAGINATION_DSC", "Number of results to display per page on tag.php");

@@ -168,7 +168,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		// Set up the query (had to do it this way as could not get setGroupby() to function??
 		$sql = "SELECT * FROM " . $this->table . " GROUP BY `mid`, `iid`";	
-				
+		
 		// Set optional criteria, must be via 'having' as cannot use 'where' with a group by
 		$criteria = new icms_db_criteria_Compo();
 		
@@ -222,12 +222,19 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$module_ids[] = $taglink->getVar('mid');
 			}
 			$module_ids = array_unique($module_ids);
-		}	
+		}
+		
+		// Fetch all modules at once to reduce query load. Only active, relevant (taglinks exist)
+		// modules will be returned.
+		$module_handler = icms::handler('icms_module');
+		$module_ids = '(' . implode(',', $module_ids) . ')';
+		$criteria = new CriteriaCompo();
+		$criteria->add(new icms_db_criteria_Item('isactive', 1));
+		$criteria->add(new icms_db_criteria_Item('mid', $module_ids, "IN"));
+		$module_array = $module_handler->getObjects($criteria, TRUE);
 		
 		// Retrieve the module objects and create a subarray for each with its mid as key, to hold its taglinks
-		foreach ($module_ids as $key => $mid) {
-			$module_handler = icms::handler('icms_module');
-			$module_array[$mid] = $module_handler->get($mid);
+		foreach ($module_array as $mid => $modObj) {
 			$taglinks_by_module[$mid] = array(); // Fix bug
 		}
 
@@ -243,7 +250,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Get handler for each module/item type, build query string and retrieve content objects	
 		// For each module...
 		foreach ($module_array as $key => $moduleObj) {
-
+			
 			// For each item type (eg. article, project, partner)...
 			foreach ($taglinks_by_module[$key] as $module_key => $item_array) {
 				$item_id = $item_string = '';

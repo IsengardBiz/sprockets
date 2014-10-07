@@ -101,27 +101,39 @@ $modversion['templates'][] = array(
 
 $modversion['templates'][]= array(
   'file' => 'sprockets_admin_tag.html',
-  'description' => 'Tag Admin Index');
+  'description' => 'Tag admin index');
+
+$modversion['templates'][]= array(
+  'file' => 'sprockets_text.html',
+  'description' => 'Subtemplate for text resources');
+
+$modversion['templates'][]= array(
+  'file' => 'sprockets_sound.html',
+  'description' => 'Subtemplate for sound resources');
+
+$modversion['templates'][]= array(
+  'file' => 'sprockets_image.html',
+  'description' => 'Subtemplate for image and video resources');
 
 $modversion['templates'][]= array(
   'file' => 'sprockets_tag.html',
-  'description' => 'Tag Index');
+  'description' => 'Tag index');
 
 $modversion['templates'][]= array(
   'file' => 'sprockets_admin_taglink.html',
-  'description' => 'Taglink Admin Index');
+  'description' => 'Taglink admin index');
 
 $modversion['templates'][]= array(
   'file' => 'sprockets_admin_rights.html',
-  'description' => 'Rights Admin Index');
+  'description' => 'Rights admin index');
 
 $modversion['templates'][]= array(
   'file' => 'sprockets_rights.html',
-  'description' => 'Rights Index');
+  'description' => 'Rights index');
 
 $modversion['templates'][]= array(
   'file' => 'sprockets_admin_archive.html',
-  'description' => 'Archive Admin Index');
+  'description' => 'Archive admin index');
 
 /** Preferences information */
 
@@ -140,6 +152,69 @@ $modversion['config'][] = array(
   'formtype' => 'text',
   'valuetype' => 'int',
   'default' =>  '10');
+
+// Thumbnail size for teaser images in the cross-module content on tag.php
+$modversion['config'][] = array(
+	'name' => 'thumbnail_width',
+	'title' => '_MI_SPROCKETS_THUMBNAIL_WIDTH',
+	'description' => '_MI_SPROCKETS_THUMBNAIL_WIDTHDSC',
+	'formtype' => 'textbox',
+	'valuetype' => 'int',
+	'default' =>  '150');
+
+$modversion['config'][] = array(
+	'name' => 'thumbnail_height',
+	'title' => '_MI_SPROCKETS_THUMBNAIL_HEIGHT',
+	'description' => '_MI_SPROCKETS_THUMBNAIL_HEIGHTDSC',
+	'formtype' => 'textbox',
+	'valuetype' => 'int',
+	'default' =>  '150');
+
+// Size for image resources in the cross-module content content on tag.php
+$modversion['config'][] = array(
+	'name' => 'image_width',
+	'title' => '_MI_SPROCKETS_IMAGE_WIDTH',
+	'description' => '_MI_SPROCKETS_IMAGE_WIDTHDSC',
+	'formtype' => 'textbox',
+	'valuetype' => 'int',
+	'default' =>  '400');
+
+$modversion['config'][] = array(
+	'name' => 'image_height',
+	'title' => '_MI_SPROCKETS_IMAGE_HEIGHT',
+	'description' => '_MI_SPROCKETS_IMAGE_HEIGHTDSC',
+	'formtype' => 'textbox',
+	'valuetype' => 'int',
+	'default' =>  '400');
+
+// Client OBJECTS to include in the cross-module content on tag.php or in the cross-content block.
+// Need one entry for every object type.
+$client_objects = array(
+	'Catalogue' => 'item',
+	'Events' => 'event',
+	'Library' => 'publication',
+	'News' => 'article',
+	'Partners' => 'partner',
+	'Podcasts (programmes)' => 'programme',
+	'Podcasts (soundtracks)' => 'soundtrack',
+	'Projects' => 'project'
+);
+
+$modversion['config'][] = array(
+	'name' => 'client_objects',
+	'title' => '_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS',
+	'description' => '_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS_DSC',
+	'formtype' => 'select_multi',
+	'valuetype' => 'array',
+	'options' => $client_objects);
+
+$modversion['config'][] = array(
+	'name' => 'pagination_limit',
+	'title' => '_MI_SPROCKETS_PAGINATION',
+	'description' => '_MI_SPROCKETS_PAGINATION_DSC',
+	'formtype' => 'textbox',
+	'valuetype' => 'int',
+	'default' =>  '10');
 
 $modversion['config'][] = array(
   'name' => 'resumption_token_cursor_offset',

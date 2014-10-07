@@ -1,0 +1,28 @@
+<!-- Title of resource with link to full description -->	
+<h2><{$item.itemLink}></h2>
+
+<!-- Metadata -->
+<div class="itemInfo sprockets_separator">
+	<{if $item.creator}><{$smarty.const._CO_SPROCKETS_CONTENT_AUTHORS}>: <{$item.creator}><{/if}>
+	<{if $item.creator && ($item.date || $item.counter || $item.tags)}> | <{/if}>
+	<{if $item.date}><{$smarty.const._CO_SPROCKETS_CONTENT_PUBLISHED}> <{$item.date}><{/if}>
+	<{if ($item.creator || $item.date) && ($item.counter || $item.tags)}> | <{/if}>
+	<{if $item.counter}><{$item.counter}> <{$smarty.const._CO_SPROCKETS_CONTENT_VIEWS}><{/if}>
+	<{if ($item.creator || $item.date || $item.counter) && $item.tags}> | <{/if}>
+	<{if $item.tags}><{$item.tags}><{/if}>
+</div>
+
+<!-- Image -->
+<{if $item.image}>
+	<div class="sprockets_content_image">
+		<a href="<{$item.itemUrl}>">
+			<{resized_image file=$item.image width=$image_width height=$image_height fit="inside"}></a>
+	</div>
+<{/if}>
+
+<!-- Description -->
+<div>
+	<{if $item.description}>
+		<{$item.description}>
+	<{/if}>
+</div>

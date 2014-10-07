@@ -163,4 +163,15 @@ define("_CO_SPROCKETS_BASE_URL", "Base URL");
 define("_CO_SPROCKETS_COMPRESSION", "Compression");
 define("_CO_SPROCKETS_ARCHIVE_NOT_ENABLED", "Sorry, open archives initiative functionality is not presently enabled for this module.");
 
-// New in V2.01
+// New in V2.02
+define("_CO_SPROCKETS_CONTENT_NOTHING_TO_DISPLAY", "Nothing to display");
+define("_CO_SPROCKETS_CONTENT_AUTHORS", "Author(s)");
+define("_CO_SPROCKETS_CONTENT_PUBLISHED", "Published");
+define("_CO_SPROCKETS_CONTENT_VIEWS", "views");
+define("_CO_SPROCKETS_CONTENT_LANGUAGE", "Language");
+define("_CO_SPROCKETS_CONTENT_PUBLISHER", "Publisher");
+define("_CO_SPROCKETS_CONTENT_SUBMITTER", "Submitter");
+define("_CO_SPROCKETS_CONTENT_RIGHTS", "Rights");
+define("_CO_SPROCKETS_CONTENT_DOWNLOAD", "Download");
+define("_CO_SPROCKETS_CONTENT_FORMAT", "Format");
+define("_CO_SPROCKETS_CONTENT_FILE_SIZE", "File size");

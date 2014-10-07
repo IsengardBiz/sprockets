@@ -1,16 +1,26 @@
 <{includeq file='db:sprockets_header.html'}>
 
-<{if $sprockets_tag}>
-	<div id="sprockets_content_container">
-		<h1><{$sprockets_tag.title}></h1>
-		<div><b><{$smarty.const._CO_SPROCKETS_TAG_DESCRIPTION}></b></div>
-				<div><{$sprockets_tag.description}></div>
-
-	</div>
-<{/if}>
-<{if $sprockets_tag_table}>
-	<h1><{$sprockets_title}></h1>
-	<{$sprockets_tag_table}>
-<{/if}>
+<div id="sprockets_content_container">
+	<{if $sprockets_tag}>
+	
+			<!-- Title -->
+			<h1><{$sprockets_tag.title}></h1>
+			
+			<!-- Loop through tagged content -->
+			<{if $sprockets_tagged_content}>
+				<{foreach item=item from=$sprockets_tagged_content}>
+					<{include file=$item.subtemplate}>
+				<{/foreach}>
+			<{/if}>
+			
+			<!-- Pagination control -->
+			<div>
+				<{if $sprockets_navbar}><{$sprockets_navbar}><{/if}>
+			</div>
+			
+	<{else}>
+		<h1><{$sprockets_nothing_to_display}></h1>
+	<{/if}>
+</div>
 
 <{includeq file='db:sprockets_footer.html'}>

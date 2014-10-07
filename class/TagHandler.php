@@ -370,6 +370,125 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		
 		return $status;
 	}
+	
+	/**
+	 * Returns a list of module/object pairs that are clients of sprockets
+	 * 
+	 * @return array
+	 */
+	public function getClientObjects() {
+		return array(
+			'article' => 'news',
+			'programme' => 'podcast',
+			'soundtrack' => 'podcast',
+			'publication' => 'library',
+			'item' => 'catalogue',
+			'partner' => 'partners',
+			'project' => 'projects',
+			'start' => 'cms'
+			);
+	}
+	
+	/**
+	 * Checks which compatible modules are installed/active and retrieves relevant object handlers
+	 * 
+	 * This function helps to populate the tag.php page with cross-module content.
+	 * 
+	 * @return array
+	 */
+	public function getClientObjectHandlers() {
+		// Container to hold handlers for client module objects
+		$compatibleModules = array();
+		$clientObjectHandlers = array();
+		
+		// Prepare an array of handlers using object name as the key
+		$compatibleModules = $this->getClientObjects();
+		foreach($compatibleModules as $object => $module) {
+			if (icms_get_module_status($module)) {
+				$clientObjectHandlers[$object] = icms_getModuleHandler($object, $module, $module);
+			}
+		}
+		
+		return $clientObjectHandlers;
+	}
+	
+	/**
+	 * Converts an array of mixed client objects from different modules and prepares them for 
+	 * insertion into smarty templates (user side display)
+	 * 
+	 * To do this the function maintains a list of the equivalent function that converts objects
+	 * for user-side display in each client module. The names of these functions will be 
+	 * standardised in future so that this function can be deprecated.
+	 * 
+	 */
+	public function prepareClientObjectsForDisplay($mixedClientObjects) {
+		$mixedClientArray = array(); // Holds the converted results
+		foreach($mixedClientObjects as $key => $object) {
+			// Convert client objects to array and format for user-side display
+			$class = get_class($object);
+			switch($class) {
+				case "CatalogueItem":
+					$object = $object->toArray();
+					$object['subtemplate'] = 'db:sprockets_image.html';
+					break;
+				case "mod_partners_Partner":
+				case "mod_projects_Project":
+				case "mod_cms_Start":
+					$object = $object->toArray();
+					$object['image'] = $object['logo']; // Remap non-standard image name
+					$object['subtemplate'] = 'db:sprockets_text.html';
+					break;					
+				case "PodcastProgramme":
+					$object = $object->toArray();
+					$object['image'] = $object['cover'];
+					$object['subtemplate'] = 'db:sprockets_sound.html';
+					break;
+				case "NewsArticle":
+					$object = $object->prepareArticleForDisplay(FALSE); // May need manual buffers
+					$object['subtemplate'] = 'db:sprockets_text.html';
+					break;
+				case "mod_events_Event":
+					$object = $object->handler->prepareEventForDisplay($object);
+					$object['subtemplate'] = 'db:sprockets_text.html';
+					break;
+				case "mod_library_Publication": // May need manual buffers
+				case "PodcastSoundtrack": // May need manual buffers
+					$object = $object->toArrayWithoutOverrides();
+					switch($object['type']) {
+						case "Text":
+						case "Collection":
+						case "Event":
+						case "Software":
+						case "Dataset":
+						case "Collection":
+							$object['subtemplate'] = 'db:sprockets_text.html';
+							break;
+						case "Sound":
+							$object['subtemplate'] = 'db:sprockets_sound.html';
+							break;
+						case "Image":
+						case "MovingImage":
+							$object['subtemplate'] = 'db:sprockets_image.html';
+							if ($object['poster_image']) {
+								$object['image'] = $object['poster_image']; // Remap non-standard name
+							}
+							break;
+						// Not implemented
+						//case "InteractiveResource":
+						//case "Service":
+						//case "PhysicalObject":
+						default:
+					}
+					break;
+				default: // No known method for this object, destroy it to avoid display errors
+					unset($object);
+			}			
+			if ($object) {
+				$mixedClientArray[] = $object;
+			}
+		}
+		return $mixedClientArray;
+	}
 		
 	/**
 	 * Currently not in use.
