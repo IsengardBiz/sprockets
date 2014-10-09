@@ -390,9 +390,10 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Checks which compatible modules are installed/active and retrieves relevant object handlers
+	 * Checks which compatible modules are active / set as clients retrieves relevant object handlers
 	 * 
-	 * This function helps to populate the tag.php page with cross-module content.
+	 * This function helps to populate the tag.php page with cross-module content. The return array
+	 * of handlers is keyed with object names
 	 * 
 	 * @return array
 	 */
@@ -402,10 +403,13 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$clientObjectHandlers = array();
 		
 		// Prepare an array of handlers using object name as the key
+		$clientObjects = icms_getConfig('client_objects', 'sprockets');
 		$compatibleModules = $this->getClientObjects();
 		foreach($compatibleModules as $object => $module) {
-			if (icms_get_module_status($module)) {
-				$clientObjectHandlers[$object] = icms_getModuleHandler($object, $module, $module);
+			if (in_array($object, $clientObjects)) {
+				if (icms_get_module_status($module)) {
+					$clientObjectHandlers[$object] = icms_getModuleHandler($object, $module, $module);
+				}
 			}
 		}
 		

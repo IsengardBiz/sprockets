@@ -38,7 +38,13 @@ Version 2.01 beta
 - Add additional rights on installation: Copyright, the Publisher. Use this when republishing a work
 where the rights belong to an external agency.
 - Modified getTaggedItems() to allow it to return content for multiple (specified) modules. The 
-$item_type parameter now accepts a comma-delimited string of object types (eg article, publication)
+$item_type parameter now accepts an single object type as a string, or multiple object types 
+(eg article, publication) as an array
+- Modified getTaggedItem() so that it retrieves cross-module content sorted by the 'date' field 
+common to all Gone Native module objects. It works, however, it is quite inefficient at present, as
+it runs a separate query for every module, retrieves all results, sorts and then truncates them. It
+would be much more efficient if this could be done in a single query joining all the tables, but
+at present I have not been able to find a way to do this.
 - Added an extras file for making a PHP block that can display a stream of mixed content from 
 across the Catalogue, Events, Library, News, Partner, Programme, Podcast and Project modules. This will 
 be incorporated as a formal block eventually (NB: See the block code for configuration options).

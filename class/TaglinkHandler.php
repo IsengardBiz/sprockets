@@ -51,26 +51,28 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @return array $item_list
 	 */
 	
-	public function getTaglinkItems() {
+	public function getTaglinkItems($tag_id = FALSE) {
 		
+		$tid = isset($tag_id) ? intval($tag_id) : FALSE;
 		$item_list = array();
 		$criteria = '';
 		
 		$sql = "SELECT DISTINCT `item` FROM " . $this->table;
-		$sql = mysql_real_escape_string($sql);
-		
+		if ($tid) {
+			$sql .= " WHERE `tid` = '" . $tid . "'";
+		}
 		$rows = $this->query($sql, $criteria);
 		foreach ($rows as $key => $item) {
-			$item_list[] = $item;
+			$item_list[] = $item['item'];
 		}
-		
+
 		return $item_list;
 	}
 	
 	/**
 	 * Retrieve tag_ids for an object (either tag or category label_type, but not both)
 	 *
-	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
+	 * Based on code from ImTagging: author marcan aka Marc-Andre Lanciault <marcan@smartfactory.ca>
 	 *
 	 * @param int $iid id of the related object
 	 * @param object IcmsPersistableHandler
@@ -127,8 +129,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * feeds and tag pages. Always use this method with a limit and as many parameters as possible
 	 * in order to simplify the results and avoid slow queries (for example, if you neglect to 
 	 * specify a module_id it will run queries on all compatible modules).
+	 * 
+	 * Note: The first element in the returned array is a COUNT of the total number of available
+	 * results, which is used to construct pagination controls. The calling code needs to remove
+	 * this element before attempting to process the content objects
 	 *
-	 * @global array $sprocketsConfig
 	 * @param int $tag_id
 	 * @param int $module_id
 	 * @param array $item_type // list of object types as strings
@@ -140,18 +145,18 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
-			$start = FALSE, $limit = FALSE, $sort = 'taglink_id', $order = 'DESC') {
-
-		global $sprocketsConfig;
+			$start = FALSE, $limit = FALSE, $sort = 'DESC') {
 		
-		$sql = '';
+		$sql = $item_list = '';
 		$content_id_array = $content_object_array = $taglink_object_array = $module_ids
-			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module = array();
+			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
+			= $object_counts = array();
+		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		
 		// Parameters to public methods should be sanitised
 		$tag_id = isset($tag_id) ? intval($tag_id) : 0;
 		$module_id = isset($module_id) ? intval($module_id) : 0;
-		$item_type_whitelist = array_keys(sprockets_get_object_options());
+		$item_type_whitelist = icms_getConfig('client_objects', 'sprockets');
 		$item_type = is_array($item_type) ? $item_type : array();
 		foreach ($item_type as &$type) {
 			if (in_array($type, $item_type_whitelist)) {
@@ -160,61 +165,36 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
 		$start = isset($start) ? intval($start) : 0;
 		$limit = isset($limit) ? intval($limit) : 0;
-		$sort_whitelist = array('taglink_id', 'tid', 'mid', 'item', 'iid');
-		$sort = in_array($sort, $sort_whitelist) ? $sort : 'taglink_id';
-		if ($order != 'ASC') {
-			$order = 'DESC';
+		if ($sort != 'ASC') {
+			$sort = 'DESC';
 		}
 		
-		// Set up the query (had to do it this way as could not get setGroupby() to function??
-		$sql = "SELECT * FROM " . $this->table . " GROUP BY `mid`, `iid`";	
+		// Get handlers for objects that are a) designated clients of sprockets and b) where the 
+		// module is installed and activated
+		$handlers = $sprockets_tag_handler->getClientObjectHandlers();
 		
-		// Set optional criteria, must be via 'having' as cannot use 'where' with a group by
-		$criteria = new icms_db_criteria_Compo();
-		
-		if ($tag_id || $module_id || $item_type)
-		{
-			$sql .= " HAVING";
-			
+		// Get a list of taglinks broken down by object types
+		if ($tag_id || $module_id || $item_type || $start || $limit || $sort || $order) {
+			$criteria = new icms_db_criteria_Compo();
 			if ($tag_id) {
-				$sql .= " `tid` = " . $tag_id;
-				if ($module_id || $item_type) {
-					$sql .= " AND";
-				}
+				$criteria->add(new icms_db_criteria_Item('tid', $tag_id));
 			}
-
 			if ($module_id) {
-				$sql .= " `mid` = " . $module_id;
-				if ($item_type) {
-					$sql .= " AND";
+				$criteria->add(new icms_db_criteria_Item('mid', $module_id));
+			}
+			if ($item_type) {
+				if (is_array($item_type)) {
+					$item_type = '("' . implode('","', $item_type) . '")';
+					$criteria->add(new icms_db_criteria_Item('item', $item_type, "IN"));
+				} else {
+					$criteria->add(new icms_db_criteria_Item('item', $item_type));
 				}
 			}
-
-			if ($item_type && is_array($item_type)) {
-				$item_type = "('" . implode("', '", $item_type) . "')";
-				$sql .= " `item` IN " . $item_type;
-			}
 		}
-				
-		if ($start) {
-			$criteria->setStart($start);
-		}
-		
-		if ($limit) {
-			$criteria->setLimit($limit);
-		}
-		
-		if ($sort) {
-			$criteria->setSort($sort);
-		}
-		
-		if ($order) {
-			$criteria->setOrder($order);
-		}
-		
-		$taglink_object_array = $this->getObjects($criteria, TRUE, TRUE, $sql);
-		
-		// Get the required module object if parameter supplied, or build an array of module IDs from the taglinks
+		$taglink_object_array = $this->getObjects($criteria);
+	
+		// Get the required module object if parameter supplied, or build an array of module IDs
+		// from the taglinks
 		if($module_id) {
 			$module_ids[] = $module_id;
 		} else {
@@ -228,21 +208,23 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// modules will be returned.
 		$module_handler = icms::handler('icms_module');
 		$module_ids = '(' . implode(',', $module_ids) . ')';
-		$criteria = new CriteriaCompo();
+		$criteria = new icms_db_criteria_Compo();
 		$criteria->add(new icms_db_criteria_Item('isactive', 1));
 		$criteria->add(new icms_db_criteria_Item('mid', $module_ids, "IN"));
 		$module_array = $module_handler->getObjects($criteria, TRUE);
 		
-		// Retrieve the module objects and create a subarray for each with its mid as key, to hold its taglinks
+		// Retrieve the module objects, create a subarray for each with its mid as key, to hold 
+		// its taglinks, and load the relevant language file
 		foreach ($module_array as $mid => $modObj) {
-			$taglinks_by_module[$mid] = array(); // Fix bug
+			$taglinks_by_module[$mid] = array();
+			icms_loadLanguageFile($modObj->getVar('dirname'), 'common');
 		}
 
 		// IMPORTANT!! Sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
 		// But this will screw up the sorting by taglink_id!
 		foreach ($taglink_object_array as $key => $taglink) {
-			if (!array_key_exists($taglink->getItem(), $taglinks_by_module[$taglink->getVar('mid')])) {
-				$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()] = array();
+			if (!array_key_exists($taglink->getVar('item'), $taglinks_by_module[$taglink->getVar('mid')])) {
+				$taglinks_by_module[$taglink->getVar('mid')][$taglink->getVar('item')] = array();
 			}
 			$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()][$taglink->getVar('taglink_id')] = $taglink;
 		}
@@ -265,23 +247,47 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$id_string = "(" . implode(",", $id_string) . ")";
 				$criteria->add(new icms_db_criteria_Item($item_id, $id_string, 'IN'));
 				$criteria->add(new icms_db_criteria_Item('online_status', '1'));
+				$criteria->setSort('date');
+				$criteria->setOrder($sort);
+				$criteria->setLimit($limit);
 
 				// Retrieve the content objects
-				$content_handler = icms_getModuleHandler($module_key, $moduleObj->getVar('dirname'),
-						$moduleObj->getVar('dirname'));
-				$content_objects = $content_handler->getObjects($criteria);
+				$content_objects = $handlers[$module_key]->getObjects($criteria);
 				
 				// Concatenate the content objects to form combined (multi-module) results
 				$content_object_array = array_merge($content_object_array, $content_objects);
 			}
 		}
-
-		// Sort the combined module content by date (not working?)
-		$tmp = array();
-		foreach($content_object_array as $key => &$obj) {
-			$tmp[] = &$obj->getVar('date', 'e');
+				
+		// Sort the results by date field
+		function sortByDateDescending($a, $b) {
+			if ($a->getVar('date', 'e') == $b->getVar('date', 'e')) {
+				return 0;
+			}
+			return ($a->getVar('date', 'e') < $b->getVar('date', 'e')) ? 1 : -1;
 		}
-		array_multisort($tmp, SORT_DESC, $content_object_array);
+		
+		function sortByDateAscending($a, $b) {
+			if ($a->getVar('date', 'e') == $b->getVar('date', 'e')) {
+				return 0;
+			}
+			return ($a->getVar('date', 'e') < $b->getVar('date', 'e')) ? -1 : 1;
+		}
+
+		if ($sort == 'DESC') {
+			usort($content_object_array, "sortByDateDescending");
+		} elseif ($sort == 'ASC') {
+			usort($content_object_array, "sortByDateAscending");
+		}
+		
+		// Count the total result set to allow construction of pagination controls
+		$content_count = count($content_object_array);
+		
+		// Truncate the results to the desired quantity (very inefficient, needs improving)
+		$content_object_array = array_slice($content_object_array, $start, $limit);
+		
+		// Prepend the $count of results
+		array_unshift($content_object_array, $content_count);
 		
 		return $content_object_array;
 	}

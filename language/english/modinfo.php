@@ -87,3 +87,12 @@ define("_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS_DSC", "Select which modules you wis
 	be included by default.");
 define("_MI_SPROCKETS_PAGINATION", "Pagination limit on tag.php");
 define("_MI_SPROCKETS_PAGINATION_DSC", "Number of results to display per page on tag.php");
+define("_MI_SPROCKETS_CMS_PAGES", "CMS pages");
+define("_MI_SPROCKETS_CATALOGUE_ITEMS", "Catalogue items");
+define("_MI_SPROCKETS_EVENTS", "Events");
+define("_MI_SPROCKETS_LIBRARY_PUBLICATIONS", "Library publications");
+define("_MI_SPROCKETS_NEWS_ARTICLES", "News articles");
+define("_MI_SPROCKETS_PARTNERS", "Partners");
+define("_MI_SPROCKETS_PODCAST_PROGRAMMES", "Podcasts (programmes)");
+define("_MI_SPROCKETS_PODCAST_SOUNDTRACKS", "Podcasts (soundtracks)");
+define("_MI_SPROCKETS_PROJECTS", "Projects");
