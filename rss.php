@@ -80,11 +80,11 @@ if ($clean_tag_id) {
 
 		// get the content objects for this tag's feed
 		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $limit = FALSE,
-		// $sort = 'taglink_id', $order = 'DESC'
+		// $sort = 'DESC')
 		$content_object_array = $sprockets_taglink_handler->getTaggedItems($clean_tag_id, FALSE,
 				FALSE, FALSE, icms::$module->config['number_rss_items']);
 		
-		// Unset the first result as it contains a count value that we do not need
+		// Unset the first result as it contains a count value that we do not need in this case
 		unset($content_object_array[0]);
 
 		// prepare an array of content items

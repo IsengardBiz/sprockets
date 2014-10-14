@@ -133,6 +133,10 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * Note: The first element in the returned array is a COUNT of the total number of available
 	 * results, which is used to construct pagination controls. The calling code needs to remove
 	 * this element before attempting to process the content objects
+	 * 
+	 * Note: This method should ONLY be used to retrieve content from multiple modules 
+	 * simultaneously. Individual modules can retrieve / process their own results much more 
+	 * efficiently using their own methods or a standard IPF call.
 	 *
 	 * @param int $tag_id
 	 * @param int $module_id
@@ -147,7 +151,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
 			$start = FALSE, $limit = FALSE, $sort = 'DESC') {
 		
-		$sql = $item_list = '';
+		$sql = $item_list = $items = '';
+		$content_count = 0;
+		$nothing_to_display = FALSE;
 		$content_id_array = $content_object_array = $taglink_object_array = $module_ids
 			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
 			= $object_counts = array();
@@ -159,7 +165,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$item_type_whitelist = icms_getConfig('client_objects', 'sprockets');
 		$item_type = is_array($item_type) ? $item_type : array();
 		foreach ($item_type as &$type) {
-			if (in_array($type, $item_type_whitelist)) {
+			if (in_array($type, $item_type_whitelist)) { // What if item type is just one ?
 				unset($type);
 			}
 		}
@@ -173,7 +179,89 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// module is installed and activated
 		$handlers = $sprockets_tag_handler->getClientObjectHandlers();
 		
-		// Get a list of taglinks broken down by object types
+		// Get a list of taglinks broken down by object types. NOTE: If there are a very large 
+		// number of taglinks, resource usage might be very high.
+		//
+		// One possibility to increase efficiency might be to:
+		// 
+		// 1. Just get a list of distinct items associated with the tag in question. That will 
+		// tell you which module object tables need to be searched.
+		// 
+		// 2. Run a cross-module query directly using multiple joins (this will eliminate the need
+		// to build a list of taglink_ids). This will allow the result set to be retrieved and 
+		// sorted in one go, dramatically reducing the number of queries required for the operation.
+		// However, it will be a (relatively) complex query and I suppose it could impose a heavy
+		// load by itself?
+		
+		// 1. Get a list of distinct item (object) types associated with the search parameters
+		$sql = "SELECT `item`, COUNT(*) FROM " . $this->table;
+		if ($tag_id || $module_id || $item_type) {
+			$sql .= " WHERE";
+			if ($tag_id) {
+				$sql .= " `tid` = " . $tag_id;
+			}
+			if ($module_id) {
+				if ($tag_id) {
+					$sql .= " AND";
+				}
+					$sql .= " `mid` = " . $module_id;
+			}
+		}
+		if ($item_type) {
+			if (is_array($item_type)) {
+				$item_type = '("' . implode('","', $item_type) . '")';
+			} else {
+				$item_type = '("' . $item_type . '")';
+			}				
+			if ($tag_id || $module_id) {
+				$sql .= " AND";
+			}
+			$sql .= " `item` IN " . $item_type;
+		}
+		$sql .= " GROUP BY `item`";
+		$result = icms::$xoopsDB->query($sql);
+		if (!$result) {
+				echo 'Error';
+				exit;
+		} else {
+			while ($row = icms::$xoopsDB->fetchArray($result)) {
+				$content_count += $row['COUNT(*)'];
+				$items[] = $row['item'];
+			}
+		}
+		
+		// 2. Use the item list to check client modules are active and load required handlers
+		if ($items) {
+			$item_whitelist = $sprockets_tag_handler->getClientObjects();
+			foreach ($items as $key => $item) {
+				if (in_array($item, $item_whitelist)) {
+					// Check module is available/activated, remove anything that isn't
+					if (icms_get_module_status($item_whitelist[$item])) {
+						$handlers[$item] = icms_getModuleHandler($item, $item_whitelist[$item], 
+							$item_whitelist[$item]);
+					} else {
+						unset($items[$key]);
+					}
+				}
+			}
+		} else {
+			$nothing_to_display == TRUE;
+		}
+		
+		
+		// 3. Count total result set and retrieve the subset of results actually required
+		
+		
+		
+		// MAYBE USE ->QUERY RATHER THAN getObjects()? The SQL is ok and returns the expected
+		// results, however getObjects returns a load of gibberish.
+		$taglink_object_array = $this->getObjects($criteria, FALSE, FALSE, $sql);
+		$content_count = count($taglink_object_array);
+		echo 'Results returned: ' . count($taglink_object_array);
+		
+		
+		// THIS CODE WORKS - COMMENTED OUT TO TEST A MORE EFFICIENT METHOD - DO NOT DELETE!
+		/*
 		if ($tag_id || $module_id || $item_type || $start || $limit || $sort || $order) {
 			$criteria = new icms_db_criteria_Compo();
 			if ($tag_id) {
@@ -221,12 +309,12 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
 
 		// IMPORTANT!! Sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
-		// But this will screw up the sorting by taglink_id!
 		foreach ($taglink_object_array as $key => $taglink) {
 			if (!array_key_exists($taglink->getVar('item'), $taglinks_by_module[$taglink->getVar('mid')])) {
 				$taglinks_by_module[$taglink->getVar('mid')][$taglink->getVar('item')] = array();
 			}
-			$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()][$taglink->getVar('taglink_id')] = $taglink;
+			$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()]
+					[$taglink->getVar('taglink_id')] = $taglink;
 		}
 		
 		// Get handler for each module/item type, build query string and retrieve content objects	
@@ -249,6 +337,15 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$criteria->add(new icms_db_criteria_Item('online_status', '1'));
 				$criteria->setSort('date');
 				$criteria->setOrder($sort);
+				// The next two lines are probably not going to work on a per-module basis, because
+				// we do not know the position of any given module's contents until they have been 
+				// compared against the dates of results from all other modules. It's ok for the 
+				// most recent results, but once you start requesting earlier pagination subsets
+				// you are going to run into inconsistencies, because you are sorting independent 
+				// subsets of results, not all results. Basically, the only way around this is to 
+				// do the query via a huge join, where date fields can be examined across all object
+				// tables simultaneously. This will also save a ton of queries.
+				$criteria->setOrder($start);
 				$criteria->setLimit($limit);
 
 				// Retrieve the content objects
@@ -279,6 +376,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} elseif ($sort == 'ASC') {
 			usort($content_object_array, "sortByDateAscending");
 		}
+		*/
 		
 		// Count the total result set to allow construction of pagination controls
 		$content_count = count($content_object_array);
