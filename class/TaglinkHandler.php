@@ -123,6 +123,24 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
     }
 	
 	/**
+	 * Returns a list of module/object pairs that are clients of sprockets
+	 * 
+	 * @return array
+	 */
+	public function getClientObjects() {
+		return array(
+			'article' => 'news',
+			'programme' => 'podcast',
+			'soundtrack' => 'podcast',
+			'publication' => 'library',
+			'item' => 'catalogue',
+			'partner' => 'partners',
+			'project' => 'projects',
+			'start' => 'cms'
+			);
+	}
+	
+	/**
 	 * Returns a list of content objects associated with a specific tag, module or item type
 	 *
 	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
@@ -156,17 +174,18 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$nothing_to_display = FALSE;
 		$content_id_array = $content_object_array = $content_array = $taglink_object_array 
 			= $module_ids = $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
-			= $object_counts = array();
-		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
+			= $object_counts = $handlers = array();
 		
 		// Parameters to public methods should be sanitised
 		$tag_id = isset($tag_id) ? intval($tag_id) : 0;
 		$module_id = isset($module_id) ? intval($module_id) : 0;
 		$item_type_whitelist = icms_getConfig('client_objects', 'sprockets');
-		$item_type = is_array($item_type) ? $item_type : array();
-		foreach ($item_type as &$type) {
-			if (in_array($type, $item_type_whitelist)) { // What if item type is just one ?
-				unset($type);
+		if ($item_type) {
+			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
+			foreach ($item_type as &$type) {
+				if (!in_array($type, $item_type_whitelist)) {
+					unset($type);
+				}
 			}
 		}
 		$start = isset($start) ? intval($start) : 0;
@@ -175,11 +194,10 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$sort = 'DESC';
 		}
 		
-		// Get handlers for objects that are a) designated clients of sprockets and b) where the 
-		// module is installed and activated
-		$handlers = $sprockets_tag_handler->getClientObjectHandlers();
-		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
+		// NOTE: Should not get the count from this list, as it does not take into account the 
+		// possibility that some objects will be marked as offline, and this will create errors in
+		// the pagination controls. Need to get a count from the next query
 		$sql = "SELECT `item`, COUNT(*) FROM " . $this->table;
 		if ($tag_id || $module_id || $item_type) {
 			$sql .= " WHERE";
@@ -215,25 +233,25 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$items[] = $row['item'];
 			}
 		}
-		
+			
 		// 2. Use the item list to check client modules are active and load required handlers
+		// Note that $items is based on whitelisted user input or on results from the database,
+		// so the only thing that needs to be checked is whether the relevant modules are installed 
+		// and activated
 		if ($items) {
-			$item_whitelist = $sprockets_tag_handler->getClientObjects();
-			foreach ($items as $key => $item) {
-				if (in_array($item, $item_whitelist)) {
-					// Check module is available/activated, remove anything that isn't
-					if (icms_get_module_status($item_whitelist[$item])) {
-						$handlers[$item] = icms_getModuleHandler($item, $item_whitelist[$item], 
-							$item_whitelist[$item]);
-					} else {
-						unset($items[$key]);
-					}
+			$clientObjects = $this->getClientObjects();
+			foreach ($items as $key => &$itm) {
+				if (icms_get_module_status($clientObjects[$itm])) {
+					$handlers[$itm] = icms_getModuleHandler($itm, $clientObjects[$itm], 
+						$clientObjects[$itm]);
+				} else {
+					unset($items[$key]);
 				}
 			}
 		} else {
 			$nothing_to_display = TRUE;
 		}
-		
+		echo count($items);
 		// 3. Retrieve the subset of results actually required, using as few resources as possible.
 		// A sub-query is run on each object table (unavoidable). The results are combined through
 		// a UNION of common fields (easy, since Gone Native modules use standard Dublin Core field
@@ -245,7 +263,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		if ($items) {
 			$sql = '';
 			$i = count($items);
-			foreach ($items as $item) {
+			foreach ($items as $key => $it) {
 				$i--;
 				$sql .= "(SELECT "
 					. "`item`,"
@@ -260,11 +278,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					. "`iid`,"
 					. "`mid`,"
 					. "`tid`";
-				$sql .= " FROM " . $this->table . " INNER JOIN " . $handlers[$item]->table . " ON "
-						. $this->table . ".iid  = " . $handlers[$item]->table . "." . $item . "_id";
+				$sql .= " FROM " . $this->table . " INNER JOIN " . $handlers[$it]->table . " ON "
+						. $this->table . ".iid  = " . $handlers[$it]->table . "." . $it . "_id";
 				$sql .= " WHERE " . $this->table . ".iid  = " 
-						. $handlers[$item]->table . "." . $item . "_id";
-				$sql .= " AND " . $this->table . ".item = '" . $item . "'";
+						. $handlers[$it]->table . "." . $it . "_id";
+				$sql .= " AND " . $this->table . ".item = '" . $it . "'";
 
 				if ($tag_id || $module_id) {
 					$sql .= " AND";

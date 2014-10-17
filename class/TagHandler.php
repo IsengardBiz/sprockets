@@ -224,8 +224,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	
 	/**
 	 * Checks if the given tag (category) is a parent
-	 * @param type $id
-	 * @return type 
+	 * @param int $id
+	 * @return bool 
 	 */
 	public function check_is_parent($id) {
 		$is_parent = FALSE;
@@ -369,51 +369,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$this->insert($obj, TRUE);
 		
 		return $status;
-	}
-	
-	/**
-	 * Returns a list of module/object pairs that are clients of sprockets
-	 * 
-	 * @return array
-	 */
-	public function getClientObjects() {
-		return array(
-			'article' => 'news',
-			'programme' => 'podcast',
-			'soundtrack' => 'podcast',
-			'publication' => 'library',
-			'item' => 'catalogue',
-			'partner' => 'partners',
-			'project' => 'projects',
-			'start' => 'cms'
-			);
-	}
-	
-	/**
-	 * Checks which compatible modules are active / set as clients retrieves relevant object handlers
-	 * 
-	 * This function helps to populate the tag.php page with cross-module content. The return array
-	 * of handlers is keyed with object names
-	 * 
-	 * @return array
-	 */
-	public function getClientObjectHandlers() {
-		// Container to hold handlers for client module objects
-		$compatibleModules = array();
-		$clientObjectHandlers = array();
-		
-		// Prepare an array of handlers using object name as the key
-		$clientObjects = icms_getConfig('client_objects', 'sprockets');
-		$compatibleModules = $this->getClientObjects();
-		foreach($compatibleModules as $object => $module) {
-			if (in_array($object, $clientObjects)) {
-				if (icms_get_module_status($module)) {
-					$clientObjectHandlers[$object] = icms_getModuleHandler($object, $module, $module);
-				}
-			}
-		}
-		
-		return $clientObjectHandlers;
 	}
 	
 	/**
