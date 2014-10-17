@@ -154,8 +154,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$sql = $item_list = $items = '';
 		$content_count = 0;
 		$nothing_to_display = FALSE;
-		$content_id_array = $content_object_array = $taglink_object_array = $module_ids
-			= $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
+		$content_id_array = $content_object_array = $content_array = $taglink_object_array 
+			= $module_ids = $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
 			= $object_counts = array();
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		
@@ -178,20 +178,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Get handlers for objects that are a) designated clients of sprockets and b) where the 
 		// module is installed and activated
 		$handlers = $sprockets_tag_handler->getClientObjectHandlers();
-		
-		// Get a list of taglinks broken down by object types. NOTE: If there are a very large 
-		// number of taglinks, resource usage might be very high.
-		//
-		// One possibility to increase efficiency might be to:
-		// 
-		// 1. Just get a list of distinct items associated with the tag in question. That will 
-		// tell you which module object tables need to be searched.
-		// 
-		// 2. Run a cross-module query directly using multiple joins (this will eliminate the need
-		// to build a list of taglink_ids). This will allow the result set to be retrieved and 
-		// sorted in one go, dramatically reducing the number of queries required for the operation.
-		// However, it will be a (relatively) complex query and I suppose it could impose a heavy
-		// load by itself?
 		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
 		$sql = "SELECT `item`, COUNT(*) FROM " . $this->table;
@@ -245,139 +231,77 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				}
 			}
 		} else {
-			$nothing_to_display == TRUE;
+			$nothing_to_display = TRUE;
 		}
 		
-		
-		// 3. Count total result set and retrieve the subset of results actually required
-		
-		
-		
-		// MAYBE USE ->QUERY RATHER THAN getObjects()? The SQL is ok and returns the expected
-		// results, however getObjects returns a load of gibberish.
-		$taglink_object_array = $this->getObjects($criteria, FALSE, FALSE, $sql);
-		$content_count = count($taglink_object_array);
-		echo 'Results returned: ' . count($taglink_object_array);
-		
-		
-		// THIS CODE WORKS - COMMENTED OUT TO TEST A MORE EFFICIENT METHOD - DO NOT DELETE!
-		/*
-		if ($tag_id || $module_id || $item_type || $start || $limit || $sort || $order) {
-			$criteria = new icms_db_criteria_Compo();
-			if ($tag_id) {
-				$criteria->add(new icms_db_criteria_Item('tid', $tag_id));
-			}
-			if ($module_id) {
-				$criteria->add(new icms_db_criteria_Item('mid', $module_id));
-			}
-			if ($item_type) {
-				if (is_array($item_type)) {
-					$item_type = '("' . implode('","', $item_type) . '")';
-					$criteria->add(new icms_db_criteria_Item('item', $item_type, "IN"));
-				} else {
-					$criteria->add(new icms_db_criteria_Item('item', $item_type));
+		// 3. Retrieve the subset of results actually required, using as few resources as possible.
+		// A sub-query is run on each object table (unavoidable). The results are combined through
+		// a UNION of common fields (easy, since Gone Native modules use standard Dublin Core field
+		// names). NB: The LIMIT is applied to the COMBINED result set of all subqueries linked by
+		// the union, so sorting of results happens ACROSS all tables simultaneously. Cool, huh?
+		// 
+		// To do: What happens if there is no tag_id? Or if module_id or item_type are the only 
+		// parameters? Need to ensure all parameter cases are addresses.
+		if ($items) {
+			$sql = '';
+			$i = count($items);
+			foreach ($items as $item) {
+				$i--;
+				$sql .= "(SELECT "
+					. "`item`,"
+					. "`title`,"
+					. "`description`,"
+					. "`creator`,"
+					. "`counter`,"
+					. "`image`,"
+					. "`short_url`,"
+					. "`date`,"
+					. "`taglink_id`,"
+					. "`iid`,"
+					. "`mid`,"
+					. "`tid`";
+				$sql .= " FROM " . $this->table . " INNER JOIN " . $handlers[$item]->table . " ON "
+						. $this->table . ".iid  = " . $handlers[$item]->table . "." . $item . "_id";
+				$sql .= " WHERE " . $this->table . ".iid  = " 
+						. $handlers[$item]->table . "." . $item . "_id";
+				$sql .= " AND " . $this->table . ".item = '" . $item . "'";
+
+				if ($tag_id || $module_id) {
+					$sql .= " AND";
+					if ($tag_id) {
+						$sql .= " `tid` = " . "'" . $tag_id . "'";
+					}
+					if ($module_id) {
+						if ($tag_id) {
+							$sql .= " AND";
+						}
+							$sql .= " `mid` = '" . $module_id . "'";
+					}
+				}
+				$sql .= " AND `online_status` = '1') ";
+				if ($i >0) {
+					$sql .= " UNION ";
 				}
 			}
-		}
-		$taglink_object_array = $this->getObjects($criteria);
-	
-		// Get the required module object if parameter supplied, or build an array of module IDs
-		// from the taglinks
-		if($module_id) {
-			$module_ids[] = $module_id;
+			$sql .= " ORDER BY `date` " . $sort;
+			if ($start || $limit) {
+				$sql .= " LIMIT " . $start . "," . $limit . " ";
+			}
+			echo $sql;
+			// Run the query
+			$result = icms::$xoopsDB->queryF($sql);
+			if (!$result) {
+					echo 'Error';
+					exit;
+			} else {
+				while ($row = icms::$xoopsDB->fetchArray($result)) {
+					$content_array = $row;
+				}
+			}
 		} else {
-			foreach ($taglink_object_array as $key => $taglink) {
-				$module_ids[] = $taglink->getVar('mid');
-			}
-			$module_ids = array_unique($module_ids);
-		}
-		
-		// Fetch all modules at once to reduce query load. Only active, relevant (taglinks exist)
-		// modules will be returned.
-		$module_handler = icms::handler('icms_module');
-		$module_ids = '(' . implode(',', $module_ids) . ')';
-		$criteria = new icms_db_criteria_Compo();
-		$criteria->add(new icms_db_criteria_Item('isactive', 1));
-		$criteria->add(new icms_db_criteria_Item('mid', $module_ids, "IN"));
-		$module_array = $module_handler->getObjects($criteria, TRUE);
-		
-		// Retrieve the module objects, create a subarray for each with its mid as key, to hold 
-		// its taglinks, and load the relevant language file
-		foreach ($module_array as $mid => $modObj) {
-			$taglinks_by_module[$mid] = array();
-			icms_loadLanguageFile($modObj->getVar('dirname'), 'common');
-		}
-
-		// IMPORTANT!! Sort the taglinks to facilitate processing: taglinks_by_module[module_id][item][iid]
-		foreach ($taglink_object_array as $key => $taglink) {
-			if (!array_key_exists($taglink->getVar('item'), $taglinks_by_module[$taglink->getVar('mid')])) {
-				$taglinks_by_module[$taglink->getVar('mid')][$taglink->getVar('item')] = array();
-			}
-			$taglinks_by_module[$taglink->getVar('mid')][$taglink->getItem()]
-					[$taglink->getVar('taglink_id')] = $taglink;
-		}
-		
-		// Get handler for each module/item type, build query string and retrieve content objects	
-		// For each module...
-		foreach ($module_array as $key => $moduleObj) {
+			$nothing_to_display = TRUE;
+		}		
 			
-			// For each item type (eg. article, project, partner)...
-			foreach ($taglinks_by_module[$key] as $module_key => $item_array) {
-				$item_id = $item_string = '';
-				$id_string = $content_objects = array();
-				$criteria = new icms_db_criteria_Compo();
-
-				// Prepare a string of item IDs as search criteria
-				foreach ($item_array as $item_key => $taglink) {
-					$id_string[] = $taglink->getVar('iid');
-				}
-				$item_id = $module_key . '_id';
-				$id_string = "(" . implode(",", $id_string) . ")";
-				$criteria->add(new icms_db_criteria_Item($item_id, $id_string, 'IN'));
-				$criteria->add(new icms_db_criteria_Item('online_status', '1'));
-				$criteria->setSort('date');
-				$criteria->setOrder($sort);
-				// The next two lines are probably not going to work on a per-module basis, because
-				// we do not know the position of any given module's contents until they have been 
-				// compared against the dates of results from all other modules. It's ok for the 
-				// most recent results, but once you start requesting earlier pagination subsets
-				// you are going to run into inconsistencies, because you are sorting independent 
-				// subsets of results, not all results. Basically, the only way around this is to 
-				// do the query via a huge join, where date fields can be examined across all object
-				// tables simultaneously. This will also save a ton of queries.
-				$criteria->setOrder($start);
-				$criteria->setLimit($limit);
-
-				// Retrieve the content objects
-				$content_objects = $handlers[$module_key]->getObjects($criteria);
-				
-				// Concatenate the content objects to form combined (multi-module) results
-				$content_object_array = array_merge($content_object_array, $content_objects);
-			}
-		}
-				
-		// Sort the results by date field
-		function sortByDateDescending($a, $b) {
-			if ($a->getVar('date', 'e') == $b->getVar('date', 'e')) {
-				return 0;
-			}
-			return ($a->getVar('date', 'e') < $b->getVar('date', 'e')) ? 1 : -1;
-		}
-		
-		function sortByDateAscending($a, $b) {
-			if ($a->getVar('date', 'e') == $b->getVar('date', 'e')) {
-				return 0;
-			}
-			return ($a->getVar('date', 'e') < $b->getVar('date', 'e')) ? -1 : 1;
-		}
-
-		if ($sort == 'DESC') {
-			usort($content_object_array, "sortByDateDescending");
-		} elseif ($sort == 'ASC') {
-			usort($content_object_array, "sortByDateAscending");
-		}
-		*/
-		
 		// Count the total result set to allow construction of pagination controls
 		$content_count = count($content_object_array);
 		
