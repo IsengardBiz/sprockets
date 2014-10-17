@@ -195,9 +195,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
 		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
-		// NOTE: Should not get the count from this list, as it does not take into account the 
-		// possibility that some objects will be marked as offline, and this will create errors in
-		// the pagination controls. Need to get a count from the next query somehow
 		$sql = "SELECT `item`, COUNT(*) FROM " . $this->table;
 		if ($tag_id || $module_id || $item_type) {
 			$sql .= " WHERE";
@@ -251,8 +248,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$nothing_to_display = TRUE;
 		}
 		
-		// 3. Get a count of the total number of search results available. Unfortunately, this is 
-		// very expensive thing to do in a cross-module table search
+		// 3. Get a count of the total number of search results available. Unfortunately, this is an
+		// expensive thing to do in a cross-module table search (one query per object type)
 		if ($items) {
 			$sql = '';
 			$i = count($items);
@@ -377,10 +374,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			}
 		} else {
 			$nothing_to_display = TRUE;
-		}		
-			
-		// Count the total result set to allow construction of pagination controls
-		$content_count = count($content_object_array);
+		}
 		
 		// Truncate the results to the desired quantity (very inefficient, needs improving)
 		$content_object_array = array_slice($content_object_array, $start, $limit);
