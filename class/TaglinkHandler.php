@@ -197,7 +197,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// 1. Get a list of distinct item (object) types associated with the search parameters
 		// NOTE: Should not get the count from this list, as it does not take into account the 
 		// possibility that some objects will be marked as offline, and this will create errors in
-		// the pagination controls. Need to get a count from the next query
+		// the pagination controls. Need to get a count from the next query somehow
 		$sql = "SELECT `item`, COUNT(*) FROM " . $this->table;
 		if ($tag_id || $module_id || $item_type) {
 			$sql .= " WHERE";
@@ -229,7 +229,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				exit;
 		} else {
 			while ($row = icms::$xoopsDB->fetchArray($result)) {
-				$content_count += $row['COUNT(*)'];
 				$items[] = $row['item'];
 			}
 		}
@@ -251,8 +250,51 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$nothing_to_display = TRUE;
 		}
-		echo count($items);
-		// 3. Retrieve the subset of results actually required, using as few resources as possible.
+		
+		// 3. Get a count of the total number of search results available. Unfortunately, this is 
+		// very expensive thing to do in a cross-module table search
+		if ($items) {
+			$sql = '';
+			$i = count($items);
+			foreach ($items as $itms) {
+				$i--;
+				$sql .= "(SELECT `item`, COUNT(*)";
+				$sql .= " FROM " . $this->table . " INNER JOIN " . $handlers[$itms]->table . " ON "
+						. $this->table . ".iid  = " . $handlers[$itms]->table . "." . $itms . "_id";
+				$sql .= " WHERE " . $this->table . ".iid  = " 
+						. $handlers[$itms]->table . "." . $itms . "_id";
+				$sql .= " AND " . $this->table . ".item = '" . $itms . "'";
+
+				if ($tag_id || $module_id) {
+					$sql .= " AND";
+					if ($tag_id) {
+						$sql .= " `tid` = " . "'" . $tag_id . "'";
+					}
+					if ($module_id) {
+						if ($tag_id) {
+							$sql .= " AND";
+						}
+							$sql .= " `mid` = '" . $module_id . "'";
+					}
+				}
+				$sql .= " AND `online_status` = '1') ";
+				if ($i >0) {
+					$sql .= " UNION ";
+				}
+			}
+			// Run the count query
+			$result = icms::$xoopsDB->queryF($sql);
+			if (!$result) {
+					echo 'Error';
+					exit;
+			} else {
+				while ($row = icms::$xoopsDB->fetchArray($result)) {
+					$content_count += $row['COUNT(*)'];
+				}
+			}
+		}
+		
+		// 4. Retrieve the subset of results actually required, using as few resources as possible.
 		// A sub-query is run on each object table (unavoidable). The results are combined through
 		// a UNION of common fields (easy, since Gone Native modules use standard Dublin Core field
 		// names). NB: The LIMIT is applied to the COMBINED result set of all subqueries linked by
@@ -265,16 +307,34 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$i = count($items);
 			foreach ($items as $key => $it) {
 				$i--;
+				// soundtrack poster_image
+				
 				$sql .= "(SELECT "
 					. "`item`,"
 					. "`title`,"
 					. "`description`,"
-					. "`creator`,"
+					//. "`creator`," // need to standardise this across modules, some use $user
 					. "`counter`,"
-					. "`image`,"
 					. "`short_url`,"
-					. "`date`,"
-					. "`taglink_id`,"
+					. "`date`,";
+				// Remap non-standard field names. Need to standardise these across client modules
+				switch ($it) {
+					case "programme":
+						$sql .= "`cover` as `image`,";
+						break;
+					case "partner":
+					case "project":
+					case "start":
+						$sql .= "`logo` as `image`,";
+						break;
+					case "soundtrack":
+						$sql .= "`poster_image` as `image`,";
+						break;
+					default:
+						$sql .= "`image`,";
+						break;
+				}
+				$sql .= "`taglink_id`,"
 					. "`iid`,"
 					. "`mid`,"
 					. "`tid`";
@@ -305,7 +365,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			if ($start || $limit) {
 				$sql .= " LIMIT " . $start . "," . $limit . " ";
 			}
-			echo $sql;
 			// Run the query
 			$result = icms::$xoopsDB->queryF($sql);
 			if (!$result) {

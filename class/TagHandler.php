@@ -387,32 +387,24 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			$class = get_class($object);
 			switch($class) {
 				case "CatalogueItem":
-					$object = $object->toArray();
 					$object['subtemplate'] = 'db:sprockets_image.html';
 					break;
 				case "mod_partners_Partner":
 				case "mod_projects_Project":
 				case "mod_cms_Start":
-					$object = $object->toArray();
-					$object['image'] = $object['logo']; // Remap non-standard image name
 					$object['subtemplate'] = 'db:sprockets_text.html';
 					break;					
 				case "PodcastProgramme":
-					$object = $object->toArray();
-					$object['image'] = $object['cover'];
 					$object['subtemplate'] = 'db:sprockets_sound.html';
 					break;
 				case "NewsArticle":
-					$object = $object->prepareArticleForDisplay(FALSE); // May need manual buffers
 					$object['subtemplate'] = 'db:sprockets_text.html';
 					break;
 				case "mod_events_Event":
-					$object = $object->handler->prepareEventForDisplay($object);
 					$object['subtemplate'] = 'db:sprockets_text.html';
 					break;
 				case "mod_library_Publication": // May need manual buffers
 				case "PodcastSoundtrack": // May need manual buffers
-					$object = $object->toArrayWithoutOverrides();
 					switch($object['type']) {
 						case "Text":
 						case "Collection":
@@ -428,9 +420,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 						case "Image":
 						case "MovingImage":
 							$object['subtemplate'] = 'db:sprockets_image.html';
-							if ($object['poster_image']) {
-								$object['image'] = $object['poster_image']; // Remap non-standard name
-							}
 							break;
 						// Not implemented
 						//case "InteractiveResource":
