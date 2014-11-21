@@ -39,7 +39,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
     }
 
 	/**
-	 * Returns a list of tags with tag_id as key
+	 * Returns a list of tag bnames with tag_id as key and a 0 element for building select boxes
 	 *
 	 * @return array
 	 */
@@ -49,6 +49,23 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$tagList = array(0 => '---') + $this->getList($criteria);
 		asort($tagList);
 		return $tagList;
+	}
+	
+	/**
+	 * Returns a list of tags with tag_id as key for use as lightweight buffer
+	 * 
+	 * As it only returns IDs and names, not full objects, you need to build your own links from
+	 * these details, but it potentially saves a lot of memory.
+	 * 
+	 * @return array
+	 */
+	
+	public function getTagBuffer() {
+		$tag_buffer = array();
+		$tag_buffer = $this->getTags();
+		// Remove the 0 '---' element as we aren't building a select box!
+		unset($tag_buffer[0]);
+		return $tag_buffer;
 	}
 
 	/**
@@ -282,30 +299,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	{
 		$moduleList = array();
 		
-		// Get a unique list of module IDs that have created categories
-		/*$icmsDB = icms::$xoopsDB;
-		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))), 'sprockets');		
-		$sql = "SELECT DISTINCT `mid` from " . $sprockets_tag_handler->table . " WHERE `label_type` = '1'";
-		$result = icms::$xoopsDB->query($sql);
-		if (!$result)
-		{
-			echo 'Error: Module filter failed';
-			exit;
-		}
-		else
-		{
-			$rows = $sprockets_tag_handler->convertResultSet($result);
-			foreach ($rows as $key => $value)
-			{
-				$moduleList[] = $value->getVar('mid');
-			}
-			$moduleList = " (" . implode(',', $moduleList) . ") ";
-		}*/
-		
 		// Get a list of modules installed on the system, module id as key
 		$module_handler = icms::handler('icms_module');
-		//$criteria = new icms_db_criteria_Compo();
-		//$criteria->add(new icms_db_criteria_Item('mid', $moduleList, 'IN'));
 		$moduleList = $module_handler->getList($criteria = NULL, FALSE);
 				
 		// Return the list
@@ -372,54 +367,111 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Converts an array of mixed client objects from different modules and prepares them for 
-	 * insertion into smarty templates (user side display)
+	 * Converts an array of mixed client objects (as arrays) from different modules and prepares
+	 * them for insertion into smarty templates (user side display)
 	 * 
 	 * To do this the function maintains a list of the equivalent function that converts objects
 	 * for user-side display in each client module. The names of these functions will be 
 	 * standardised in future so that this function can be deprecated.
 	 * 
 	 */
-	public function prepareClientObjectsForDisplay($mixedClientObjects) {
-		$mixedClientArray = array(); // Holds the converted results
-		foreach($mixedClientObjects as $key => $object) {
-			// Convert client objects to array and format for user-side display
-			$class = get_class($object);
-			switch($class) {
-				case "CatalogueItem":
-					$object['subtemplate'] = 'db:sprockets_image.html';
+	public function prepareClientItemsForDisplay($mixedClientItems) {
+		// Holds the converted results
+		$mixedClientArray = array();
+		
+		foreach($mixedClientItems as $key => $item) {
+			
+			// Configure object-specific fields
+			switch($item['item']) {
+				case "item":
+					$item['image'] = !empty($item['image']) ? '/uploads/catalogue/' . $item['item'] 
+						. '/' . $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/catalogue/item.php?item_id=' 
+							. $item['iid'];
+					$item['subtemplate'] = 'db:sprockets_image.html';
 					break;
-				case "mod_partners_Partner":
-				case "mod_projects_Project":
-				case "mod_cms_Start":
-					$object['subtemplate'] = 'db:sprockets_text.html';
+				case "partner":
+					$item['image'] = !empty($item['image']) ? '/uploads/partners/' . $item['item'] 
+						. '/' . $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/partners/partner.php?partner_id=' 
+							. $item['iid'];
+					$item['subtemplate'] = 'db:sprockets_text.html';
+					break;
+				case "project":
+					$item['image'] = !empty($item['image']) ? '/uploads/projects/' . $item['item'] 
+						. '/' . $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/projects/project.php?project_id=' 
+							. $item['iid'];
+					$item['subtemplate'] = 'db:sprockets_text.html';
+					break;
+				case "start":
+					$item['image'] = !empty($item['image']) ? '/uploads/cms/' . $item['item'] . '/' 
+						. $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/cms/start.php?start_id=' . '';
+					$item['subtemplate'] = 'db:sprockets_text.html';
 					break;					
-				case "PodcastProgramme":
-					$object['subtemplate'] = 'db:sprockets_sound.html';
+				case "programme":
+					$item['image'] = !empty($item['image']) ? '/uploads/podcast/' . $item['item'] 
+						. '/' . $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/podcast/programme.php?programme_id=' . '';
+					$item['subtemplate'] = 'db:sprockets_sound.html';
 					break;
-				case "NewsArticle":
-					$object['subtemplate'] = 'db:sprockets_text.html';
+				case "article":
+					$item['image'] = !empty($item['image']) ? '/uploads/news/' . $item['item'] . '/' 
+						. $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/news/article.php?article_id=' 
+							. $item['iid'];
+					// Need to retrieve user names (if 'use submitter as author' preference is set)
+					// If so, this will throw another query for each article, so it is best left
+					// turned off (default)
+					if (isset($item['creator']) && intval($item['creator'])) {
+						$member_handler = icms::handler('icms_member');
+						$user = &$member_handler->getUser($item['creator']);
+						$item['creator'] = $user->getVar('uname');
+					}
+					$item['subtemplate'] = 'db:sprockets_text.html';
 					break;
-				case "mod_events_Event":
-					$object['subtemplate'] = 'db:sprockets_text.html';
+				case "event":
+					$item['image'] = !empty($item['image']) ? '/uploads/events/' . $item['item'] 
+						. '/' . $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/events/event.php?event_id=' 
+							. $item['iid'];
+					$item['subtemplate'] = 'db:sprockets_text.html';
 					break;
-				case "mod_library_Publication": // May need manual buffers
-				case "PodcastSoundtrack": // May need manual buffers
-					switch($object['type']) {
+				case "soundtrack": // May need manual buffers
+					$item['image'] = !empty($item['image']) ? '/uploads/podcast/' . $item['item'] 
+						. '/' . $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/podcast/soundtrack.php?soundtrack_id=' 
+							. $item['iid'];
+					switch($item['type']) {
+						case "Sound":
+							$item['subtemplate'] = 'db:sprockets_sound.html';
+							break;
+						case "MovingImage":
+							$item['subtemplate'] = 'db:sprockets_image.html';
+							break;
+					}
+					break;
+				case "publication": // May need manual buffers
+					$item['image'] = !empty($item['image']) ? 'uploads/library/' . $item['item'] . '/' 
+						. $item['image'] : '';
+					$item['itemUrl'] = ICMS_URL . '/modules/library/publication.php?publication_id=' 
+							. $item['iid'];				
+					switch($item['type']) {
 						case "Text":
 						case "Collection":
 						case "Event":
 						case "Software":
 						case "Dataset":
 						case "Collection":
-							$object['subtemplate'] = 'db:sprockets_text.html';
+							$item['subtemplate'] = 'db:sprockets_text.html';
 							break;
 						case "Sound":
-							$object['subtemplate'] = 'db:sprockets_sound.html';
+							$item['subtemplate'] = 'db:sprockets_sound.html';
 							break;
 						case "Image":
 						case "MovingImage":
-							$object['subtemplate'] = 'db:sprockets_image.html';
+							$item['subtemplate'] = 'db:sprockets_image.html';
 							break;
 						// Not implemented
 						//case "InteractiveResource":
@@ -429,24 +481,25 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 					}
 					break;
 				default: // No known method for this object, destroy it to avoid display errors
-					unset($object);
-			}			
-			if ($object) {
-				$mixedClientArray[] = $object;
+					unset($item);
+			}
+			
+			// Configure common fields
+			$item['date'] = date(icms_getConfig('date_format', 'sprockets'), $item['date']);
+			if ($item['short_url']) {
+				$item['itemUrl'] .= '&amp;title=' . $item['short_url'];
+			}
+			$item['itemLink'] = '<a href="' . $item['itemUrl'] . '" title="' . $item['title'] . '">' 
+					. $item['title'] . '</a>';
+			
+			// Add the item to the array of content
+			if (isset($item)) {
+				$mixedClientArray[] = $item;
 			}
 		}
+		
 		return $mixedClientArray;
 	}
-		
-	/**
-	 * Currently not in use.
-	 *
-	 * @param object $obj SprocketsTag object
-	 * @return bool
-	 */
-	protected function afterSave(& $obj) {
-		return TRUE;
-	} 
 
 	/**
 	 * Cleans up after category deletion: Deletes child categories and associated taglink objects

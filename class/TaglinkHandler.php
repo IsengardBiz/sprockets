@@ -141,7 +141,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Returns a list of content objects associated with a specific tag, module or item type
+	 * Returns a list of content items (as arrays) associated with a specific tag, module or item type
 	 *
 	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
 	 * feeds and tag pages. Always use this method with a limit and as many parameters as possible
@@ -304,16 +304,15 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$i = count($items);
 			foreach ($items as $key => $it) {
 				$i--;
-				// soundtrack poster_image
-				
 				$sql .= "(SELECT "
 					. "`item`,"
 					. "`title`,"
 					. "`description`,"
-					//. "`creator`," // need to standardise this across modules, some use $user
+					. "`creator`," // need to standardise this across modules, some use $user
 					. "`counter`,"
 					. "`short_url`,"
-					. "`date`,";
+					. "`date`,"
+					. "`type`,";
 				// Remap non-standard field names. Need to standardise these across client modules
 				switch ($it) {
 					case "programme":
@@ -369,20 +368,17 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					exit;
 			} else {
 				while ($row = icms::$xoopsDB->fetchArray($result)) {
-					$content_array = $row;
+					$content_array[] = $row;
 				}
 			}
 		} else {
 			$nothing_to_display = TRUE;
 		}
-		
-		// Truncate the results to the desired quantity (very inefficient, needs improving)
-		$content_object_array = array_slice($content_object_array, $start, $limit);
-		
+
 		// Prepend the $count of results
-		array_unshift($content_object_array, $content_count);
+		array_unshift($content_array, $content_count);
 		
-		return $content_object_array;
+		return $content_array;
 	}
 	
 	/**

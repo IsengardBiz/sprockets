@@ -96,3 +96,8 @@ define("_MI_SPROCKETS_PARTNERS", "Partners");
 define("_MI_SPROCKETS_PODCAST_PROGRAMMES", "Podcasts (programmes)");
 define("_MI_SPROCKETS_PODCAST_SOUNDTRACKS", "Podcasts (soundtracks)");
 define("_MI_SPROCKETS_PROJECTS", "Projects");
+
+// New
+define("_MI_SPROCKETS_DATE_FORMAT", "Date format on tag.php");
+define("_MI_SPROCKETS_DATE_FORMAT_DSC", "Controls the format of the date. See the date() function in
+	the PHP Manual for formatting options.");

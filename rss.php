@@ -28,7 +28,7 @@ function encode_entities($field) {
 
 global $sprocketsConfig;
 $clean_tag_id = $sort_order = '';
-$tags_with_rss = array();
+$tags_with_rss = $content_item_array = array();
 
 $clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : FALSE;
 
@@ -81,25 +81,34 @@ if ($clean_tag_id) {
 		// get the content objects for this tag's feed
 		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $limit = FALSE,
 		// $sort = 'DESC')
-		$content_object_array = $sprockets_taglink_handler->getTaggedItems($clean_tag_id, FALSE,
+		$content_item_array = $sprockets_taglink_handler->getTaggedItems($clean_tag_id, FALSE,
 				FALSE, FALSE, icms::$module->config['number_rss_items']);
 		
 		// Unset the first result as it contains a count value that we do not need in this case
-		unset($content_object_array[0]);
+		unset($content_item_array[0]);
 
-		// prepare an array of content items
-		foreach($content_object_array as $contentObj) {
+		// Prepare an array of content items (these are NOT objects, array of required fields only)
+		foreach($content_item_array as $contentItem) {
 
 			// encode content fields to ensure feed is compliant with the RSS spec
 			// Isengard convention: Multiple creators are pipe-delimited
-			$creator = $contentObj->getVar('creator', 'e');
-			$creator = explode('|', $creator);
-			foreach ($creator as &$individual) {
-				$individual = encode_entities($individual);
+			if ($contentItem['creator']) {
+				$creator = $contentItem['creator'];
+				$creator = explode('|', $creator);
+				foreach ($creator as &$individual) {
+					$individual = encode_entities($individual);
+				}
+			} else {
+				$creator = encode_entities();
 			}
-			$description = encode_entities($contentObj->getVar('description', 'e'));
-			$title = encode_entities($contentObj->getVar('title'));
-			$link = encode_entities($contentObj->getItemLink(TRUE));
+			// Strip the filtered by HTML purifier notices before they get encoded
+			$contentItem['description'] = str_replace('<!-- filtered with htmlpurifier -->', '',
+					$contentItem['description']);
+			$contentItem['description'] = str_replace('<!-- input filtered -->', '',
+					$contentItem['description']);
+			$description = encode_entities($contentItem['description']);
+			$title = encode_entities($contentItem['title']);
+			$link = encode_entities($contentItem['itemUrl']);
 
 			$unified_feed->feeds[] = array (
 				'title' => $title,
@@ -107,7 +116,7 @@ if ($clean_tag_id) {
 				'description' => $description,
 				'author' => $creator,
 				// pubdate must be a RFC822-date-time EXCEPT with 4-digit year or won't validate
-				'pubdate' => date(DATE_RSS, $contentObj->getVar('date', 'e')),
+				'pubdate' => date(DATE_RSS, $contentItem['date']),
 				'guid' => $link,
 				'category' => $tag_title
 				);

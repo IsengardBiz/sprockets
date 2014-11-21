@@ -31,6 +31,11 @@ $taglinkObjects = array();
 $taglinkObjectsSortedByType = array();
 $combinedContentObjects = array();
 
+// Get relative path to document root for this ICMS install
+$directory_name = basename(dirname(__FILE__));
+$script_name = getenv("SCRIPT_NAME");
+$document_root = str_replace('modules/' . $directory_name . '/tag.php', '', $script_name);
+
 // Retrieve the requested tag object
 $tagObj = $sprockets_tag_handler->get($clean_tag_id);
 if($tagObj && !$tagObj->isNew()) {
@@ -46,16 +51,80 @@ if($tagObj && !$tagObj->isNew()) {
 	
 	// Extract the results count needed to build the pagination control
 	$content_count = array_shift($combinedContentObjects);
-	
-	// Prepare objects for display (includes assignment of type-specific subtemplates)
-	$combinedContentObjects = $sprockets_tag_handler->prepareClientObjectsForDisplay($combinedContentObjects);
 
+	// Prepare objects for display (includes assignment of type-specific subtemplates)
+	$combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($combinedContentObjects);
+	
+	// Adjust image file path for subdirectory installs of ICMS (resize Smarty plugin needs fix)
+	foreach ($combinedContentObjects as &$object) {
+		if (!empty($object['image'])) {
+			$object['image'] = $document_root . $object['image'];
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////
+	////////// LOOKUP AND APPEND TAGS FOR THE RETURNED CONTENT OBJECTS //////////
+	/////////////////////////////////////////////////////////////////////////////
+	
+	// Build a tag buffer for lightweight lookups
+	$tag_buffer = $sprockets_tag_handler->getTagBuffer();
+	
+	// Build a taglink buffer (use combination of item and iid to identify distinct rows)
+	$sql = $result = $count = '';
+	$count = count($combinedContentObjects);
+	$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table . " WHERE";
+	foreach ($combinedContentObjects as $item) {
+		$count--;
+		$sql .= " (`item` = '" . $item['item'] . "' AND `iid` = '" . $item['iid'] . "')";
+		if ($count > 0) {
+			$sql .= " OR ";
+		}
+	}
+	
+	// Retrieve the results and sort by i) item and ii) iid for easy retrieval
+	$tag_info = array();
+	$result = icms::$xoopsDB->query($sql);
+	if (!$result) {
+			echo 'Error';
+			exit;
+	} else {
+		while ($row = icms::$xoopsDB->fetchArray($result)) {
+			if (!isset($tag_info[$row['item']], $tag_info)) {
+				$tag_info[$row['item']] = array();
+			}
+			if (!isset($tag_info[$row['item']][$row['iid']], $tag_info[$row['item']])) {
+				$tag_info[$row['item']][$row['iid']] = array();
+			}
+			$tag_info[$row['item']][$row['iid']][] = '<a href="' . $script_name
+					. '?tag_id=' . $row['tid'] . '">' . $tag_buffer[$row['tid']] . '</a>';
+		}
+	}
+	// Iterate through content items appending the sorted tags
+	foreach ($combinedContentObjects as &$obj) {
+		if (isset($obj['iid'], $tag_info[$obj['item']])) {
+			$obj['tags'] = implode(', ', $tag_info[$obj['item']][$obj['iid']]);
+		}
+	}
+	//////////////////////////////////////////////////////////
+	//////////////////// END TAG ASSEMBLY ////////////////////
+	//////////////////////////////////////////////////////////
+	
+	// Prepare RSS feed (only for tags with RSS enabled)
+	if ($tagObj->getVar('rss', 'e') == 1) {
+		$icmsTpl->assign('sprockets_rss_link', 'rss.php?tag_id=' . $tagObj->getVar('tag_id', 'e'));
+		$icmsTpl->assign('sprockets_rss_title', _CO_SPROCKETS_SUBSCRIBE_RSS_ON
+				. $tagObj->getVar('title'));
+		$icmsTpl->assign('sprockets_tag_name', $tagObj->getVar('title'));
+	}
+	
 	// Assign content to template, together with relevant module preferences
 	$icmsTpl->assign('sprockets_tagged_content', $combinedContentObjects);
-	$icmsTpl->assign('thumbnail_width', icms_getModuleConfig('thumbnail_width', 'sprockets'));
-	$icmsTpl->assign('thumbnail_height', icms_getModuleConfig('thumbnail_height', 'sprockets'));
-	$icmsTpl->assign('image_width', icms_getModuleConfig('image_width', 'sprockets'));
-	$icmsTpl->assign('image_height', icms_getModuleConfig('image_height', 'sprockets'));
+	$icmsTpl->assign('thumbnail_height', icms_getConfig('thumbnail_height', 'sprockets'));
+	$icmsTpl->assign('thumbnail_height', icms_getConfig('thumbnail_height', 'sprockets'));
+	$icmsTpl->assign('thumbnail_width', icms_getConfig('thumbnail_width', 'sprockets'));
+	$icmsTpl->assign('thumbnail_height', icms_getConfig('thumbnail_height', 'sprockets'));
+	$icmsTpl->assign('image_width', icms_getConfig('image_width', 'sprockets'));
+	$icmsTpl->assign('image_height', icms_getConfig('image_height', 'sprockets'));
 
 	// Pagination control
 	if ($clean_tag_id) {

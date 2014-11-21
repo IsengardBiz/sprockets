@@ -210,6 +210,14 @@ $modversion['config'][] = array(
 	'options' => $client_objects);
 
 $modversion['config'][] = array(
+	'name' => 'date_format',
+	'title' => '_MI_SPROCKETS_DATE_FORMAT',
+	'description' => '_MI_SPROCKETS_DATE_FORMAT_DSC',
+	'formtype' => 'textbox',
+	'valuetype' => 'text',
+	'default' =>  'j/n/Y');
+
+$modversion['config'][] = array(
 	'name' => 'pagination_limit',
 	'title' => '_MI_SPROCKETS_PAGINATION',
 	'description' => '_MI_SPROCKETS_PAGINATION_DSC',

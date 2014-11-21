@@ -11,4 +11,9 @@
 			<{$sprockets_category_path}></span>
 		<{/if}>
 	</div>
+<{else}>
+	<h1><a href="<{$sprockets_rss_link}>" title="<{$sprockets_rss_title}>">
+		<img src="./images/rss.png" alt="RSS" /></a>
+		<{if $sprockets_tag_name}><{$sprockets_tag_name}><{/if}>
+	</h1>
 <{/if}>

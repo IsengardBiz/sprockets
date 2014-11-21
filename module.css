@@ -18,5 +18,22 @@
 	margin-bottom: 35px;
 }
 
+/* For publication covers etc */
+.sprockets_image_right {
+	float: right;
+	margin: 0em 0em 1em 1em;
+	border: solid;
+	border-color: #000000;
+	border-width: 1px;
+}
+
+.sprockets_image_left {
+	float: left;
+	margin: 0em 1em 1em 0em;
+	border: solid;
+	border-color: #000000;
+	border-width: 1px;
+}
+
 /* used to vertically space elements to neaten up the display */
 .sprockets_separator{margin-bottom:1em;}
