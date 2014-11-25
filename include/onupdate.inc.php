@@ -26,14 +26,14 @@ if (!defined("ICMS_ROOT_PATH")) die("ICMS root path not defined");
 define('SPROCKETS_DB_VERSION', 1);
 
 /**
- * Updates the module
+ * Updates the module. Inserts a default tag for marking untagged content, if none exists
  *
  * @param <type> $module
  * @return bool
  */
 
 function icms_module_update_sprockets($module) {
-    return TRUE;
+	return TRUE;
 }
 
 /**
@@ -93,10 +93,10 @@ function icms_module_install_sprockets($module) {
 	// insert some licenses so that it is ready for use on installation
 	$queries = array();
 	
-	// a generic tag to hold untagged content
+	// Add a default tag for marking content as untagged
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_tag')
-		. " (`title`, `description`) values ('Untagged', 'Content that has not been tagged.')";
-
+				. " (`title`, `description`, `label_type`) values ('Untagged', 'Content that has not been tagged.', '0')";
+	
 	// some common licenses
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
 		. " (`title`, `description`) values ('Copyright, all rights reserved',
@@ -123,7 +123,6 @@ function icms_module_install_sprockets($module) {
 		. " (`title`, `description`) values ('Copyright, the Publisher',
                 'The rights to this work are owned by a third party. Please contact the author/publisher for the terms of distribution, or permission to modify or distribute this work.')";
 		
-
 	foreach($queries as $query) {
 		$result = icms::$xoopsDB->query($query);
 	}

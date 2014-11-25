@@ -123,7 +123,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 
 	/**
 	 * Returns a select box of available tags, optionally filtered by module (ie. tags in use)
-	 *
+	 * 
 	 * @param string $action page to load on submit
 	 * @param int $selected
 	 * @param string $zero_option_message

@@ -14,7 +14,10 @@ How to install Sprockets
 
 Sprockets is installed as a regular ImpressCMS module, which means you should copy the complete /sprockets folder into the /modules directory of your website. Then, log in to your site as administrator, go to System Admin > Modules, look for the Sprockets icon in the list of uninstalled modules and click in the install icon. Follow the directions in the screen and you'll be ready to go.
 
+Upgrading from version 2.0
+==========================
+A new "untagged content" preference has been added. You must:
 
-.:: The SmartFactory ::.
-.:: Open Source : smartfactory.ca ::.
-.:: Professionnal : inboxinternational.com ::.
+1. Create a new tag called "Untagged" (or something similar).
+2. Update the module.
+3. Go to the module preferences and select "Untagged" as the default tag for marking unlabeled content.

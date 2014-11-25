@@ -249,6 +249,34 @@ $modversion['config'][] = array(
   'valuetype' => 'int',
   'default' =>  '60');
 
+$tag_objects = array();
+// Note that module handlers cannot be loaded until the module is installed. Otherwise the system
+// modules page will throw a fatal error
+if (icms_get_module_status('sprockets')) {
+	$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
+	$criteria = icms_buildCriteria(array('label_type' => '0'));
+	$tag_objects = $sprockets_tag_handler->getList($criteria);
+	if ($tag_objects) {
+		$tag_objects = array_flip($tag_objects);
+	} else {
+		$tag_objects['Untagged'] = '1';
+	}	
+} else {
+	$tag_objects['Untagged'] = '1';
+}
+
+// Sets the default tag for labelling 'untagged' content. If this setting is changed later on it
+// is important to update the module first, so that the config options (tag list) is updated.
+// Otherwise any tags added after install won't be included in the list.
+$modversion['config'][] = array(
+	'name' => 'untagged_content',
+	'title' => '_MI_SPROCKETS_UNTAGGED_CONTENT_TAG',
+	'description' => '_MI_SPROCKETS_UNTAGGED_CONTENT_TAG_DSC',
+	'formtype' => 'select',
+	'valuetype' => 'array',
+	'options' => $tag_objects,
+	'default' => '1');
+
 /** Comments information */
 $modversion['hasComments'] = 0;
 

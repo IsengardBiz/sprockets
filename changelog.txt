@@ -61,3 +61,8 @@ objects and deals with inconsistencies in field names etc, to simplify subsequen
 processing.
 - Modified rss.php to work with arrays rather than objects.
 - Strip HTML purifier notices in rss.php to stop them being encoded and sent to the feed.
+- Added a preference for assigning a tag to mark "untagged" content. The default installation tag
+has been renamed to "Untagged" (legacy installs will need to create "Untagged" and set the 
+preference to point to it.
+- Added getUntaggedContent() which will retrieve content that has been marked as "untagged". This is
+basically content where you didn't bother to select any tags (ie. it happens automatically).

@@ -101,3 +101,9 @@ define("_MI_SPROCKETS_PROJECTS", "Projects");
 define("_MI_SPROCKETS_DATE_FORMAT", "Date format on tag.php");
 define("_MI_SPROCKETS_DATE_FORMAT_DSC", "Controls the format of the date. See the date() function in
 	the PHP Manual for formatting options.");
+define("_MI_SPROCKETS_UNTAGGED_CONTENT_TAG", "Tag for marking untagged content (READ THE 
+	HELP TEXT)");
+define("_MI_SPROCKETS_UNTAGGED_CONTENT_TAG_DSC", "1. IMPORTANT: UPATE THE MODULE BEFORE ADJUSTING 
+	THIS SETTING (essential to update the tag list). 2. Select the tag you want to use to designate 
+	untagged content. Warning! Once you have set this preference don't change it. You can safely 
+	EDIT the target tag, but do not delete it or select a different one.");

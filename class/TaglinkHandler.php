@@ -162,7 +162,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @param int $start
 	 * @param int $limit
 	 * @param string $sort
-	 * @param string $order
 	 * @return array $content_object_array
 	 */
 	
@@ -301,9 +300,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// a UNION of common fields (easy, since Gone Native modules use standard Dublin Core field
 		// names). NB: The LIMIT is applied to the COMBINED result set of all subqueries linked by
 		// the union, so sorting of results happens ACROSS all tables simultaneously. Cool, huh?
-		// 
-		// To do: What happens if there is no tag_id? Or if module_id or item_type are the only 
-		// parameters? Need to ensure all parameter cases are addresses.
 		if ($items) {
 			$sql = '';
 			$i = count($items);
@@ -387,6 +383,39 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 	
 	/**
+	 * Returns a list of content items (as arrays) that has been marked as untagged, and that are
+	 * optionally associated with a specific tag, module or item type
+	 *
+	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
+	 * feeds and content pages. Always use this method with a limit and as many parameters as possible
+	 * in order to simplify the results and avoid slow queries (for example, if you neglect to 
+	 * specify a module_id it will run queries on all compatible modules).
+	 * 
+	 * Note: The first element in the returned array is a COUNT of the total number of available
+	 * results, which is used to construct pagination controls. The calling code needs to remove
+	 * this element before attempting to process the content objects
+	 * 
+	 * Note: This method should ONLY be used to retrieve content from multiple modules 
+	 * simultaneously. Individual modules can retrieve / process their own results much more 
+	 * efficiently using their own methods or a standard IPF call.
+	 *
+	 * @param int $tag_id
+	 * @param int $module_id
+	 * @param array $item_type // list of object types as strings
+	 * @param int $start
+	 * @param int $limit
+	 * @param string $sort
+	 * @return array $content_object_array
+	 */
+	public function getUntaggedContent($module_id = FALSE, $item_type = FALSE, $start = FALSE,
+			$limit = FALSE, $sort = 'DESC') {
+		$untagged = icms_getConfig('untagged_content', 'sprockets');
+		if ($untagged) {
+			return $this->getTaggedItems($untagged, $module_id, $item_type, $start, $limit, $sort);
+		}
+	}
+	
+	/**
 	 * Saves tags for an object by creating taglinks. NB: If you are saving categories, you need to
 	 * pass in the category key. Also note: If your object has both tags and categories, then you 
 	 * need to call this method TWICE with different label_type (0 = tag, 1 = category) in order to 
@@ -410,10 +439,23 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$tag_array = array($tag_array);
 		}
 		
+		$count = count($tag_array);
 		$moduleObj = icms_getModuleInfo($obj->handler->_moduleName);
-
-		if (count($tag_array) > 0) {
-
+		
+		// If there are NO tags, or ONLY the 0 element tag ('---'), flag as untagged content
+		if ($count == 0 || ($count == 1 && in_array(0, $tag_array))) {
+			$untagged_content = '';
+			$untagged_content = icms_getConfig('untagged_content', 'sprockets'); // Untagged flag
+			if ($untagged_content && is_int($untagged_content)) {
+				$taglinkObj = $this->create();
+				$taglinkObj->setVar('mid', $moduleObj->getVar('mid'));
+				$taglinkObj->setVar('item', $obj->handler->_itemname);
+				$taglinkObj->setVar('iid', $obj->id());
+				$taglinkObj->setVar('tid', $untagged_content);
+				$this->insert($taglinkObj);
+			}
+		} else {
+			// Save the tags via taglinks
 			foreach($tag_array as $tag) {
 				// Do not allow the select box zero message to be stored as a tag!
 				if ($tag != '0')
