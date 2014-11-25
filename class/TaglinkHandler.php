@@ -249,7 +249,12 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
 		
 		// 3. Get a count of the total number of search results available. Unfortunately, this is an
-		// expensive thing to do in a cross-module table search (one query per object type)
+		// expensive thing to do in a cross-module table search (one query per object type). If
+		// online_status were recorded in the taglinks table this could be reduced to a single 
+		// query (counting the number of taglinks). A better approach might be to treat
+		// sprockets_taglinks as a shared table, that all Gone Native modules will try to set up 
+		// if it doesn't exist. That way client modules can start documenting untagged content
+		// even before Sprockets is installed.
 		if ($items) {
 			$sql = '';
 			$i = count($items);
