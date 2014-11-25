@@ -95,7 +95,7 @@ function icms_module_install_sprockets($module) {
 	
 	// a generic tag to hold untagged content
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_tag')
-		. " (`title`, `description`) values ('Example', 'For testing purposes, replace this with your own tags.')";
+		. " (`title`, `description`) values ('Untagged', 'Content that has not been tagged.')";
 
 	// some common licenses
 	$queries[] = "INSERT into " . icms::$xoopsDB->prefix('sprockets_rights')
