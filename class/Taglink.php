@@ -28,7 +28,7 @@ class SprocketsTaglink extends icms_ipf_Object {
 		$this->quickInitVar('taglink_id', XOBJ_DTYPE_INT, TRUE);
 		$this->quickInitVar('tid', XOBJ_DTYPE_INT, TRUE);
 		$this->quickInitVar('mid', XOBJ_DTYPE_INT, FALSE);
-		$this->quickInitVar('item', XOBJ_DTYPE_TXTBOX, FALSE);
+		$this->quickInitVar('item', XOBJ_DTYPE_TXTBOX, TRUE);
 		$this->quickInitVar('iid', XOBJ_DTYPE_INT, TRUE);
 	}
 

@@ -156,7 +156,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * simultaneously. Individual modules can retrieve / process their own results much more 
 	 * efficiently using their own methods or a standard IPF call.
 	 *
-	 * @param int $tag_id
+	 * @param mixed $tag_id // Can be an int (tag ID) or 'untagged' to retrieve untagged content
 	 * @param int $module_id
 	 * @param array $item_type // list of object types as strings
 	 * @param int $start
@@ -170,10 +170,16 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$sql = $item_list = $items = '';
 		$content_count = 0;
-		$nothing_to_display = FALSE;
+		$untagged_content = $nothing_to_display = FALSE;
 		$content_id_array = $content_object_array = $content_array = $taglink_object_array 
 			= $module_ids = $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
 			= $object_counts = $handlers = array();
+		
+		// If tag_id = 'untagged' set a flag to retrieve untagged content
+		if ($tag_id == 'untagged') {
+			$untagged_content = TRUE;
+			$tag_id = FALSE;
+		}
 		
 		// Parameters to public methods should be sanitised
 		$tag_id = isset($tag_id) ? intval($tag_id) : 0;
@@ -195,9 +201,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
 		$sql = "SELECT `item`, COUNT(*) FROM " . $this->table;
-		if ($tag_id || $module_id || $item_type) {
+		if ($untagged_content || $tag_id || $module_id || $item_type) {
 			$sql .= " WHERE";
-			if ($tag_id) {
+			if ($untagged_content) {
+				$sql .= " `tid` = '0'";
+			} elseif ($tag_id) {
 				$sql .= " `tid` = " . $tag_id;
 			}
 			if ($module_id) {
@@ -266,9 +274,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 						. $handlers[$itms]->table . "." . $itms . "_id";
 				$sql .= " AND " . $this->table . ".item = '" . $itms . "'";
 
-				if ($tag_id || $module_id) {
+				if ($untagged_content || $tag_id || $module_id) {
 					$sql .= " AND";
-					if ($tag_id) {
+					if ($untagged_content) {
+						$sql .= " `tid` = '0'";
+					} elseif ($tag_id) {
 						$sql .= " `tid` = " . "'" . $tag_id . "'";
 					}
 					if ($module_id) {
@@ -341,9 +351,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 						. $handlers[$it]->table . "." . $it . "_id";
 				$sql .= " AND " . $this->table . ".item = '" . $it . "'";
 
-				if ($tag_id || $module_id) {
+				if ($untagged_content || $tag_id || $module_id) {
 					$sql .= " AND";
-					if ($tag_id) {
+					if ($untagged_content) {
+						$sql .= " `tid` = '0'";
+					} elseif ($tag_id) {
 						$sql .= " `tid` = " . "'" . $tag_id . "'";
 					}
 					if ($module_id) {
@@ -409,10 +421,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 */
 	public function getUntaggedContent($module_id = FALSE, $item_type = FALSE, $start = FALSE,
 			$limit = FALSE, $sort = 'DESC') {
-		$untagged = icms_getConfig('untagged_content', 'sprockets');
-		if ($untagged) {
-			return $this->getTaggedItems($untagged, $module_id, $item_type, $start, $limit, $sort);
-		}
+			return $this->getTaggedItems('untagged', $module_id, $item_type, $start, $limit, $sort);
 	}
 	
 	/**
@@ -444,14 +453,12 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		// If there are NO tags, or ONLY the 0 element tag ('---'), flag as untagged content
 		if ($count == 0 || ($count == 1 && in_array(0, $tag_array))) {
-			$untagged_content = '';
-			$untagged_content = icms_getConfig('untagged_content', 'sprockets'); // Untagged flag
 			if ($untagged_content && is_int($untagged_content)) {
 				$taglinkObj = $this->create();
 				$taglinkObj->setVar('mid', $moduleObj->getVar('mid'));
 				$taglinkObj->setVar('item', $obj->handler->_itemname);
 				$taglinkObj->setVar('iid', $obj->id());
-				$taglinkObj->setVar('tid', $untagged_content);
+				$taglinkObj->setVar('tid', 0);
 				$this->insert($taglinkObj);
 			}
 		} else {

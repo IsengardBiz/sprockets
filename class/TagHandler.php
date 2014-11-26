@@ -131,7 +131,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTagSelectBox($action, $selected = null, $zero_option_message = '---',
-			$navigation_elements_only = TRUE, $module_id = null, $item = null) {
+			$navigation_elements_only = TRUE, $module_id = null, $item = null,
+			$untagged_content_option = FALSE) {
 
 		$form = $criteria = '';
 		$tagList = $tag_ids = array();
@@ -192,6 +193,10 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 				} else {
 					$form .= '<option value="' . $key . '">' . $value . '</option>';
 				}
+			}
+			// Add an extra option for selecting untagged content
+			if ($untagged_content_option) {
+				$form .= '<option value="untagged" >' . _CO_SPROCKETS_TAG_UNTAGGED . '</option>';
 			}
 			$form .= '</select></form></div>';
 

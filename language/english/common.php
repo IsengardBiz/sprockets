@@ -179,3 +179,4 @@ define("_CO_SPROCKETS_CONTENT_TAGS", "Tags");
 define("_CO_SPROCKETS_ALL_TAGGED_CONTENT", "All tagged content");
 define("_CO_SPROCKETS_ALL_TAGGED_CONTENT_KEYWORDS", "All, contents");
 define("_CO_SPROCKETS_ALL_TAGGED_CONTENT_DSC", "All tagged content");
+define("_CO_SPROCKETS_TAG_UNTAGGED", "Untagged");
