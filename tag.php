@@ -18,6 +18,12 @@ $xoopsOption['template_main'] = 'sprockets_tag.html';
 include_once ICMS_ROOT_PATH . '/header.php';
 
 // Sanitise the tag_id and start (pagination) parameters
+$untagged_content = FALSE; // Flag indicating that UNTAGGED content should be returned
+if (isset($_GET['tag_id'])) {
+	if ($_GET['tag_id'] == 'untagged') {
+		$untagged_content = TRUE;
+	}
+}
 $clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']): 0 ;
 $clean_start = isset($_GET['start']) ? intval($_GET['start']) : 0;
 
@@ -36,24 +42,38 @@ $directory_name = basename(dirname(__FILE__));
 $script_name = getenv("SCRIPT_NAME");
 $document_root = str_replace('modules/' . $directory_name . '/tag.php', '', $script_name);
 
-// Retrieve the requested tag object
-$tagObj = $sprockets_tag_handler->get($clean_tag_id);
-if($tagObj && !$tagObj->isNew()) {
+// Retrieve tagged content
+if ($clean_tag_id) {
+	$tagObj = $sprockets_tag_handler->get($clean_tag_id);
+	if($tagObj && !$tagObj->isNew()) {
+		$icmsTpl->assign('sprockets_tag', $tagObj->toArray());
+		$combinedContentObjects = $sprockets_taglink_handler->getTaggedItems(
+			$clean_tag_id, // Tag ID
+			FALSE, // Module ID
+			icms_getConfig("client_objects", "sprockets"), // Permitted client objects set in prefs
+			$clean_start, // Pagination control
+			icms_getConfig("pagination_limit", "sprockets")); // Pagination limit
+	}
+// Retrieve untagged content
+} elseif ($untagged_content) {
+	$tagObj = $sprockets_tag_handler->create(); // Inflate an empty "Untagged" tag object
+	$tagObj->setVar('title', _CO_SPROCKETS_TAG_UNTAGGED_CONTENT);
+	$tagObj->setVar('description', _CO_SPROCKETS_TAG_UNTAGGED_CONTENT_DSC);	
 	$icmsTpl->assign('sprockets_tag', $tagObj->toArray());
-	
-	// Retrieve cross-module content
-	$combinedContentObjects = $sprockets_taglink_handler->getTaggedItems(
-		$clean_tag_id, // Tag ID
+	$combinedContentObjects = $sprockets_taglink_handler->getUntaggedItems(
 		FALSE, // Module ID
 		icms_getConfig("client_objects", "sprockets"), // Permitted client objects set in prefs
 		$clean_start, // Pagination control
 		icms_getConfig("pagination_limit", "sprockets")); // Pagination limit
-	
-	// Extract the results count needed to build the pagination control
-	$content_count = array_shift($combinedContentObjects);
+}
 
-	// Prepare objects for display (includes assignment of type-specific subtemplates)
-	$combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($combinedContentObjects);
+// Extract the results count needed to build the pagination control
+if ($combinedContentObjects) {
+	$content_count = array_shift($combinedContentObjects);
+}
+if ($content_count) {
+// Prepare objects for display (includes assignment of type-specific subtemplates)
+$combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($combinedContentObjects);
 	
 	// Adjust image file path for subdirectory installs of ICMS (resize Smarty plugin needs fix)
 	foreach ($combinedContentObjects as &$object) {
@@ -66,43 +86,47 @@ if($tagObj && !$tagObj->isNew()) {
 	////////// LOOKUP AND APPEND TAGS FOR THE RETURNED CONTENT OBJECTS //////////
 	/////////////////////////////////////////////////////////////////////////////
 	
-	// Build a tag buffer for lightweight lookups
-	$tag_buffer = $sprockets_tag_handler->getTagBuffer();
-	
-	// Build a taglink buffer (use combination of item and iid to identify distinct rows)
-	$sql = $result = $count = '';
-	$count = count($combinedContentObjects);
-	$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table . " WHERE";
-	foreach ($combinedContentObjects as $item) {
-		$count--;
-		$sql .= " (`item` = '" . $item['item'] . "' AND `iid` = '" . $item['iid'] . "')";
-		if ($count > 0) {
-			$sql .= " OR ";
-		}
-	}
-	
-	// Retrieve the results and sort by i) item and ii) iid for easy retrieval
-	$tag_info = array();
-	$result = icms::$xoopsDB->query($sql);
-	if (!$result) {
-			echo 'Error';
-			exit;
-	} else {
-		while ($row = icms::$xoopsDB->fetchArray($result)) {
-			if (!isset($tag_info[$row['item']], $tag_info)) {
-				$tag_info[$row['item']] = array();
+	// Tag assembly is not necessary for untagged content!
+	if ($untagged_content == FALSE) {
+
+		// Build a tag buffer for lightweight lookups
+		$tag_buffer = $sprockets_tag_handler->getTagBuffer();
+
+		// Build a taglink buffer (use combination of item and iid to identify distinct rows)
+		$sql = $result = $count = '';
+		$count = count($combinedContentObjects);
+		$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table . " WHERE";
+		foreach ($combinedContentObjects as $item) {
+			$count--;
+			$sql .= " (`item` = '" . $item['item'] . "' AND `iid` = '" . $item['iid'] . "')";
+			if ($count > 0) {
+				$sql .= " OR ";
 			}
-			if (!isset($tag_info[$row['item']][$row['iid']], $tag_info[$row['item']])) {
-				$tag_info[$row['item']][$row['iid']] = array();
-			}
-			$tag_info[$row['item']][$row['iid']][] = '<a href="' . $script_name
-					. '?tag_id=' . $row['tid'] . '">' . $tag_buffer[$row['tid']] . '</a>';
 		}
-	}
-	// Iterate through content items appending the sorted tags
-	foreach ($combinedContentObjects as &$obj) {
-		if (isset($obj['iid'], $tag_info[$obj['item']])) {
-			$obj['tags'] = implode(', ', $tag_info[$obj['item']][$obj['iid']]);
+
+		// Retrieve the results and sort by i) item and ii) iid for easy retrieval
+		$tag_info = array();
+		$result = icms::$xoopsDB->query($sql);
+		if (!$result) {
+				echo 'Error';
+				exit;
+		} else {
+			while ($row = icms::$xoopsDB->fetchArray($result)) {
+				if (!isset($tag_info[$row['item']], $tag_info)) {
+					$tag_info[$row['item']] = array();
+				}
+				if (!isset($tag_info[$row['item']][$row['iid']], $tag_info[$row['item']])) {
+					$tag_info[$row['item']][$row['iid']] = array();
+				}
+				$tag_info[$row['item']][$row['iid']][] = '<a href="' . $script_name
+						. '?tag_id=' . $row['tid'] . '">' . $tag_buffer[$row['tid']] . '</a>';
+			}
+		}
+		// Iterate through content items appending the sorted tags
+		foreach ($combinedContentObjects as &$obj) {
+			if (isset($obj['iid'], $tag_info[$obj['item']])) {
+				$obj['tags'] = implode(', ', $tag_info[$obj['item']][$obj['iid']]);
+			}
 		}
 	}
 	//////////////////////////////////////////////////////////
@@ -135,15 +159,15 @@ if($tagObj && !$tagObj->isNew()) {
 	$pagenav = new icms_view_PageNav($content_count, 
 		icms_getConfig('pagination_limit', 'sprockets'), $clean_start, 'start', $extra_arg);
 	$icmsTpl->assign('sprockets_navbar', $pagenav->renderNav());
-
-	// Generate meta information for this page
-	$icms_metagen = new icms_ipf_Metagen($tagObj->getVar('title'),
-		$tagObj->getVar('meta_keywords','n'), $tagObj->getVar('meta_description', 'n'));
-	$icms_metagen->createMetaTags();
-} else {
+} else {	
 	// Nothing to display
 	$icmsTpl->assign('sprockets_nothing_to_display', _CO_SPROCKETS_CONTENT_NOTHING_TO_DISPLAY);
 }
+
+// Generate meta information for this page
+$icms_metagen = new icms_ipf_Metagen($tagObj->getVar('title'),
+	$tagObj->getVar('meta_keywords','n'), $tagObj->getVar('meta_description', 'n'));
+$icms_metagen->createMetaTags();
 
 $icmsTpl->assign('sprockets_module_home', sprockets_getModuleName(TRUE, TRUE));
 $icmsTpl->assign('sprockets_display_breadcrumb', $sprocketsConfig['display_breadcrumb']);

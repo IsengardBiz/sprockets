@@ -180,3 +180,5 @@ define("_CO_SPROCKETS_ALL_TAGGED_CONTENT", "All tagged content");
 define("_CO_SPROCKETS_ALL_TAGGED_CONTENT_KEYWORDS", "All, contents");
 define("_CO_SPROCKETS_ALL_TAGGED_CONTENT_DSC", "All tagged content");
 define("_CO_SPROCKETS_TAG_UNTAGGED", "Untagged");
+define("_CO_SPROCKETS_TAG_UNTAGGED_CONTENT", "Untagged content");
+define("_CO_SPROCKETS_TAG_UNTAGGED_CONTENT_DSC", "Content that has not been labelled with subject tags.");

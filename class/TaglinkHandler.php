@@ -178,7 +178,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// If tag_id = 'untagged' set a flag to retrieve untagged content
 		if ($tag_id == 'untagged') {
 			$untagged_content = TRUE;
-			$tag_id = FALSE;
 		}
 		
 		// Parameters to public methods should be sanitised
@@ -452,15 +451,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$moduleObj = icms_getModuleInfo($obj->handler->_moduleName);
 		
 		// If there are NO tags, or ONLY the 0 element tag ('---'), flag as untagged content
-		if ($count == 0 || ($count == 1 && in_array(0, $tag_array))) {
-			if ($untagged_content && is_int($untagged_content)) {
-				$taglinkObj = $this->create();
-				$taglinkObj->setVar('mid', $moduleObj->getVar('mid'));
-				$taglinkObj->setVar('item', $obj->handler->_itemname);
-				$taglinkObj->setVar('iid', $obj->id());
-				$taglinkObj->setVar('tid', 0);
-				$this->insert($taglinkObj);
-			}
+		if ($count == 0 || ($count == 1 && $tag_array[0] == 0)) {
+			$taglinkObj = $this->create();
+			$taglinkObj->setVar('mid', $moduleObj->getVar('mid'));
+			$taglinkObj->setVar('item', $obj->handler->_itemname);
+			$taglinkObj->setVar('iid', $obj->id());
+			$taglinkObj->setVar('tid', 0);
+			$this->insert($taglinkObj);
 		} else {
 			// Save the tags via taglinks
 			foreach($tag_array as $tag) {
