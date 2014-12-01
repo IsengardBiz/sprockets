@@ -66,3 +66,5 @@ has been renamed to "Untagged" (legacy installs will need to create "Untagged" a
 preference to point to it.
 - Added getUntaggedContent() which will retrieve content that has been marked as "untagged". This is
 basically content where you didn't bother to select any tags (ie. it happens automatically).
+- Updated getTagsForObject() to correctly set the 'untagged' value on the tag field when editing an object.
+- Updated deleteTagsForObject() to correctly delete 'untagged' taglinks when editing an object.

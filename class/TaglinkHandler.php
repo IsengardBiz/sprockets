@@ -110,12 +110,18 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);
 		
 		// For each of the object's tags, check if the array_key_exists in the reference $tagList.
-		// If so, then it is the right kind of tag and can be appended to the results:
-		foreach ($ret as $key => $value)
-		{
-			if (array_key_exists($value, $tagList))
+		// If so, then it is the right kind of tag and can be appended to the results. However, if
+		// there are NO tags, or if there is only one tag and tid = 0 then it's untagged content
+		$count = count($ret);
+		if ($count == 0 || ($count == 1 && $ret[0] == 0)) {
+			$resultList[0] = 0;
+		} else {
+			foreach ($ret as $key => $value)
 			{
-				$resultList[] = $value;
+				if (array_key_exists($value, $tagList))
+				{
+					$resultList[] = $value;
+				}
 			}
 		}
 		
@@ -512,10 +518,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			'item' => $obj->handler->_itemname));
 		$taglinkObjArray = $sprockets_taglink_handler->getObjects($criteria, TRUE);
 		
-		// Check if each taglink tid is one of the target tag/category IDs. If so, mark the taglink_id for deletion
+		// Check if each taglink tid is one of the target tag/category IDs. If so, mark the 
+		// taglink_id for deletion
 		foreach ($taglinkObjArray as $taglink)
 		{
-			if (array_key_exists($taglink->getVar('tid'), $tagList))
+			if (array_key_exists($taglink->getVar('tid'), $tagList) || $taglink->getVar('tid') == 0)
 			{
 				$taglinks_for_deletion[] = $taglink->getVar('taglink_id');
 			}
