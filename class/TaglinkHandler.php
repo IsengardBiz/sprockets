@@ -112,19 +112,16 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// For each of the object's tags, check if the array_key_exists in the reference $tagList.
 		// If so, then it is the right kind of tag and can be appended to the results. However, if
 		// there are NO tags, or if there is only one tag and tid = 0 then it's untagged content
-		$count = count($ret);
-		if ($count == 0 || ($count == 1 && $ret[0] == 0)) {
-			$resultList[0] = 0;
-		} else {
-			foreach ($ret as $key => $value)
-			{
-				if (array_key_exists($value, $tagList))
-				{
-					$resultList[] = $value;
-				}
+		// (only applies to tags, as there is no untagged functionality for categories)
+		foreach ($ret as $key => $value) {
+			if (array_key_exists($value, $tagList))	{
+				$resultList[] = $value;
 			}
 		}
-		
+		if (empty($resultList)) {
+			$resultList[0] = 0;
+		}
+
     	return $resultList;
     }
 	
@@ -430,10 +427,12 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Saves tags for an object by creating taglinks. NB: If you are saving categories, you need to
-	 * pass in the category key. Also note: If your object has both tags and categories, then you 
-	 * need to call this method TWICE with different label_type (0 = tag, 1 = category) in order to 
-	 * update them both.
+	 * Saves tags for an object by creating taglinks.
+	 * 
+	 * If you are saving categories, you need to pass in the category key. Also note: If your object 
+	 * has both tags and categories, then you need to call this method TWICE with different 
+	 * label_type (0 = tag, 1 = category) in order to update them both. The 'untagged' option only 
+	 * applies to tags (not available for categories).
 	 *
 	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
 	 * 
@@ -457,7 +456,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$moduleObj = icms_getModuleInfo($obj->handler->_moduleName);
 		
 		// If there are NO tags, or ONLY the 0 element tag ('---'), flag as untagged content
-		if ($count == 0 || ($count == 1 && $tag_array[0] == 0)) {
+		if ($label_type == 0 && ($count == 0 || ($count == 1 && $tag_array[0] == 0))) {
 			$taglinkObj = $this->create();
 			$taglinkObj->setVar('mid', $moduleObj->getVar('mid'));
 			$taglinkObj->setVar('item', $obj->handler->_itemname);
@@ -492,7 +491,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * method with the appropriate label_type and it will selectively delete them.
 	 * 
 	 * @param obj $obj
-	 * @param int $label_type (0 = tags, 1 = categories) 
+	 * @param int $label_type (0 = tags, 1 = categories)
 	 */
 	public function deleteTagsForObject(& $obj, $label_type)
 	{
@@ -522,7 +521,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// taglink_id for deletion
 		foreach ($taglinkObjArray as $taglink)
 		{
-			if (array_key_exists($taglink->getVar('tid'), $tagList) || $taglink->getVar('tid') == 0)
+			if (array_key_exists($taglink->getVar('tid'), $tagList)
+					|| ($taglink->getVar('tid') == 0 && $label_type == 0))
 			{
 				$taglinks_for_deletion[] = $taglink->getVar('taglink_id');
 			}
