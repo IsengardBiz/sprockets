@@ -186,7 +186,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Parameters to public methods should be sanitised
 		$tag_id = isset($tag_id) ? intval($tag_id) : 0;
 		$module_id = isset($module_id) ? intval($module_id) : 0;
-		$item_type_whitelist = icms_getConfig('client_objects', 'sprockets');
+		$item_type_whitelist = array_keys($this->getClientObjects());
 		if ($item_type) {
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
@@ -194,6 +194,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					unset($type);
 				}
 			}
+		} else {
+			$item_type = icms_getConfig('client_objects', 'sprockets');
 		}
 		$start = isset($start) ? intval($start) : 0;
 		$limit = isset($limit) ? intval($limit) : 0;
@@ -202,31 +204,36 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
 		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
-		$sql = "SELECT `item`, COUNT(*) FROM " . $this->table;
+		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
+		$sql = "SELECT $this->table.item, COUNT(*) FROM " . $this->table;
+		if (!$untagged_content) {
+				$sql .= " INNER JOIN " . $sprockets_tag_handler->table 
+					. " ON " . $this->table . ".tid = " . $sprockets_tag_handler->table . ".tag_id";
+		}
+		$sql .= " WHERE";
 		if ($untagged_content || $tag_id || $module_id || $item_type) {
-			$sql .= " WHERE";
 			if ($untagged_content) {
 				$sql .= " `tid` = '0'";
 			} elseif ($tag_id) {
-				$sql .= " `tid` = " . $tag_id;
+				$sql .= " (`tid` = " . $tag_id . " AND `label_type` = '0')";
 			}
 			if ($module_id) {
 				if ($tag_id) {
 					$sql .= " AND";
 				}
-					$sql .= " `mid` = " . $module_id;
+				$sql .= " `mid` = " . $module_id;
 			}
-		}
-		if ($item_type) {
-			if (is_array($item_type)) {
-				$item_type = '("' . implode('","', $item_type) . '")';
-			} else {
-				$item_type = '("' . $item_type . '")';
-			}				
-			if ($tag_id || $module_id) {
-				$sql .= " AND";
+			if ($item_type) {
+				if (is_array($item_type)) {
+					$item_type = '("' . implode('","', $item_type) . '")';
+				} else {
+					$item_type = '("' . $item_type . '")';
+				}				
+				if ($untagged_content || $tag_id || $module_id) {
+					$sql .= " AND";
+				}
+				$sql .= " `item` IN " . $item_type;
 			}
-			$sql .= " `item` IN " . $item_type;
 		}
 		$sql .= " GROUP BY `item`";
 		$result = icms::$xoopsDB->query($sql);
@@ -264,14 +271,20 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// sprockets_taglinks as a shared table, that all Gone Native modules will try to set up 
 		// if it doesn't exist. That way client modules can start documenting untagged content
 		// even before Sprockets is installed.
+		// does this screen out categories from the tags in taglinks?
 		if ($items) {
 			$sql = '';
 			$i = count($items);
 			foreach ($items as $itms) {
 				$i--;
 				$sql .= "(SELECT `item`, COUNT(*)";
-				$sql .= " FROM " . $this->table . " INNER JOIN " . $handlers[$itms]->table . " ON "
+				$sql .= " FROM " . $this->table 
+						. " INNER JOIN " . $handlers[$itms]->table . " ON "
 						. $this->table . ".iid  = " . $handlers[$itms]->table . "." . $itms . "_id";
+				if (!$untagged_content) {
+					$sql .= " INNER JOIN " . $sprockets_tag_handler->table 
+						. " ON " . $this->table . ".tid = " . $sprockets_tag_handler->table . ".tag_id";
+				}
 				$sql .= " WHERE " . $this->table . ".iid  = " 
 						. $handlers[$itms]->table . "." . $itms . "_id";
 				$sql .= " AND " . $this->table . ".item = '" . $itms . "'";
@@ -279,9 +292,10 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				if ($untagged_content || $tag_id || $module_id) {
 					$sql .= " AND";
 					if ($untagged_content) {
-						$sql .= " `tid` = '0'";
+						$sql .= " " . $this->table . ".tid = '0'";
 					} elseif ($tag_id) {
-						$sql .= " `tid` = " . "'" . $tag_id . "'";
+						$sql .= " (" . $this->table . ".tid = " . "'" . $tag_id . "' AND " 
+								. $sprockets_tag_handler->table . ".label_type = '0')";
 					}
 					if ($module_id) {
 						if ($tag_id) {
@@ -295,6 +309,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					$sql .= " UNION ";
 				}
 			}
+			//////////////////////////////////////////////////
 			// Run the count query
 			$result = icms::$xoopsDB->queryF($sql);
 			if (!$result) {
@@ -306,7 +321,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				}
 			}
 		}
-		
+
 		// 4. Retrieve the subset of results actually required, using as few resources as possible.
 		// A sub-query is run on each object table (unavoidable). The results are combined through
 		// a UNION of common fields (easy, since Gone Native modules use standard Dublin Core field
@@ -319,11 +334,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$i--;
 				$sql .= "(SELECT "
 					. "`item`,"
-					. "`title`,"
-					. "`description`,"
+					. $handlers[$it]->table . ".title,"
+					. $handlers[$it]->table . ".description,"
 					. "`creator`," // need to standardise this across modules, some use $user
 					. "`counter`,"
-					. "`short_url`,"
+					. $handlers[$it]->table . ".short_url,"
 					. "`date`,"
 					. "`type`,";
 				// Remap non-standard field names. Need to standardise these across client modules
@@ -345,10 +360,14 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				}
 				$sql .= "`taglink_id`,"
 					. "`iid`,"
-					. "`mid`,"
+					. $this->table . ".mid,"
 					. "`tid`";
 				$sql .= " FROM " . $this->table . " INNER JOIN " . $handlers[$it]->table . " ON "
 						. $this->table . ".iid  = " . $handlers[$it]->table . "." . $it . "_id";
+				if (!$untagged_content) {
+					$sql .= " INNER JOIN " . $sprockets_tag_handler->table . " ON " 
+							. $this->table . ".tid = " . $sprockets_tag_handler->table . ".tag_id";
+				}
 				$sql .= " WHERE " . $this->table . ".iid  = " 
 						. $handlers[$it]->table . "." . $it . "_id";
 				$sql .= " AND " . $this->table . ".item = '" . $it . "'";
@@ -358,7 +377,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					if ($untagged_content) {
 						$sql .= " `tid` = '0'";
 					} elseif ($tag_id) {
-						$sql .= " `tid` = " . "'" . $tag_id . "'";
+						$sql .= " (`tid` = " . "'" . $tag_id . "' AND " 
+								. $sprockets_tag_handler->table . ".label_type = '0')";
 					}
 					if ($module_id) {
 						if ($tag_id) {

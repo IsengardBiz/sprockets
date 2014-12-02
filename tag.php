@@ -60,7 +60,7 @@ if ($clean_tag_id) {
 	$tagObj->setVar('title', _CO_SPROCKETS_TAG_UNTAGGED_CONTENT);
 	$tagObj->setVar('description', _CO_SPROCKETS_TAG_UNTAGGED_CONTENT_DSC);	
 	$icmsTpl->assign('sprockets_tag', $tagObj->toArray());
-	$combinedContentObjects = $sprockets_taglink_handler->getUntaggedItems(
+	$combinedContentObjects = $sprockets_taglink_handler->getUntaggedContent(
 		FALSE, // Module ID
 		icms_getConfig("client_objects", "sprockets"), // Permitted client objects set in prefs
 		$clean_start, // Pagination control
@@ -95,10 +95,16 @@ $combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($
 		// Build a taglink buffer (use combination of item and iid to identify distinct rows)
 		$sql = $result = $count = '';
 		$count = count($combinedContentObjects);
-		$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table . " WHERE";
+		$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table 
+				. " INNER JOIN " . $sprockets_tag_handler->table . " ON "
+				. $sprockets_taglink_handler->table . ".tid = " 
+				. $sprockets_tag_handler->table . ".tag_id"
+				. " WHERE ";
 		foreach ($combinedContentObjects as $item) {
 			$count--;
-			$sql .= " (`item` = '" . $item['item'] . "' AND `iid` = '" . $item['iid'] . "')";
+			$sql .= " (`item` = '" . $item['item'] 
+					. "' AND `iid` = '" . $item['iid']
+					. "' AND " . $sprockets_tag_handler->table . ".label_type = '0')";
 			if ($count > 0) {
 				$sql .= " OR ";
 			}

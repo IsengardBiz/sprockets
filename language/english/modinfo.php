@@ -53,11 +53,6 @@ define("_MI_SPROCKETS_RESUMPTION_TOKEN_THROTTLE_DSC", "To reduce server load fro
 	reducing it a bit if you have dedicated server resources. Set it at zero to disable the 
 	throttle");
 
-// New in V2.01
-define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content");
-define("_MI_SPROCKETS_CONTENT_TEASERSDSC", "Displays the description (teaser) for content across 
-	compatible modules");
-
 // New in V2.02
 define("_MI_SPROCKETS_THUMBNAIL_WIDTH", "Thumbnail width");
 define("_MI_SPROCKETS_THUMBNAIL_WIDTHDSC", "Thumbnails are the teaser images accompanying a content 
@@ -96,8 +91,14 @@ define("_MI_SPROCKETS_PARTNERS", "Partners");
 define("_MI_SPROCKETS_PODCAST_PROGRAMMES", "Podcasts (programmes)");
 define("_MI_SPROCKETS_PODCAST_SOUNDTRACKS", "Podcasts (soundtracks)");
 define("_MI_SPROCKETS_PROJECTS", "Projects");
-
-// New
 define("_MI_SPROCKETS_DATE_FORMAT", "Date format on tag.php");
 define("_MI_SPROCKETS_DATE_FORMAT_DSC", "Controls the format of the date. See the date() function in
 	the PHP Manual for formatting options.");
+define("_MI_SPROCKETS_CONTENT_TEASERS_CATS", "Recent content (categories)");
+define("_MI_SPROCKETS_CONTENT_TEASERS_CATSDSC", "Displays the description (teaser for content across 
+	compatible modules for a selected category.");
+
+// Updated in V2.02
+define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content (tags)");
+define("_MI_SPROCKETS_CONTENT_TEASERSDSC", "Displays the description (teaser) for content across 
+	compatible modules for a selected tag.");

@@ -1,6 +1,6 @@
 <?php
 /**
- * New content (recent items from across modules) block file
+ * New tagged content (recent items from across modules) block file
  *
  * This file holds the functions needed to edit/view the 'recent content' block
  *
@@ -38,10 +38,9 @@ function sprockets_content_teasers_show($options) {
 		
 		// options[0]: Number teasers to show
 		// options[1]: Tag to filter
-		// options[2]: Object filter
-		// options[3]: Date format
-		// options[4]: Position of teaser image (0 = no image, 1 = left, 2 = right)
-		// options[5]: Size of teaser image (pixels)
+		// options[2]: Object filter - note that options are limited by the module preferences
+		// options[3]: Position of teaser image (0 = no image, 1 = left, 2 = right)
+		// options[4]: Size of teaser image (pixels)
 		if (empty($options[2])) {
 			$options[2] = sprockets_get_object_options();
 			$options[2] = array_keys($options[2]);
@@ -50,16 +49,15 @@ function sprockets_content_teasers_show($options) {
 			$options[2] = array(0 => $options[2]);
 		}
 			
-		// Retrieve last X objects from each module, using the taglink table to minimise queries.
-		// tid is used as a quick and dirty proxy for chronological sorting, but it will work so long
-		// as you don't go back and retrospectively add more tags to legacy content.
+		// Retrieve last X content items from each module (note: They are returned as arrays not
+		// as objects in order to minimise resource use).
 		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $limit = FALSE, 
 		// $sort = 'taglink_id', $order = 'DESC'
-		$content_objects = $sprockets_taglink_handler->getTaggedItems($options[1], FALSE, $options[2], FALSE, 
-				$options[0], $sort = 'taglink_id', 'DESC');
+		$content_objects = $sprockets_taglink_handler->getTaggedItems($options[1], FALSE, 
+				$options[2], FALSE, $options[0], $sort = 'date', 'DESC');
 		
 		// Generate output
-		if ($options[6]) // Display in teaser mode
+		if ($options[5]) // Display in teaser mode
 		{
 			foreach ($content_objects as $key => $object)
 			{
@@ -67,7 +65,7 @@ function sprockets_content_teasers_show($options) {
 				$content = $tags = $tagLinks = array();
 				$content['title'] = $object->getVar('title');
 				$content['description'] = $object->getVar('description');
-				$content['date'] = date($options[3], $object->getVar('date', 'e'));
+				$content['date'] = date(icms_getConfig('date_format', 'sprockets'), $object->getVar('date', 'e'));
 				$content['counter'] = $object->getVar('counter');
 				$content['url'] = $object->getItemLink(TRUE);
 				$short_url = $object->getVar('short_url');
@@ -76,7 +74,7 @@ function sprockets_content_teasers_show($options) {
 				}
 
 				// Images
-				if ($options[4])
+				if ($options[3])
 				{
 					$type = $object->handler->_itemname;
 					switch ($type)
@@ -132,7 +130,8 @@ function sprockets_content_teasers_show($options) {
 			{
 				$content = array();
 				$content['title'] = $object->getVar('title');
-				$content['date'] = date($options[3], $object->getVar('date', 'e'));
+				$content['date'] = date(icms_getConfig('date_format', 'sprockets'),
+						$object->getVar('date', 'e'));
 				$content['url'] = $object->getItemLink(TRUE);
 				$short_url = $object->getVar('short_url');
 				if (!empty($short_url)) {
@@ -144,13 +143,13 @@ function sprockets_content_teasers_show($options) {
 		
 		// Assign to template
 		$block['content_array'] = $content_array;
-		if ($options[4] == 1) {
+		if ($options[3] == 1) {
 			$block['sprockets_teaser_image_position'] = 'float:left;margin:0em 1em 1em 0em;';
-		} elseif ($options[4] == 2) {
+		} elseif ($options[3] == 2) {
 			$block['sprockets_teaser_image_position'] = 'float:right;margin:0em 0em 1em 1em;';
 		}
-		$block['sprockets_teaser_image_size'] = $options[5];
-		$block['sprockets_teaser_display_mode'] = $options[6];
+		$block['sprockets_teaser_image_size'] = $options[4];
+		$block['sprockets_teaser_display_mode'] = $options[5];
 	}
 	
 	return $block;
@@ -172,7 +171,7 @@ function sprockets_content_teasers_edit($options) {
 	$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 	icms_loadLanguageFile('sprockets', 'block');
 	
-	// Parameters: number teasers to show | tag | object | date format | image position | image size
+	// Parameters: number teasers to show | tag | object | image position | image size
 	
 	// Number of teasers to show
 	$form = '<table>';
@@ -196,24 +195,20 @@ function sprockets_content_teasers_edit($options) {
 	$form_select2->addOptionArray($objectList);
 	$form .= '<td>' . $form_select2->render() . '</td></tr>';
 
-	// Date format, as per PHP's date() method
-	$form .= '<tr><td>Date format (as per PHP date() function): </td>';	
-	$form .= '<td><input type="text" name="options[3]" value="' . $options[3] . '" /></td></tr>';
-	
 	// Position of teaser images
 	$form .= '<tr><td>Position of teaser images: </td>';
-	$form_select3 = new icms_form_elements_Select('', 'options[4]', $options[4], '1', FALSE);
+	$form_select3 = new icms_form_elements_Select('', 'options[3]', $options[3], '1', FALSE);
 	$form_select3->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_RECENT_NONE, 
 		1 => _MB_SPROCKETS_CONTENT_RECENT_LEFT, 2 => _MB_SPROCKETS_CONTENT_RECENT_RIGHT));
 	$form .= '<td>' . $form_select3->render() . '</td></tr>';
 	
 	// Size of teaser image (automatically resized and cached by Smarty plugin)
 	$form .= '<tr><td>Width of teaser image (pixels): </td>';
-	$form .= '<td><input type="text" name="options[5]" value="' . $options[5] . '" /></td></tr>';
+	$form .= '<td><input type="text" name="options[4]" value="' . $options[4] . '" /></td></tr>';
 	
 	// Display mode (teasers vs simple list)
 	$form .= '<tr><td>Display mode: </td>';
-	$form_select4 = new icms_form_elements_Select('', 'options[6]', $options[6], '1', FALSE);
+	$form_select4 = new icms_form_elements_Select('', 'options[5]', $options[5], '1', FALSE);
 	$form_select4->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_RECENT_LIST, 1 => _MB_SPROCKETS_CONTENT_RECENT_TEASERS));
 	$form .= '<td>' . $form_select4->render() . '</td></tr>';
 	$form .= '</table>';
