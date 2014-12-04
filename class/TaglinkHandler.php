@@ -401,7 +401,10 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					$sql .= " `mid` = '" . $module_id . "'";
 				}
 				$sql .= " AND `online_status` = '1'";
-				$sql .= " GROUP BY `iid`, `item`)";
+				if (!$tag_id) {
+					$sql .= " GROUP BY `item`, `iid`";
+				}
+				$sql .= ")";
 				if ($i >0) {
 					$sql .= " UNION ";
 				}
