@@ -173,13 +173,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$sql = $item_list = $items = '';
 		$content_count = 0;
-		$untagged_content = $nothing_to_display = FALSE;
+		$untagged_content = $nothing_to_display = 0;
 		$content_id_array = $content_object_array = $content_array = $taglink_object_array 
 			= $module_ids = $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
 			= $object_counts = $handlers = array();
 		
 		// If tag_id = 'untagged' set a flag to retrieve untagged content
-		if ($tag_id == 'untagged') {
+		if ($tag_id === 'untagged') {
 			$untagged_content = TRUE;
 		}
 		
@@ -216,24 +216,39 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$sql .= " `tid` = '0'";
 			} elseif ($tag_id) {
 				$sql .= " (`tid` = " . $tag_id . " AND `label_type` = '0')";
+			} else {
+				$sql .= " `label_type` = '0'";
 			}
 			if ($module_id) {
-				if ($tag_id) {
+				if ($untagged_content || $tag_id) {
 					$sql .= " AND";
 				}
 				$sql .= " `mid` = " . $module_id;
 			}
 			if ($item_type) {
-				if (is_array($item_type)) {
-					$item_type = '("' . implode('","', $item_type) . '")';
-				} else {
-					$item_type = '("' . $item_type . '")';
-				}				
 				if ($untagged_content || $tag_id || $module_id) {
-					$sql .= " AND";
+					if (is_array($item_type)) {
+						$item_type = '("' . implode('","', $item_type) . '")';
+					} else {
+						$item_type = '("' . $item_type . '")';
+					}				
+					if ($untagged_content || $tag_id || $module_id) {
+						$sql .= " AND";
+					}
+					$sql .= " `item` IN " . $item_type;
 				}
-				$sql .= " `item` IN " . $item_type;
 			}
+		}
+		
+		// If you want to retrieve untagged content, need to explictly request it
+		// If you merely don't specify tag_id, this means retrieve all *tagged* content
+		// The way it is structured, tag_id = 0 should *only* be run if untagged content requested
+		// If there is simply no tag_id (but untagged not specified), then still need the join
+		if (!$untagged_content && $tag_id == 0) {
+			if ($untagged_content || $tag_id || $module_id || $item_type) {
+				$sql .= " AND";
+			}
+			$sql .= " `tid` != '0'";
 		}
 		$sql .= " GROUP BY `item`";
 		$result = icms::$xoopsDB->query($sql);
@@ -245,7 +260,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$items[] = $row['item'];
 			}
 		}
-			
+		
 		// 2. Use the item list to check client modules are active and load required handlers
 		// Note that $items is based on whitelisted user input or on results from the database,
 		// so the only thing that needs to be checked is whether the relevant modules are installed 
@@ -271,13 +286,12 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// sprockets_taglinks as a shared table, that all Gone Native modules will try to set up 
 		// if it doesn't exist. That way client modules can start documenting untagged content
 		// even before Sprockets is installed.
-		// does this screen out categories from the tags in taglinks?
 		if ($items) {
 			$sql = '';
 			$i = count($items);
 			foreach ($items as $itms) {
 				$i--;
-				$sql .= "(SELECT `item`, COUNT(*)";
+				$sql .= "(SELECT `item`, COUNT(DISTINCT `item`, `iid`)";
 				$sql .= " FROM " . $this->table 
 						. " INNER JOIN " . $handlers[$itms]->table . " ON "
 						. $this->table . ".iid  = " . $handlers[$itms]->table . "." . $itms . "_id";
@@ -288,36 +302,37 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$sql .= " WHERE " . $this->table . ".iid  = " 
 						. $handlers[$itms]->table . "." . $itms . "_id";
 				$sql .= " AND " . $this->table . ".item = '" . $itms . "'";
-
-				if ($untagged_content || $tag_id || $module_id) {
-					$sql .= " AND";
-					if ($untagged_content) {
-						$sql .= " " . $this->table . ".tid = '0'";
-					} elseif ($tag_id) {
-						$sql .= " (" . $this->table . ".tid = " . "'" . $tag_id . "' AND " 
-								. $sprockets_tag_handler->table . ".label_type = '0')";
-					}
-					if ($module_id) {
-						if ($tag_id) {
-							$sql .= " AND";
-						}
-							$sql .= " `mid` = '" . $module_id . "'";
-					}
+				if ($untagged_content) {
+					$sql .= " AND " . $this->table . ".tid = '0'";
+				} elseif ($tag_id) {
+					$sql .= " AND (" . $this->table . ".tid = " . "'" . $tag_id . "' AND " 
+						. $sprockets_tag_handler->table . ".label_type = '0')";
+				} else {
+					$sql .= " AND " . $sprockets_tag_handler->table . ".label_type = '0'";
 				}
+				if ($module_id) {
+					if ($untagged_content || $tag_id) {
+						$sql .= " AND";
+					}
+					$sql .= " `mid` = '" . $module_id . "'";
+				}
+				
 				$sql .= " AND `online_status` = '1') ";
 				if ($i >0) {
 					$sql .= " UNION ";
 				}
 			}
-			//////////////////////////////////////////////////
-			// Run the count query
+			
+			/////////////////////////////////////////
+			////////// Run the count query //////////
+			/////////////////////////////////////////
 			$result = icms::$xoopsDB->queryF($sql);
 			if (!$result) {
 					echo 'Error';
 					exit;
 			} else {
 				while ($row = icms::$xoopsDB->fetchArray($result)) {
-					$content_count += $row['COUNT(*)'];
+					$content_count += $row['COUNT(DISTINCT `item`, `iid`)'];
 				}
 			}
 		}
@@ -370,24 +385,23 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				}
 				$sql .= " WHERE " . $this->table . ".iid  = " 
 						. $handlers[$it]->table . "." . $it . "_id";
-				$sql .= " AND " . $this->table . ".item = '" . $it . "'";
-
-				if ($untagged_content || $tag_id || $module_id) {
-					$sql .= " AND";
-					if ($untagged_content) {
-						$sql .= " `tid` = '0'";
-					} elseif ($tag_id) {
-						$sql .= " (`tid` = " . "'" . $tag_id . "' AND " 
-								. $sprockets_tag_handler->table . ".label_type = '0')";
-					}
-					if ($module_id) {
-						if ($tag_id) {
-							$sql .= " AND";
-						}
-							$sql .= " `mid` = '" . $module_id . "'";
-					}
+				$sql .= " AND " . $this->table . ".item = '" . $it . "'";		
+				if ($untagged_content) {
+					$sql .= " AND " . $this->table . ".tid = '0'";
+				} elseif ($tag_id) {
+					$sql .= " AND (" . $this->table . ".tid = " . "'" . $tag_id . "' AND " 
+						. $sprockets_tag_handler->table . ".label_type = '0')";
+				} else {
+					$sql .= " AND " . $sprockets_tag_handler->table . ".label_type = '0'";
 				}
-				$sql .= " AND `online_status` = '1') ";
+				if ($module_id) {
+					if ($untagged_content || $tag_id) {
+						$sql .= " AND";
+					}
+					$sql .= " `mid` = '" . $module_id . "'";
+				}
+				$sql .= " AND `online_status` = '1'";
+				$sql .= " GROUP BY `iid`, `item`)";
 				if ($i >0) {
 					$sql .= " UNION ";
 				}
@@ -396,6 +410,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			if ($start || $limit) {
 				$sql .= " LIMIT " . $start . "," . $limit . " ";
 			}
+
 			// Run the query
 			$result = icms::$xoopsDB->queryF($sql);
 			if (!$result) {
@@ -409,7 +424,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$nothing_to_display = TRUE;
 		}
-
 		// Prepend the $count of results
 		array_unshift($content_array, $content_count);
 		

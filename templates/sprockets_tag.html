@@ -1,19 +1,17 @@
 <{includeq file='db:sprockets_header.html'}>
 
 <div id="sprockets_content_container">
-	<{if $sprockets_tag}>
+	<{if $sprockets_tagged_content}>
 		
-			<!-- Loop through tagged content -->
-			<{if $sprockets_tagged_content}>
-				<{foreach item=item from=$sprockets_tagged_content}>
-					<{include file=$item.subtemplate}>
-				<{/foreach}>
-			<{/if}>
-			
-			<!-- Pagination control -->
-			<div>
-				<{if $sprockets_navbar}><{$sprockets_navbar}><{/if}>
-			</div>
+		<!-- Loop through tagged content -->
+			<{foreach item=item from=$sprockets_tagged_content}>
+				<{include file=$item.subtemplate}>
+			<{/foreach}>
+
+		<!-- Pagination control -->
+		<div>
+			<{if $sprockets_navbar}><{$sprockets_navbar}><{/if}>
+		</div>
 			
 	<{else}>
 		<h1><{$sprockets_nothing_to_display}></h1>

@@ -42,25 +42,28 @@ $directory_name = basename(dirname(__FILE__));
 $script_name = getenv("SCRIPT_NAME");
 $document_root = str_replace('modules/' . $directory_name . '/tag.php', '', $script_name);
 
-// Retrieve tagged content
-if ($clean_tag_id) {
-	$tagObj = $sprockets_tag_handler->get($clean_tag_id);
-	if($tagObj && !$tagObj->isNew()) {
-		$icmsTpl->assign('sprockets_tag', $tagObj->toArray());
-		$combinedContentObjects = $sprockets_taglink_handler->getTaggedItems(
-			$clean_tag_id, // Tag ID
-			FALSE, // Module ID
-			icms_getConfig("client_objects", "sprockets"), // Permitted client objects set in prefs
-			$clean_start, // Pagination control
-			icms_getConfig("pagination_limit", "sprockets")); // Pagination limit
-	}
 // Retrieve untagged content
-} elseif ($untagged_content) {
+if ($untagged_content) {
 	$tagObj = $sprockets_tag_handler->create(); // Inflate an empty "Untagged" tag object
 	$tagObj->setVar('title', _CO_SPROCKETS_TAG_UNTAGGED_CONTENT);
 	$tagObj->setVar('description', _CO_SPROCKETS_TAG_UNTAGGED_CONTENT_DSC);	
 	$icmsTpl->assign('sprockets_tag', $tagObj->toArray());
 	$combinedContentObjects = $sprockets_taglink_handler->getUntaggedContent(
+		FALSE, // Module ID
+		icms_getConfig("client_objects", "sprockets"), // Permitted client objects set in prefs
+		$clean_start, // Pagination control
+		icms_getConfig("pagination_limit", "sprockets")); // Pagination limit
+} else {
+	// Retrieve tagged content (or all content, if tag_id == 0)
+	if ($clean_tag_id) {
+		$tagObj = $sprockets_tag_handler->get($clean_tag_id);
+		if($tagObj && !$tagObj->isNew()) {
+		$icmsTpl->assign('sprockets_tag', $tagObj->toArray());
+		}
+	}
+	// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $limit = FALSE, $sort = 'DESC'
+	$combinedContentObjects = $sprockets_taglink_handler->getTaggedItems(
+		$clean_tag_id, // Tag ID
 		FALSE, // Module ID
 		icms_getConfig("client_objects", "sprockets"), // Permitted client objects set in prefs
 		$clean_start, // Pagination control
@@ -72,8 +75,8 @@ if ($combinedContentObjects) {
 	$content_count = array_shift($combinedContentObjects);
 }
 if ($content_count) {
-// Prepare objects for display (includes assignment of type-specific subtemplates)
-$combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($combinedContentObjects);
+	// Prepare objects for display (includes assignment of type-specific subtemplates)
+	$combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($combinedContentObjects);
 	
 	// Adjust image file path for subdirectory installs of ICMS (resize Smarty plugin needs fix)
 	foreach ($combinedContentObjects as &$object) {
@@ -138,15 +141,17 @@ $combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($
 	//////////////////////////////////////////////////////////
 	//////////////////// END TAG ASSEMBLY ////////////////////
 	//////////////////////////////////////////////////////////
-	
+
 	// Prepare RSS feed (only for tags with RSS enabled)
-	if ($tagObj->getVar('rss', 'e') == 1) {
-		$icmsTpl->assign('sprockets_rss_link', 'rss.php?tag_id=' . $tagObj->getVar('tag_id', 'e'));
-		$icmsTpl->assign('sprockets_rss_title', _CO_SPROCKETS_SUBSCRIBE_RSS_ON
-				. $tagObj->getVar('title'));
-		$icmsTpl->assign('sprockets_tag_name', $tagObj->getVar('title'));
+	if (isset($tagObj) && !$tagObj->isNew()) {
+		if ($tagObj->getVar('rss', 'e') == 1) {
+			$icmsTpl->assign('sprockets_rss_link', 'rss.php?tag_id=' . $tagObj->getVar('tag_id', 'e'));
+			$icmsTpl->assign('sprockets_rss_title', _CO_SPROCKETS_SUBSCRIBE_RSS_ON
+					. $tagObj->getVar('title'));
+			$icmsTpl->assign('sprockets_tag_name', $tagObj->getVar('title'));
+		}
 	}
-	
+
 	// Assign content to template, together with relevant module preferences
 	$icmsTpl->assign('sprockets_tagged_content', $combinedContentObjects);
 	$icmsTpl->assign('thumbnail_height', icms_getConfig('thumbnail_height', 'sprockets'));
@@ -165,15 +170,19 @@ $combinedContentObjects = $sprockets_tag_handler->prepareClientItemsForDisplay($
 	$pagenav = new icms_view_PageNav($content_count, 
 		icms_getConfig('pagination_limit', 'sprockets'), $clean_start, 'start', $extra_arg);
 	$icmsTpl->assign('sprockets_navbar', $pagenav->renderNav());
-} else {	
+} else {
 	// Nothing to display
 	$icmsTpl->assign('sprockets_nothing_to_display', _CO_SPROCKETS_CONTENT_NOTHING_TO_DISPLAY);
 }
 
 // Generate meta information for this page
-$icms_metagen = new icms_ipf_Metagen($tagObj->getVar('title'),
-	$tagObj->getVar('meta_keywords','n'), $tagObj->getVar('meta_description', 'n'));
-$icms_metagen->createMetaTags();
+if (isset($tagObj) && !$tagObj->isNew()) {
+	$icms_metagen = new icms_ipf_Metagen($tagObj->getVar('title'),
+		$tagObj->getVar('meta_keywords','n'), $tagObj->getVar('meta_description', 'n'));
+	$icms_metagen->createMetaTags();
+} else {
+	// Do something generic for 'all tags'
+}
 
 $icmsTpl->assign('sprockets_module_home', sprockets_getModuleName(TRUE, TRUE));
 $icmsTpl->assign('sprockets_display_breadcrumb', $sprocketsConfig['display_breadcrumb']);

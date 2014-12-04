@@ -2,7 +2,7 @@
 	<{foreach item=content from=$block.content_array}>
 		<{if $content.title}>
 			<div>
-				<h3><a href="<{$content.url}>"><{$content.title}></a></h3>
+				<h3><{$content.itemLink}></h3>
 				<{if $content.date || $content.counter || $content.tags}>
 					<div class="itemInfo">
 						<{if $content.date}><{$smarty.const._MB_SPROCKETS_CONTENT_TEASERS_PUBLISHED}>: <{$content.date}><{/if}><{if $content.counter}> | <{$content.counter}> <{$smarty.const._MB_SPROCKETS_CONTENT_TEASERS_VIEWS}>

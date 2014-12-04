@@ -77,15 +77,15 @@ function sprockets_getMonthNameById($month_id) {
 function sprockets_get_object_options() {
 	$options = array(
 		0 => _MB_SPROCKETS_CONTENT_TEASERS_ALL, // All modules
-		'item' => _MB_SPROCKETS_CONTENT_TEASERS_ITEM, // Catalogue module
-		'start' => _MB_SPROCKETS_CONTENT_TEASERS_START, // CMS module
-		//'event' => _MB_SPROCKETS_CONTENT_TEASERS_EVENT, // Events module
-		'publication' => _MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION, // Library module
 		'article' => _MB_SPROCKETS_CONTENT_TEASERS_ARTICLE, // News module
+		'event' => _MB_SPROCKETS_CONTENT_TEASERS_EVENT, // Events module
+		'item' => _MB_SPROCKETS_CONTENT_TEASERS_ITEM, // Catalogue module
 		'partner' => _MB_SPROCKETS_CONTENT_TEASERS_PARTNER, // Partner module
-		//'programme' => _MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME, // Programme module
+		'programme' => _MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME, // Podcast module
+		'project' => _MB_SPROCKETS_CONTENT_TEASERS_PROJECT, // Project module
+		'publication' => _MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION, // Library module
 		'soundtrack' => _MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK, // Podcast module
-		'project' => _MB_SPROCKETS_CONTENT_TEASERS_PROJECT // Project module
+		'start' => _MB_SPROCKETS_CONTENT_TEASERS_START, // CMS module
 	);
 	
 	return $options;

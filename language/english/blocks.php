@@ -24,17 +24,17 @@ define("_MB_SPROCKETS_CONTENT_SPOTLIGHTED_ARTICLE", "Spotlighted article:");
 define("_MB_SPROCKETS_CONTENT_SPOTLIGHT_RECENT_ARTICLES", "Headlines");
 define("_MB_SPROCKETS_RECENT_CONTENT_TITLE", "Recent content");
 
-// New in V2.01
+// Updated in V2.01
 define("_MB_SPROCKETS_CONTENT_TEASERS_ALL", "--- All ---");
-define("_MB_SPROCKETS_CONTENT_TEASERS_ITEM", "Items (Catalogue)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_START", "Start (CMS)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_EVENT", "Events (Events)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION", "Publications (Library)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_ARTICLE", "Articles (News)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_PARTNER", "Partners (Partners)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME", "Programmes (Podcast)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK", "Soundtracks (Podcast)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_PROJECT", "Projects (Projects)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_ITEM", "Catalogue items");
+define("_MB_SPROCKETS_CONTENT_TEASERS_START", "CMS pages");
+define("_MB_SPROCKETS_CONTENT_TEASERS_EVENT", "Events");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION", "Library publications");
+define("_MB_SPROCKETS_CONTENT_TEASERS_ARTICLE", "News articles");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PARTNER", "Partners");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME", "Podcasts (programmes)");
+define("_MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK", "Podcasts (soundtracks");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PROJECT", "Projects");
 define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLISHED", "Published");
 define("_MB_SPROCKETS_CONTENT_TEASERS_VIEWS", "Views");
 define("_MB_SPROCKETS_CONTENT_RECENT_LEFT", "Left");

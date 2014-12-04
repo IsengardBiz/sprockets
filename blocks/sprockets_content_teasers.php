@@ -48,108 +48,81 @@ function sprockets_content_teasers_show($options) {
 		} else {
 			$options[2] = array(0 => $options[2]);
 		}
-			
+
 		// Retrieve last X content items from each module (note: They are returned as arrays not
 		// as objects in order to minimise resource use).
 		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $limit = FALSE, 
 		// $sort = 'taglink_id', $order = 'DESC'
 		$content_objects = $sprockets_taglink_handler->getTaggedItems($options[1], FALSE, 
-				$options[2], FALSE, $options[0], $sort = 'date', 'DESC');
+				$options[2], 0, $options[0], $sort = 'DESC');
 		
-		// Generate output
-		if ($options[5]) // Display in teaser mode
-		{
-			foreach ($content_objects as $key => $object)
-			{
-				$type = '';
-				$content = $tags = $tagLinks = array();
-				$content['title'] = $object->getVar('title');
-				$content['description'] = $object->getVar('description');
-				$content['date'] = date(icms_getConfig('date_format', 'sprockets'), $object->getVar('date', 'e'));
-				$content['counter'] = $object->getVar('counter');
-				$content['url'] = $object->getItemLink(TRUE);
-				$short_url = $object->getVar('short_url');
-				if (!empty($short_url)) {
-					$content['url'] .= '&amp;title=' . $short_url;
-				}
+		// Remove the first item in $content_objects (count of results, which is not required)
+		unset($content_objects[0]);
+		
+		// Prepare objects for display (includes assignment of type-specific subtemplates)
+		if (!empty($content_objects)) {
+			$content_objects = $sprockets_tag_handler->prepareClientItemsForDisplay($content_objects);
+		}
+		
+		// Display in teaser mode - need to assemble tags
+		if ($options[5]) {			
+			// Build a tag buffer for lightweight lookups
+			$tag_buffer = $sprockets_tag_handler->getTagBuffer();
 
-				// Images
-				if ($options[3])
-				{
-					$type = $object->handler->_itemname;
-					switch ($type)
-					{						
-						case "start":				
-						case "project":
-						case "partner":
-							$image = $object->getVar('logo', 'e');
-							if (!empty($image)) {
-								$content['image'] = $object->getImageDir() . $image;
-							}
-							break;
-						//case "programme":
-						//	$image = $object->getVar('image', 'e');
-						//	if (!empty($image) {
-						//		$content['image'] = $object->getImageDir() . $image;
-						//	}
-						//	break;
-						case "soundtrack":
-							$image = $object->getVar('poster_image', 'e');
-							if (!empty($image)) {
-								$content['image'] = $object->getImageDir() . $image;
-							}
-							break;
-						default: // 'image', used by News 1.17+, Library, Catalogue
-							$image = $object->getVar('image', 'e');
-							if (!empty($image)) {
-								$content['image'] = $object->getImageDir() . $image;
-							}
-							break;
-					}		
+			// Build a taglink buffer (use combination of item and iid to identify distinct rows)
+			$sql = $result = $count = '';
+			$count = count($content_objects);
+			$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table 
+					. " INNER JOIN " . $sprockets_tag_handler->table . " ON "
+					. $sprockets_taglink_handler->table . ".tid = " 
+					. $sprockets_tag_handler->table . ".tag_id"
+					. " WHERE ";
+			foreach ($content_objects as $item) {
+				$count--;
+				$sql .= " (`item` = '" . $item['item'] 
+						. "' AND `iid` = '" . $item['iid']
+						. "' AND " . $sprockets_tag_handler->table . ".label_type = '0')";
+				if ($count > 0) {
+					$sql .= " OR ";
 				}
-				else
-				{
-					$content['image'] = FALSE;
-				};
+			}
 
-				// Tags. Query efficiency could be improved later, but with block caching its not too bad
-				$tags = $sprockets_taglink_handler->getTagsForObject($object->id(), $object->handler, 0);
-				if ($tags) {
-					foreach ($tags as $tag) {
-						$tagLinks[] = '<a href="' . $object->handler->_moduleUrl . $object->handler->_page . '?tag_id=' 
-								. $tag . '">' . $tagList[$tag] . '</a>';
+			// Retrieve the results and sort by i) item and ii) iid for easy retrieval
+			$tag_info = array();
+			$result = icms::$xoopsDB->query($sql);
+			if (!$result) {
+					echo 'Error';
+					exit;
+			} else {
+				while ($row = icms::$xoopsDB->fetchArray($result)) {
+					if (!isset($tag_info[$row['item']], $tag_info)) {
+						$tag_info[$row['item']] = array();
 					}
-					$content['tags'] = implode(", ", $tagLinks);
+					if (!isset($tag_info[$row['item']][$row['iid']], $tag_info[$row['item']])) {
+						$tag_info[$row['item']][$row['iid']] = array();
+					}
+					$tag_info[$row['item']][$row['iid']][] = '<a href="' . $script_name
+							. '?tag_id=' . $row['tid'] . '">' . $tag_buffer[$row['tid']] . '</a>';
 				}
-				$content_array[] = $content;
 			}
-		}
-		else // Display in simple list mode
-		{
-			foreach ($content_objects as $key => $object)
-			{
-				$content = array();
-				$content['title'] = $object->getVar('title');
-				$content['date'] = date(icms_getConfig('date_format', 'sprockets'),
-						$object->getVar('date', 'e'));
-				$content['url'] = $object->getItemLink(TRUE);
-				$short_url = $object->getVar('short_url');
-				if (!empty($short_url)) {
-					$content['url'] .= '&amp;title=' . $short_url;
+			// Iterate through content items appending the sorted tags
+			foreach ($content_objects as &$obj) {
+				if (isset($obj['iid'], $tag_info[$obj['item']])) {
+					$obj['tags'] = implode(', ', $tag_info[$obj['item']][$obj['iid']]);
 				}
-				$content_array[] = $content;
 			}
 		}
 		
-		// Assign to template
-		$block['content_array'] = $content_array;
+		// Assign to template - and yes there is some hardcoded CSS, that's because the stylesheet
+		// info gets killed off in cached blocks due to some very ancient bug
+		$block['content_array'] = $content_objects;
 		if ($options[3] == 1) {
 			$block['sprockets_teaser_image_position'] = 'float:left;margin:0em 1em 1em 0em;';
 		} elseif ($options[3] == 2) {
 			$block['sprockets_teaser_image_position'] = 'float:right;margin:0em 0em 1em 1em;';
 		}
 		$block['sprockets_teaser_image_size'] = $options[4];
-		$block['sprockets_teaser_display_mode'] = $options[5];
+		$block['sprockets_teaser_display_mode'] = $options[5]; // 0 = simple list, 1 = teasers
 	}
 	
 	return $block;
