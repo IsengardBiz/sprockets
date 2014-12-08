@@ -25,12 +25,13 @@ function sprockets_content_teasers_show($options) {
 	
 	// Check Sprockets is installed and active (otherwise do nothing)
 	if (icms_get_module_status("sprockets"))
-	{
+	{		
 		// Initialise
 		$sql = '';
 		$block = $content_objects = $content_array = array();
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		$sprockets_taglink_handler = icms_getModuleHandler('taglink', 'sprockets', 'sprockets');
+		$script_name = getenv("SCRIPT_NAME");
 		
 		// Get a tag buffer to minimise queries
 		$criteria = icms_buildCriteria(array('label_type' => 0));
@@ -51,8 +52,14 @@ function sprockets_content_teasers_show($options) {
 
 		// Retrieve last X content items from each module (note: They are returned as arrays not
 		// as objects in order to minimise resource use).
-		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $limit = FALSE, 
+		// // 0 items to show | 1 tags | 2 objects | 3 image position | 4 image size | 5 display mode
+		// [0] => 5 [1] => 0 [2] => Array ( [0] => article ) [3] => 1 [4] => 150 [5] => 1
+		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $sort = FALSE, 
 		// $sort = 'taglink_id', $order = 'DESC'
+		/**
+		 * From the output query it looks like the tag_id and item parameters are not being passed
+		 * correctly.
+		 */
 		$content_objects = $sprockets_taglink_handler->getTaggedItems($options[1], FALSE, 
 				$options[2], 0, $options[0], $sort = 'DESC');
 		
@@ -63,6 +70,10 @@ function sprockets_content_teasers_show($options) {
 		if (!empty($content_objects)) {
 			$content_objects = $sprockets_tag_handler->prepareClientItemsForDisplay($content_objects);
 		}
+		
+		//////////////////////////////////////////////////////
+		//////////////////// TAG ASSEMBLY ////////////////////
+		//////////////////////////////////////////////////////
 		
 		// Display in teaser mode - need to assemble tags
 		if ($options[5]) {			
@@ -101,17 +112,27 @@ function sprockets_content_teasers_show($options) {
 					if (!isset($tag_info[$row['item']][$row['iid']], $tag_info[$row['item']])) {
 						$tag_info[$row['item']][$row['iid']] = array();
 					}
-					$tag_info[$row['item']][$row['iid']][] = '<a href="' . $script_name
-							. '?tag_id=' . $row['tid'] . '">' . $tag_buffer[$row['tid']] . '</a>';
+					$tag_info[$row['item']][$row['iid']][] = '<a href="' . SPROCKETS_URL
+							. 'tag.php?tag_id=' . $row['tid'] . '">' . $tag_buffer[$row['tid']]
+							. '</a>';
 				}
 			}
-			// Iterate through content items appending the sorted tags
+			// Iterate through content items appending the sorted tags and correcting the image path
 			foreach ($content_objects as &$obj) {
 				if (isset($obj['iid'], $tag_info[$obj['item']])) {
 					$obj['tags'] = implode(', ', $tag_info[$obj['item']][$obj['iid']]);
 				}
+				if (isset($obj['image'])) {
+					if (!empty($obj['image'])) {
+						$obj['image'] = SPROCKETS_RELATIVE_PATH_TO_ROOT . $obj['image'];
+					}
+				}
 			}
 		}
+		
+		//////////////////////////////////////////////////////////
+		//////////////////// END TAG ASSEMBLY ////////////////////
+		//////////////////////////////////////////////////////////
 		
 		// Assign to template - and yes there is some hardcoded CSS, that's because the stylesheet
 		// info gets killed off in cached blocks due to some very ancient bug
@@ -163,6 +184,7 @@ function sprockets_content_teasers_edit($options) {
 	
 	// Objects to include
 	$form .= '<tr><td>Objects to include: </td>';
+	// icms_form_elements_Select options: $caption, $name, $value = null, $size = 1, $multiple = false
 	$form_select2 = new icms_form_elements_Select('', 'options[2]', $options[2], '1', FALSE);
 	$objectList = sprockets_get_object_options();
 	$form_select2->addOptionArray($objectList);

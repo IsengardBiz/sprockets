@@ -226,16 +226,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$sql .= " `mid` = " . $module_id;
 			}
 			if ($item_type) {
-				if ($untagged_content || $tag_id || $module_id) {
-					if (is_array($item_type)) {
-						$item_type = '("' . implode('","', $item_type) . '")';
-					} else {
-						$item_type = '("' . $item_type . '")';
-					}				
-					if ($untagged_content || $tag_id || $module_id) {
-						$sql .= " AND";
-					}
-					$sql .= " `item` IN " . $item_type;
+					$sql .= " AND";
+				if (count($item_type) == 1) {
+					$sql .= ' `item` = "' . implode('","', $item_type) . '"';
+				} else {
+					$sql .= '`item` IN ("' . implode('","', $item_type) . '")';
 				}
 			}
 		}

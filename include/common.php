@@ -21,6 +21,14 @@ if(!defined("SPROCKETS_ROOT_PATH")) define("SPROCKETS_ROOT_PATH", ICMS_ROOT_PATH
 if(!defined("SPROCKETS_IMAGES_URL")) define("SPROCKETS_IMAGES_URL", SPROCKETS_URL . 'images/');
 if(!defined("SPROCKETS_ADMIN_URL")) define("SPROCKETS_ADMIN_URL", SPROCKETS_URL . 'admin/');
 
+// Set a constant for the relative path to document root for this ICMS install, required for 
+// correct access to uploaded images
+$directory_name = basename(dirname(dirname(__FILE__)));
+$script_name = getenv("SCRIPT_NAME");
+$document_root = str_replace('/modules/' . $directory_name . '/tag.php', '', $script_name);
+if(!defined("SPROCKETS_RELATIVE_PATH_TO_ROOT")) 
+	define("SPROCKETS_RELATIVE_PATH_TO_ROOT", $document_root);
+
 // Include the common language file of the module
 icms_loadLanguageFile('sprockets', 'common');
 

@@ -34,7 +34,7 @@
 		<div>
 			<ul>
 			<{foreach item=content from=$block.content_array}>
-			<li><a href="<{$content.url}>"><{$content.title}></a></li>
+			<li><{$content.itemLink}></li>
 			<{/foreach}>
 			</ul>
 		</div>
