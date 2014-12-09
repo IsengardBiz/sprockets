@@ -37,6 +37,30 @@ function sprockets_content_teasers_show($options) {
 		$criteria = icms_buildCriteria(array('label_type' => 0));
 		$tagList = $sprockets_tag_handler->getList($criteria);
 		
+		/*
+		 * Determine the relative path to the web root, required for display of uploaded images.
+		 * I don't like to call $GLOBALS['xoops'] but due to differences between Linux and 
+		 * Windows servers finding the relative path to root is a lot more complicated than you'd
+		 * like to think. 
+		 */
+		$script_name = $GLOBALS['xoops']->urls['phpself'];
+		$base_name = basename($script_name);
+		// Block is being displayed on home page without a start module (start = none)
+		if (strpos($script_name, '/modules/') === FALSE) {
+			switch ($base_name) {
+				case "index.php":
+					$document_root = str_replace('index.php', '', $script_name);
+				break;
+			case "index.html":
+					$document_root = str_replace('index.html', '', $script_name);
+				break;
+			case "index.htm":
+					$document_root = str_replace('index.htm', '', $script_name);
+				break;
+			}
+		} else { // Block is being displayed on a module page
+			$document_root = substr($script_name, 0, strpos($script_name, "/modules/"));
+		}
 		// options[0]: Number teasers to show
 		// options[1]: Tag to filter
 		// options[2]: Object filter - note that options are limited by the module preferences
@@ -124,7 +148,7 @@ function sprockets_content_teasers_show($options) {
 				}
 				if (isset($obj['image'])) {
 					if (!empty($obj['image'])) {
-						$obj['image'] = SPROCKETS_RELATIVE_PATH_TO_ROOT . $obj['image'];
+						$obj['image'] = $document_root . $obj['image'];
 					}
 				}
 			}
