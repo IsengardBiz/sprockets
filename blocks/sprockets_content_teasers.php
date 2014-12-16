@@ -114,13 +114,13 @@ function sprockets_content_teasers_show($options) {
 		//////////////////////////////////////////////////////
 		
 		// Display in teaser mode - need to assemble tags
-		if ($options[5]) {
+		$count = count($content_objects);
+		if ($options[5] && $count) {
 			// Build a tag buffer for lightweight lookups
 			$tag_buffer = $sprockets_tag_handler->getTagBuffer();
 
 			// Build a taglink buffer (use combination of item and iid to identify distinct rows)
-			$sql = $result = $count = '';
-			$count = count($content_objects);
+			$sql = $result = '';
 			$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table 
 					. " INNER JOIN " . $sprockets_tag_handler->table . " ON "
 					. $sprockets_taglink_handler->table . ".tid = " 

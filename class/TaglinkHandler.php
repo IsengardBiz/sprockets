@@ -187,6 +187,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$tag_id = isset($tag_id) ? intval($tag_id) : 0;
 		$module_id = isset($module_id) ? intval($module_id) : 0;
 		$item_type_whitelist = array_keys($this->getClientObjects());
+
 		if ($item_type) {
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
