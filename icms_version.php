@@ -78,8 +78,8 @@ $modversion['blocks'][1] = array(
   'description' => _MI_SPROCKETS_CONTENT_TEASERSDSC,
   'show_func' => 'sprockets_content_teasers_show',
   'edit_func' => 'sprockets_content_teasers_edit',
-	// 0 items to show | 1 tags | 2 objects | 3 image position | 4 image size | 5 display mode
-  'options' => '5|All|All|1|150|1',
+	// 0 items to show | 1 tags | 2 objects | 3 image position | 4 image size | 5 display mode | 6 dynamic tagging
+  'options' => '5|All|All|1|150|1|0',
   'template' => 'sprockets_content_teasers.html');
 
 /** Templates information */

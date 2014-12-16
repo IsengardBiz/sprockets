@@ -27,7 +27,7 @@ function sprockets_content_teasers_show($options) {
 	if (icms_get_module_status("sprockets"))
 	{		
 		// Initialise
-		$sql = '';
+		$tag_id = $sql = '';
 		$block = $content_objects = $content_array = array();
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		$sprockets_taglink_handler = icms_getModuleHandler('taglink', 'sprockets', 'sprockets');
@@ -36,6 +36,17 @@ function sprockets_content_teasers_show($options) {
 		// Get a tag buffer to minimise queries
 		$criteria = icms_buildCriteria(array('label_type' => 0));
 		$tagList = $sprockets_tag_handler->getList($criteria);
+		
+		// Check if the block is set for dynamic tag filtering. If so, sanitise the tag_id 
+		// parameter, check the tag actually exists and override the manual filter preference
+		if ($options[6]) {
+			 if (isset($_GET['tag_id'])) {
+				$clean_tag_id = intval($_GET['tag_id']);
+				$options[1] = array_key_exists($clean_tag_id, $tagList) ? $clean_tag_id : 0;
+			 } else {
+				 $options[1] = 0;
+			 }
+		}
 		
 		/*
 		 * Determine the relative path to the web root, required for display of uploaded images.
@@ -66,10 +77,13 @@ function sprockets_content_teasers_show($options) {
 		// options[2]: Object filter - note that options are limited by the module preferences
 		// options[3]: Position of teaser image (0 = no image, 1 = left, 2 = right)
 		// options[4]: Size of teaser image (pixels)
+		// options[5]: Display in teaser or compact (list) mode
+		// options[6]: Allow dynamic tag filtering (overrides manual tag selection)
 		if (empty($options[2])) {
-			$options[2] = sprockets_get_object_options();
-			$options[2] = array_keys($options[2]);
-			array_shift($options[2]); // Get rid of the null option
+			//$options[2] = sprockets_get_object_options();
+			//$options[2] = array_keys($options[2]);
+			//array_shift($options[2]); // Get rid of the null option
+			$options[2] = icms_getConfig("client_objects", "sprockets");
 		} else {
 			$options[2] = array(0 => $options[2]);
 		}
@@ -81,8 +95,8 @@ function sprockets_content_teasers_show($options) {
 		// $tag_id = FALSE, $module_id = FALSE, $item_type = FALSE, $start = FALSE, $sort = FALSE, 
 		// $sort = 'taglink_id', $order = 'DESC'
 		/**
-		 * From the output query it looks like the tag_id and item parameters are not being passed
-		 * correctly.
+		 * Throws error when a permitted objects preference is set for an object type that doesn't
+		 * exist on the system (eg. module not installed).
 		 */
 		$content_objects = $sprockets_taglink_handler->getTaggedItems($options[1], FALSE, 
 				$options[2], 0, $options[0], $sort = 'DESC');
@@ -100,7 +114,7 @@ function sprockets_content_teasers_show($options) {
 		//////////////////////////////////////////////////////
 		
 		// Display in teaser mode - need to assemble tags
-		if ($options[5]) {			
+		if ($options[5]) {
 			// Build a tag buffer for lightweight lookups
 			$tag_buffer = $sprockets_tag_handler->getTagBuffer();
 
@@ -126,7 +140,7 @@ function sprockets_content_teasers_show($options) {
 			$tag_info = array();
 			$result = icms::$xoopsDB->query($sql);
 			if (!$result) {
-					echo 'Error';
+					echo 'Error in block';
 					exit;
 			} else {
 				while ($row = icms::$xoopsDB->fetchArray($result)) {
@@ -207,7 +221,7 @@ function sprockets_content_teasers_edit($options) {
 	$form .= '<td>' . $form_select->render() . '</td></tr>';
 	
 	// Objects to include
-	$form .= '<tr><td>Objects to include: </td>';
+	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_OBJECTS_TO_INCLUDE . ': </td>';
 	// icms_form_elements_Select options: $caption, $name, $value = null, $size = 1, $multiple = false
 	$form_select2 = new icms_form_elements_Select('', 'options[2]', $options[2], '1', FALSE);
 	$objectList = sprockets_get_object_options();
@@ -215,21 +229,27 @@ function sprockets_content_teasers_edit($options) {
 	$form .= '<td>' . $form_select2->render() . '</td></tr>';
 
 	// Position of teaser images
-	$form .= '<tr><td>Position of teaser images: </td>';
+	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_POSITION_TEASER_IMAGES . ': </td>';
 	$form_select3 = new icms_form_elements_Select('', 'options[3]', $options[3], '1', FALSE);
 	$form_select3->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_RECENT_NONE, 
 		1 => _MB_SPROCKETS_CONTENT_RECENT_LEFT, 2 => _MB_SPROCKETS_CONTENT_RECENT_RIGHT));
 	$form .= '<td>' . $form_select3->render() . '</td></tr>';
 	
 	// Size of teaser image (automatically resized and cached by Smarty plugin)
-	$form .= '<tr><td>Width of teaser image (pixels): </td>';
+	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_WIDTH_TEASERS_PIXELS . ': </td>';
 	$form .= '<td><input type="text" name="options[4]" value="' . $options[4] . '" /></td></tr>';
 	
 	// Display mode (teasers vs simple list)
-	$form .= '<tr><td>Display mode: </td>';
+	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_DISPLAY_MODE . ': </td>';
 	$form_select4 = new icms_form_elements_Select('', 'options[5]', $options[5], '1', FALSE);
 	$form_select4->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_RECENT_LIST, 1 => _MB_SPROCKETS_CONTENT_RECENT_TEASERS));
 	$form .= '<td>' . $form_select4->render() . '</td></tr>';
+	
+	// Activate dynamic tag filtering (overrides the manual tag filter, using tag_id page request parameter instead)
+	$form .= '<tr><td>' . _MB_SPROCKETS_CONTENT_DYNAMIC_FILTER_OVERRIDE . ': </td>';
+	$form_select5 = new icms_form_elements_Select('', 'options[6]', $options[6], '1', FALSE);
+	$form_select5->addOptionArray(array(0 => _MB_SPROCKETS_CONTENT_NO, 1 => _MB_SPROCKETS_CONTENT_YES));
+	$form .= '<td>' . $form_select5->render() . '<td></tr>';
 	$form .= '</table>';
 
 	return $form;

@@ -99,6 +99,6 @@ define("_MI_SPROCKETS_CONTENT_TEASERS_CATSDSC", "Displays the description (tease
 	compatible modules for a selected category.");
 
 // Updated in V2.02
-define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content (tags)");
+define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content (tagged)");
 define("_MI_SPROCKETS_CONTENT_TEASERSDSC", "Displays the description (teaser) for content across 
 	compatible modules for a selected tag.");

@@ -42,3 +42,8 @@ define("_MB_SPROCKETS_CONTENT_RECENT_RIGHT", "Right");
 define("_MB_SPROCKETS_CONTENT_RECENT_NONE", "None");
 define("_MB_SPROCKETS_CONTENT_RECENT_TEASERS", "Teasers");
 define("_MB_SPROCKETS_CONTENT_RECENT_LIST", "List");
+define("_MB_SPROCKETS_CONTENT_OBJECTS_TO_INCLUDE", "Objects to include");
+define("_MB_SPROCKETS_CONTENT_POSITION_TEASER_IMAGES", "Position of teaser images");
+define("_MB_SPROCKETS_CONTENT_WIDTH_TEASERS_PIXELS", "Width of teaser image (pixels)");
+define("_MB_SPROCKETS_CONTENT_DISPLAY_MODE", "Display mode");
+define("_MB_SPROCKETS_CONTENT_DYNAMIC_FILTER_OVERRIDE", "Dynamic tag filter override");
