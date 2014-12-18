@@ -20,7 +20,7 @@
 				<{/if}>
 				<{if $content.image && $content.description}>
 					<div style="<{$block.sprockets_teaser_image_position}>">
-						<a href="<{$content.url}>"><{resized_image file=$content.image width=$block.sprockets_teaser_image_size height="999" fit="inside"}></a>
+						<a href="<{$content.itemUrl}>"><{resized_image file=$content.image width=$block.sprockets_teaser_image_size height="999" fit="inside"}></a>
 					</div>
 				<{/if}>
 				<{if $content.description}>

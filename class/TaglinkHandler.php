@@ -93,6 +93,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
     	$criteria->add(new icms_db_criteria_Item('mid', $moduleObj->getVar('mid')));
     	$criteria->add(new icms_db_criteria_Item('item', $handler->_itemname));
     	$criteria->add(new icms_db_criteria_Item('iid', $clean_iid));
+		$criteria->add(new icms_db_criteria_Item('tid', '0', '!='));
     	$sql = 'SELECT DISTINCT `tid` FROM ' . $this->table;
 		$sql = mysql_real_escape_string($sql);
     	$rows = $this->query($sql, $criteria);

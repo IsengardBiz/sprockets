@@ -37,6 +37,24 @@ $taglinkObjects = array();
 $taglinkObjectsSortedByType = array();
 $combinedContentObjects = array();
 
+// RSS feed including autodiscovery link, which is inserted in the module header
+/*global $xoTheme;	
+if ($clean_tag_id) {
+	$icmsTpl->assign('sprockets_rss_link', 'rss.php?tag_id=' . $clean_tag_id);
+	$icmsTpl->assign('sprockets_rss_title', _CO_NEWS_SUBSCRIBE_RSS_ON
+			. $sprockets_tag_buffer[$clean_tag_id]->getVar('title', 'e'));
+	$rss_attributes = array('type' => 'application/rss+xml', 
+		'title' => $icmsConfig['sitename'] . ' - ' . $sprockets_tag_buffer[$clean_tag_id]->getVar('title', 'e'));
+	$rss_link = NEWS_URL . 'rss.php?tag_id=' . $clean_tag_id;
+} else {				
+		$icmsTpl->assign('news_rss_link', 'rss.php');
+		$icmsTpl->assign('news_rss_title', _CO_NEWS_SUBSCRIBE_RSS);
+		$rss_attributes = array('type' => 'application/rss+xml', 
+			'title' => $icmsConfig['sitename'] . ' - ' .  _CO_NEWS_NEW);
+		$rss_link = NEWS_URL . 'rss.php';
+}
+$xoTheme->addLink('alternate', $rss_link, $rss_attributes);*/
+
 // Get relative path to document root for this ICMS install
 $directory_name = basename(dirname(__FILE__));
 $script_name = getenv("SCRIPT_NAME");
@@ -150,6 +168,10 @@ if ($content_count) {
 					. $tagObj->getVar('title'));
 			$icmsTpl->assign('sprockets_tag_name', $tagObj->getVar('title'));
 		}
+	} else { // display latest content across all tags
+		$icmsTpl->assign('sprockets_rss_link', 'rss.php');
+		$icmsTpl->assign('sprockets_rss_title', _CO_SPROCKETS_SUBSCRIBE_RSS);
+		$icmsTpl->assign('sprockets_tag_name', _CO_SPROCKETS_RSS_LATEST_CONTENT);
 	}
 
 	// Assign content to template, together with relevant module preferences
