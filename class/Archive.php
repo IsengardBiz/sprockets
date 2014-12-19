@@ -521,8 +521,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			// doing this outside of the main loop avoids massive numbers of redundant queries
 			// objects use their ids as keys in the arrays for easy lookup
 
-			$sprockets_rights_handler = icms_getModuleHandler('rights', $sprocketsModule->getVar('dirname'),
-				'sprockets');
+			$sprockets_rights_handler = icms_getModuleHandler('rights', 
+					$sprocketsModule->getVar('dirname'), 'sprockets');
 
 			$rightsObjArray = $sprockets_rights_handler->getObjects(null, TRUE);
 			$system_mimetype_handler = icms_getModuleHandler('mimetype', 'system');			
@@ -824,8 +824,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				
 				// pass the resumption token back to $response, if there is one
 				$response .= '<resumptionToken completeListSize="'
-						. $completeListSize['count(*)']	. '" cursor="' . $next_cursor . '">' . $token 
-						. '</resumptionToken>';	
+						. $completeListSize['count(*)']	. '" cursor="' . $next_cursor . '">' 
+						. $token . '</resumptionToken>';	
 			}
 			return $contentArray;
 		}
@@ -861,7 +861,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		if ($content['source']) {
 			$moduleName = $contentObj->handler->_moduleName;
 			$objectName = $contentObj->handler->_itemname;
-			$content['source'] = ICMS_URL . '/modules/' . $moduleName . '/' . $objectName . '.php?' . $objectName . '_id=' . $contentObj->getVar('source', 'e');
+			$content['source'] = ICMS_URL . '/modules/' . $moduleName . '/' . $objectName . '.php?' 
+					. $objectName . '_id=' . $contentObj->getVar('source', 'e');
 		}
 		
 
