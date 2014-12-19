@@ -72,3 +72,4 @@ basically content where you didn't bother to select any tags (ie. it happens aut
 - Removed unused method mid() from Tag.php
 - Removed unused method toArrayWithoutOverrides() from Tag.php
 - Removed unused methods getTaglinkModules() and getTaglinkItems() from TaglinkHandler.php
+- Removed misplaced method getTagSelectBox() from RightsHandler.php

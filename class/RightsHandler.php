@@ -30,40 +30,6 @@ class SprocketsRightsHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Returns a select box of available tags
-	 *
-	 * @param int $selected
-	 * @param string $zero_option_message
-	 * @return string $form
-	 */
-	
-	public function getTagSelectBox($selected = null, $zero_option_message = '---',
-			$navigation_elements_only = TRUE) {
-		
-		$form = $criteria = '';
-		$tagList = array();
-
-		if ($navigation_elements_only) {
-			$criteria = icms_buildCriteria(array('navigation_element' => TRUE));
-		}
-
-		$tagList = array(0 => $zero_option_message) + $this->getList($criteria);
-
-		$form = '<div><form name="tag_selection_form" action="article.php" method="get">';
-		$form .= '<select name="tag_id" id="tag_id" onchange="this.form.submit()">';
-		foreach ($tagList as $key => $value) {
-			if ($key == $selected) {
-			$form .= '<option value="' . $key . '" selected="selected">' . $value . '</option>';
-			} else {
-				$form .= '<option value="' . $key . '">' . $value . '</option>';
-			}
-		}
-		$form .= '</select></form></div>';
-
-		return $form;
-	}
-
-	/**
 	 * Returns an array of rights, optionally with links
 	 * 
 	 * Use to build buffer to reduce DB lookups when parsing multiple objects
