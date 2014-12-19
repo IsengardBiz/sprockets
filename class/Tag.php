@@ -63,7 +63,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 */
 	
 	function getVar($key, $format = 's') {
-		if ($format == 's' && in_array($key, array ('label_type', 'parent_id', 'mid', 'icon',
+		if ($format == 's' && in_array($key, array ('label_type', 'parent_id', 'icon',
 			'navigation_element', 'rss'))) {
 			return call_user_func(array ($this,	$key));
 		}
@@ -111,29 +111,6 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		}
 		return FALSE;
 	}
-	
-	/**
-	 * Converts mid into a human readable module name
-	 *
-	 * As 
-	 * 
-	 * @return string
-	 */
-	public function mid()
-	{
-		$moduleObj = $moduleName = '';
-		
-		if (!empty($mid))
-		{
-			// Get the module object and retrieve its name
-			$module_handler = icms::handler('icms_module');
-			$moduleObj = $module_handler->getByDirname("sprockets");
-			$moduleName = $moduleObj->getVar('name');
-			return $moduleName;
-		}
-		return FALSE;
-	}
-	
 	
 	/**
 	 * Converts navigation_element into a human readable icon (yes/no)
@@ -195,43 +172,6 @@ class SprocketsTag extends icms_ipf_seo_Object {
 				. _CO_SPROCKETS_TAG_ONLINE . '" title="' . _CO_SPROCKETS_TAG_SWITCH_OFFLINE . '" /></a>';
 		}
 		return $button;
-	}
-	
-	/*
-	 * Performs the same function as toArray(), but does not permit getVar() overrides for specified
-	 * fields (ie. those requiring query lookups), so that they can be *manually* overriden from 
-	 * buffers. This can substantially reduce the number of queries when converting a large number 
-	 * of objects (for example, on an index page).
-	 */
-	public function toArrayWithoutOverrides() {
-		$ret = $vars = $blacklisted_vars = array();
-		
-		// These are the properties that we don't want converted, because each one costs a query
-		$blacklisted_vars = array('parent_id', 'mid');
-		
-		$vars = $this->getVars();
-		foreach ($vars as $key=>$var) {
-			if (in_array($key, $blacklisted_vars)) {
-				$value = $this->getVar($key, 'e');
-				$ret[$key] = $value;
-			} else {
-				$value = $this->getVar($key);
-				$ret[$key] = $value;
-			}
-		}
-		if ($this->handler->identifierName != "") {
-			$controller = new icms_ipf_Controller($this->handler);
-			/**
-			 * Addition of some automatic value
-			 */
-			$ret['itemLink'] = $controller->getItemLink($this);
-			$ret['itemUrl'] = $controller->getItemLink($this, TRUE);
-			$ret['editItemLink'] = $controller->getEditItemLink($this, FALSE, TRUE);
-			$ret['deleteItemLink'] = $controller->getDeleteItemLink($this, FALSE, TRUE);
-			$ret['printAndMailLink'] = $controller->getPrintAndMailLink($this);
-		}
-
-		return $ret;
 	}
 	
 	/**
