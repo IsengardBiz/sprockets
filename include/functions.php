@@ -58,18 +58,6 @@ function sprockets_getModuleName($withLink = TRUE, $forBreadCrumb = FALSE, $modu
 }
 
 /**
- * Get month name by its ID
- *
- * @todo to be moved in ImpressCMS 1.2 core
- *
- * @param int $month_id ID of the month
- * @return string month name
- */
-function sprockets_getMonthNameById($month_id) {
-	return Icms_getMonthNameById($month_id);
-}
-
-/**
  * List of object/module options for the recent teasers block
  * 
  * @return array $options

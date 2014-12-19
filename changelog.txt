@@ -74,3 +74,4 @@ basically content where you didn't bother to select any tags (ie. it happens aut
 - Removed unused methods getTaglinkModules() and getTaglinkItems() from TaglinkHandler.php
 - Removed misplaced method getTagSelectBox() from RightsHandler.php
 - Removed unused method get_parent_id_buffer() from TagHandler.php
+- Removed unused method sprockets_getMonthNameById() from functions.php
