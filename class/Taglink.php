@@ -62,34 +62,6 @@ class SprocketsTaglink extends icms_ipf_Object {
 		
 		return $tagObj;
 	}
-	
-	public function getTagId() {
-		
-		return $this->getVar('tid', 'e');
-	}
-
-	/**
-	 * Returns the item (object) name associated with this taglink, eg 'article'
-	 *
-	 * @return string
-	 */
-	
-	public function getItem() {
-		
-		return $this->getVar('item', 'e');
-	}
-
-	/**
-	 * Returns the item_id for the linked object
-	 *
-	 * @return int
-	 */
-	
-	public function getItemId() {
-
-		return $this->getVar('iid', 'e');
-	}
-	
 
 	/**
 	 * Returns the module object for the linked object
@@ -113,9 +85,9 @@ class SprocketsTaglink extends icms_ipf_Object {
 	
 	public function getLinkedObject() {
 
-		$item = $this->getItem();
+		$item = $this->getVar('item', 'e');
 		$module = $this->getModuleObject();
-		$content_handler = icms_getModuleHandler($this->getItem(), $module->getVar('dirname'),
+		$content_handler = icms_getModuleHandler($this->getVar('item', 'e'), $module->getVar('dirname'),
 			$module->getVar('dirname'));
 		
 		$contentObj = $content_handler->get($this->getItemId());
