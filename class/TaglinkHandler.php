@@ -21,55 +21,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Returns a distinct list of module IDs that are currently referenced by taglinks
-	 *
-	 * @return array $module_list
-	 */
-	
-	public function getTaglinkModules() {
-		
-		$module_list = array();
-		$module_handler = icms::handler('icms_module');
-		
-		$criteria = new icms_db_criteria_Compo();
-		$criteria->add(new icms_db_criteria_Item('label_type', '1', '!='));
-		
-		$sql = "SELECT DISTINCT `mid` FROM " . $this->table;
-		$sql = mysql_real_escape_string($sql);
-		
-		$rows = $this->query($sql, $criteria);
-		foreach ($rows as $key => $mid) {			
-			$module_list[$mid] = $module_handler->get($mid);
-		}
-		
-		return $module_list;
-	}
-
-	/**
-	 * Returns a distinct list of item types that are currently referenced by taglinks
-	 *
-	 * @return array $item_list
-	 */
-	
-	public function getTaglinkItems($tag_id = FALSE) {
-		
-		$tid = isset($tag_id) ? intval($tag_id) : FALSE;
-		$item_list = array();
-		$criteria = '';
-		
-		$sql = "SELECT DISTINCT `item` FROM " . $this->table;
-		if ($tid) {
-			$sql .= " WHERE `tid` = '" . $tid . "'";
-		}
-		$rows = $this->query($sql, $criteria);
-		foreach ($rows as $key => $item) {
-			$item_list[] = $item['item'];
-		}
-
-		return $item_list;
-	}
-	
-	/**
 	 * Retrieve tag_ids for an object (either tag or category label_type, but not both)
 	 *
 	 * Based on code from ImTagging: author marcan aka Marc-Andre Lanciault <marcan@smartfactory.ca>
