@@ -261,41 +261,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 
 	/**
-	 * Returns an array of parent category titles for a given list of tag objects, optionally with links
-	 * 
-	 * Use to build buffer to reduce DB lookups when parsing multiple tag objects
-	 *
-	 * @param array $tag_object_array
-	 * @return array 
-	 */
-	public function get_parent_id_buffer($tag_object_array, $with_links = FALSE) {
-		
-		$parent_id_string = '';
-		$parent_objects = $parent_buffer = array();
-		
-		foreach ($tag_object_array as $key => $tagObj) {
-			
-			$parent_objects[] = $tagObj->getVar('parent_id', 'e');  
-		}
-		
-		$parent_id_string = "(" . implode(',', $parent_objects);
-		
-		$criteria = new icms_db_criteria_Compo();
-		$criteria->add(new icms_db_criteria_Item('tag_id', $parent_id_string, 'IN'));
-		
-		if ($with_links) {
-			$parent_objects = $this->getObjects($criteria, TRUE, TRUE);
-			foreach ($parent_objects as $parent) {
-				$parent_buffer[$parent->id()] = $parent->getItemLink();
-			}
-		} else {
-			$parent_objects = $this->getList($criteria);
-		}
-		
-		return $parent_buffer;
-	}
-
-	/**
 	 * Allows the category admin page to be filtered by module
 	 * 
 	 * @return array
