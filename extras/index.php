@@ -1,6 +1,6 @@
 <?php
 /**
-* Displays related (tagged) content from across multiple modules in a unified feed
+* Alternative site index page for dislaying cross-module content
 * 
 * Can be used to replace the standard ImpressCMS root index page. Retrieves related (tagged) content 
 * from across multiple modules in the Gone Native collection. Page must be enabled and the required
@@ -14,7 +14,8 @@
 * @version		$Id$
 */
 
-include_once 'header.php';
+include_once "./mainfile.php";
+include_once(ICMS_ROOT_PATH . '/modules/sprockets/include/common.php');
 $xoopsOption['template_main'] = 'sprockets_tag.html';
 include_once ICMS_ROOT_PATH . '/header.php';
 
@@ -41,10 +42,18 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 	$taglinkObjectsSortedByType = array();
 	$combinedContentObjects = array();
 
+	// Access module stylesheet
+	global $xoTheme;
+	$xoTheme->addStylesheet(SPROCKETS_URL . '/module'. ((defined("_ADM_USE_RTL") && _ADM_USE_RTL)
+			?'_rtl':'').'.css');
+
+	// Load Sprockets language file
+	icms_loadLanguageFile('sprockets', 'common');
+
 	// Get relative path to document root for this ICMS install
 	$directory_name = basename(dirname(__FILE__));
 	$script_name = getenv("SCRIPT_NAME");
-	$document_root = str_replace('/modules/' . $directory_name . '/tag.php', '', $script_name);
+	$document_root = str_replace('/index.php', '', $script_name);
 
 	// Retrieve untagged content
 	if ($untagged_content) {
@@ -204,6 +213,7 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 	$icmsTpl->assign('sprockets_module_home', sprockets_getModuleName(TRUE, TRUE));
 	$icmsTpl->assign('sprockets_display_breadcrumb', $sprocketsConfig['display_breadcrumb']);
 } else {
+	echo _CO_SPROCKETS_CONTENT_PAGE_DISABLED;
 	exit; // This page is disable in the module preferences
 }
 include_once 'footer.php';

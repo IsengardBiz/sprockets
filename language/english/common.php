@@ -183,3 +183,6 @@ define("_CO_SPROCKETS_TAG_UNTAGGED", "Untagged");
 define("_CO_SPROCKETS_TAG_UNTAGGED_CONTENT", "Untagged content");
 define("_CO_SPROCKETS_TAG_UNTAGGED_CONTENT_DSC", "Content that has not been labelled with subject tags.");
 define("_CO_SPROCKETS_RSS_LATEST_CONTENT", "Latest content");
+define("_CO_SPROCKETS_CONTENT_PAGE_DISABLED", "This alternative site index page is disabled in the 
+	Sprockets module preferences. Please enable it, or alternatively restore the standard ImpressCMS 
+	root index page.");

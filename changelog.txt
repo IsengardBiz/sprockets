@@ -75,3 +75,8 @@ basically content where you didn't bother to select any tags (ie. it happens aut
 - Removed misplaced method getTagSelectBox() from RightsHandler.php
 - Removed unused method get_parent_id_buffer() from TagHandler.php
 - Removed unused method sprockets_getMonthNameById() from functions.php
+- Added an alternative index page in /extras, which can be used to replace the site root index. 
+This allows display of a unified cross-module content feed on the home page without having a messy
+URL like /sprockets/modules/tag.php
+- Added RSS autodiscovery links to tag.php and the alternative index page
+- Added a preference to enable/disable tag.php and the alternative index page.

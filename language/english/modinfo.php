@@ -77,9 +77,11 @@ define("_MI_SPROCKETS_IMAGE_HEIGHTDSC", "The height that image-type content item
 	specified (width or height). So in reality, image scaling will be constrained by either the 
 	width or height you have specified, but not both.");
 define("_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS", "Active client modules");
-define("_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS_DSC", "Select which modules you wish to include results 
-	from in in the cross-module content page tag.php. If you do not select any modules, all will 
-	be included by default.");
+define("_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS_DSC", "Select which module objects you wish to include 
+	results from in in the cross-module content page tag.php and the alternative site index page 
+	available from the /extras folder. If you do not select any modules, all will be included by 
+	default. IMPORTANT! To minimise database query load, select only those objects you actually 
+	need.");
 define("_MI_SPROCKETS_PAGINATION", "Pagination limit on tag.php");
 define("_MI_SPROCKETS_PAGINATION_DSC", "Number of results to display per page on tag.php");
 define("_MI_SPROCKETS_CMS_PAGES", "CMS pages");
@@ -97,6 +99,10 @@ define("_MI_SPROCKETS_DATE_FORMAT_DSC", "Controls the format of the date. See th
 define("_MI_SPROCKETS_CONTENT_TEASERS_CATS", "Recent content (categories)");
 define("_MI_SPROCKETS_CONTENT_TEASERS_CATSDSC", "Displays the description (teaser for content across 
 	compatible modules for a selected category.");
+define("_MI_SPROCKETS_ENABLE_USER_SIDE", "Enable user side pages?");
+define("_MI_SPROCKETS_ENABLE_USER_SIDE_DSC", "Enables the tag.php and alternative site index page 
+	(see the extras folder) which display cross-module content from Gone Native modules. If you 
+	select 'no' these pages will be non-functional.");
 
 // Updated in V2.02
 define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content (tagged)");

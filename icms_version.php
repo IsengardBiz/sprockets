@@ -145,6 +145,7 @@ $modversion['config'][1] = array(
   'valuetype' => 'int',
   'default' =>  '1');
 
+// Number of items to include in RSS feed
 $modversion['config'][] = array(
   'name' => 'number_rss_items',
   'title' => '_MI_SPROCKETS_NUMBER_RSS_ITEMS',
@@ -201,6 +202,16 @@ $client_objects = array(
 	'_MI_SPROCKETS_PROJECTS' => 'project'
 );
 
+// Enable or disable cross-module content pages
+$modversion['config'][] = array(
+	'name' => 'enable_user_side_pages',
+	'title' => '_MI_SPROCKETS_ENABLE_USER_SIDE',
+	'description' => '_MI_SPROCKETS_ENABLE_USER_SIDE_DSC',
+	'formtype' => 'yesno',
+	'valuetype' => 'int',
+	'default' => '0');
+
+// Objects to include in the cross-module content pages
 $modversion['config'][] = array(
 	'name' => 'client_objects',
 	'title' => '_MI_SPROCKETS_ALLOWED_CLIENT_OBJECTS',

@@ -12,8 +12,10 @@
 		<{/if}>
 	</div>
 <{else}>
-	<h1><a href="<{$sprockets_rss_link}>" title="<{$sprockets_rss_title}>">
-		<img src="./images/rss.png" alt="RSS" /></a>
+	<h1><{if $sprockets_rss_link}>
+			<a href="<{$sprockets_rss_link}>" title="<{$sprockets_rss_title}>">
+			<img src="<{$sprockets_rss_image}>" alt="RSS" /></a>
+		<{/if}>
 		<{if $sprockets_tag_name}><{$sprockets_tag_name}><{/if}>
 	</h1>
 <{/if}>
