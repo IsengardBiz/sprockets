@@ -53,7 +53,7 @@ define("_MI_SPROCKETS_RESUMPTION_TOKEN_THROTTLE_DSC", "To reduce server load fro
 	reducing it a bit if you have dedicated server resources. Set it at zero to disable the 
 	throttle");
 
-// New in V2.02
+// New in V2.01
 define("_MI_SPROCKETS_THUMBNAIL_WIDTH", "Thumbnail width");
 define("_MI_SPROCKETS_THUMBNAIL_WIDTHDSC", "Thumbnails are the teaser images accompanying a content 
 	item (except for 'image' type publications, which are displayed at a considerably larger size 
@@ -104,7 +104,7 @@ define("_MI_SPROCKETS_ENABLE_USER_SIDE_DSC", "Enables the tag.php and alternativ
 	(see the extras folder) which display cross-module content from Gone Native modules. If you 
 	select 'no' these pages will be non-functional.");
 
-// Updated in V2.02
+// Updated in V2.01
 define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content (tagged)");
 define("_MI_SPROCKETS_CONTENT_TEASERSDSC", "Displays the description (teaser) for content across 
 	compatible modules for a selected tag.");
