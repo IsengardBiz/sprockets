@@ -13,6 +13,10 @@
 
 class SprocketsTagHandler extends icms_ipf_Handler {
 
+	////////////////////////////////////////////////////////
+	//////////////////// PUBLIC METHODS ////////////////////
+	////////////////////////////////////////////////////////
+	
 	/**
 	 * Constructor
 	 */
@@ -20,24 +24,18 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		parent::__construct($db, 'tag', 'tag_id', 'title', 'description',
 			'sprockets');
 	}
-
+	
 	/**
 	 * Returns the name of a tag
 	 *
 	 * @param int $tag_id
 	 * @return string
 	 */
-
-	function getTagName($tag_id) {
-    	$icms_persistable_registry_handler = icms_ipf_registry_Handler::getInstance();
-    	$tagObj = $icms_persistable_registry_handler->getSingleObject('tag', $tag_id, 'sprockets');
-    	if ($tagObj && !$tagObj->isNew()) {
-    		return $tagObj->getVar('title');
-    	} else {
-    		return FALSE;
-    	}
-    }
-
+	
+	public function getTagName($tag_id) {
+		return $this->_getTagName($tag_id);
+	}
+	
 	/**
 	 * Returns a list of tag bnames with tag_id as key and a 0 element for building select boxes
 	 *
@@ -45,10 +43,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 
 	public function getTags() {
-		$criteria = icms_buildCriteria(array('label_type' => '0'));
-		$tagList = array(0 => '---') + $this->getList($criteria);
-		asort($tagList);
-		return $tagList;
+		return $this->_getTags();
 	}
 	
 	/**
@@ -61,13 +56,9 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTagBuffer() {
-		$tag_buffer = array();
-		$tag_buffer = $this->getTags();
-		// Remove the 0 '---' element as we aren't building a select box!
-		unset($tag_buffer[0]);
-		return $tag_buffer;
+		return $this->_getTagBuffer();
 	}
-
+	
 	/**
 	 * Returns a select box containing the category tree
 	 *
@@ -76,6 +67,151 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 
 	public function getCategoryOptions($selected = '') {
+		return $this->_getCategoryOptions();
+	}
+	
+	/**
+	 * Returns a select box of available tags, optionally filtered by module (ie. tags in use)
+	 * 
+	 * @param string $action page to load on submit
+	 * @param int $selected
+	 * @param string $zero_option_message
+	 * @return string $form
+	 */
+	
+	public function getTagSelectBox($action, $selected = null, $zero_option_message = '---',
+			$navigation_elements_only = TRUE, $module_id = null, $item = null,
+			$untagged_content_option = FALSE) {
+		return $this->_getTagSelectBox($action, $selected, $zero_option_message, 
+				$navigation_elements_only, $module_id, $item , $untagged_content_option);
+	}
+	
+	/**
+	 * Returns a select box of available categories, optionally filtered by module
+	 *
+	 * @param string $action page to load on submit
+	 * @param int $selected
+	 * @param string $zero_option_message
+	 * @return string $form
+	 */
+	
+	public function getCategorySelectBox($action, $selected = null, $zero_option_message = '---',
+			$module_id = null, $item = null) {
+		return $this->_getCategorySelectBox($action, $selected, $zero_option_message, $module_id,
+				$item);
+	}
+	
+	/**
+	 * Checks if the given tag (category) is a parent
+	 * @param int $id
+	 * @return bool 
+	 */
+	public function check_is_parent($id) {
+		return $this->_check_is_parent($id);
+	}
+	
+	/**
+	 * Allows the category admin page to be filtered by module
+	 * 
+	 * @return array
+	 */
+	public function module_filter() {
+		return $this->_module_filter();
+	}
+	
+	/**
+	 * Allows the tag/category admin page to be filtered by those with/without navigation element status
+	 * 
+	 * @return array
+	 */
+	public function navigation_element_filter() {
+		return $this->_navigation_element_filter();
+	}
+	
+	/**
+	 * Allows the tag/category admin page to be filtered by those with/without rss feeds
+	 * 
+	 * @return array
+	 */
+	public function rss_filter() {
+		return $this->_rss_filter();
+	}
+	
+	/**
+	 * Returns an array of tag objects that have RSS feeds enabled
+	 *
+	 * @return array $tag_object_array
+	 */
+
+	public function getTagsWithRss() {
+		return $this->_getTagsWithRss();
+	}
+	
+	/**
+	 * Toggles a yes/no field on or offline
+	 *
+	 * @param int $id
+	 * @param str $field
+	 * @return int $status
+	 */
+	public function toggleStatus($id, $field) {
+		return $this->_toggleStatus($id, $field);
+	}
+	
+	/**
+	 * Converts an array of mixed client objects (as arrays) from different modules and prepares
+	 * them for insertion into smarty templates (user side display)
+	 * 
+	 * To do this the function maintains a list of the equivalent function that converts objects
+	 * for user-side display in each client module. The names of these functions will be 
+	 * standardised in future so that this function can be deprecated.
+	 * 
+	 */
+	public function prepareClientItemsForDisplay($mixedClientItems) {
+		return $this->_prepareClientItemsForDisplay($mixedClientItems);
+	}
+	
+	/**
+	 * Cleans up after category deletion: Deletes child categories and associated taglink objects
+	 *
+	 * @param object $obj
+	 * @return bool
+	 */
+
+	public function afterDelete(&$obj) {
+		return $this->_afterDelete(&$obj);
+	}
+	
+	/////////////////////////////////////////////////////////
+	//////////////////// PRIVATE METHODS ////////////////////
+	/////////////////////////////////////////////////////////
+	
+	private function _getTagName($tag_id) {
+    	$icms_persistable_registry_handler = icms_ipf_registry_Handler::getInstance();
+    	$tagObj = $icms_persistable_registry_handler->getSingleObject('tag', $tag_id, 'sprockets');
+    	if ($tagObj && !$tagObj->isNew()) {
+    		return $tagObj->getVar('title');
+    	} else {
+    		return FALSE;
+    	}
+    }
+
+	private function _getTags() {
+		$criteria = icms_buildCriteria(array('label_type' => '0'));
+		$tagList = array(0 => '---') + $this->getList($criteria);
+		asort($tagList);
+		return $tagList;
+	}
+	
+	private function _getTagBuffer() {
+		$tag_buffer = array();
+		$tag_buffer = $this->getTags();
+		// Remove the 0 '---' element as we aren't building a select box!
+		unset($tag_buffer[0]);
+		return $tag_buffer;
+	}
+
+	private function _getCategoryOptions($selected = '') {
 		include_once ICMS_ROOT_PATH . '/modules/sprockets/include/angry_tree.php';
 		
 		/////////////////////////////////////////////////
@@ -121,18 +257,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		return $parentCategoryOptions;
 	}
 
-	/**
-	 * Returns a select box of available tags, optionally filtered by module (ie. tags in use)
-	 * 
-	 * @param string $action page to load on submit
-	 * @param int $selected
-	 * @param string $zero_option_message
-	 * @return string $form
-	 */
-	
-	public function getTagSelectBox($action, $selected = null, $zero_option_message = '---',
-			$navigation_elements_only = TRUE, $module_id = null, $item = null,
-			$untagged_content_option = FALSE) {
+	private function _getTagSelectBox($action, $selected, $zero_option_message,
+			$navigation_elements_only, $module_id, $item, $untagged_content_option) {
 
 		$form = $criteria = '';
 		$tagList = $tag_ids = array();
@@ -208,17 +334,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		}
 	}
 	
-	/**
-	 * Returns a select box of available categories, optionally filtered by module
-	 *
-	 * @param string $action page to load on submit
-	 * @param int $selected
-	 * @param string $zero_option_message
-	 * @return string $form
-	 */
-	
-	public function getCategorySelectBox($action, $selected = null, $zero_option_message = '---',
-			$module_id = null, $item = null) 
+	private function _getCategorySelectBox($action, $selected, $zero_option_message, $module_id,
+			$item) 
 	{	
 		$clean_module_id = isset($module_id) ? intval($module_id): null ;
 		$clean_item = mysql_real_escape_string($item);
@@ -244,12 +361,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		}
 	}
 	
-	/**
-	 * Checks if the given tag (category) is a parent
-	 * @param int $id
-	 * @return bool 
-	 */
-	public function check_is_parent($id) {
+	private function _check_is_parent($id) {
 		$is_parent = FALSE;
 		$criteria = icms_buildCriteria(array('parent_id' => $id, 'label_type' => '1'));
 		$is_parent = $this->getList($criteria);
@@ -260,13 +372,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		}
 	}
 
-	/**
-	 * Allows the category admin page to be filtered by module
-	 * 
-	 * @return array
-	 */
-	public function module_filter()
-	{
+	private function _module_filter() {
 		$moduleList = array();
 		
 		// Get a list of modules installed on the system, module id as key
@@ -277,31 +383,15 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		return $moduleList;
 	}
 	
-	/**
-	 * Allows the tag/category admin page to be filtered by those with/without navigation element status
-	 * 
-	 * @return array
-	 */
-	public function navigation_element_filter() {
+	private function _navigation_element_filter() {
 		return array(0 => _CO_SPROCKETS_TAG_NO, 1 => _CO_SPROCKETS_TAG_YES);
 	}
 	
-	/**
-	 * Allows the tag/category admin page to be filtered by those with/without rss feeds
-	 * 
-	 * @return array
-	 */
-	public function rss_filter() {
+	private function _rss_filter() {
 		return array(0 => _CO_SPROCKETS_TAG_RSS_DISABLED, 1 => _CO_SPROCKETS_TAG_RSS_ENABLED);
 	}
 	
-	/**
-	 * Returns an array of tag objects that have RSS feeds enabled
-	 *
-	 * @return array $tag_object_array
-	 */
-
-	public function getTagsWithRss() {
+	private function _getTagsWithRss() {
 		
 		$criteria = new icms_db_criteria_Compo();
 		//$criteria->add(new icms_db_criteria_Item('label_type', '1', '!='));
@@ -312,14 +402,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		return $tag_object_array;
 	}
 	
-	/**
-	 * Toggles a yes/no field on or offline
-	 *
-	 * @param int $id
-	 * @param str $field
-	 * @return int $status
-	 */
-	public function toggleStatus($id, $field) {
+	private function _toggleStatus($id, $field) {
 		
 		$status = $obj = '';
 		
@@ -336,16 +419,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		return $status;
 	}
 	
-	/**
-	 * Converts an array of mixed client objects (as arrays) from different modules and prepares
-	 * them for insertion into smarty templates (user side display)
-	 * 
-	 * To do this the function maintains a list of the equivalent function that converts objects
-	 * for user-side display in each client module. The names of these functions will be 
-	 * standardised in future so that this function can be deprecated.
-	 * 
-	 */
-	public function prepareClientItemsForDisplay($mixedClientItems) {
+	private function _prepareClientItemsForDisplay($mixedClientItems) {
 		// Holds the converted results
 		$mixedClientArray = array();
 		
@@ -471,14 +545,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		return $mixedClientArray;
 	}
 
-	/**
-	 * Cleans up after category deletion: Deletes child categories and associated taglink objects
-	 *
-	 * @param object $obj
-	 * @return bool
-	 */
-
-	protected function afterDelete(&$obj) {
+	private function _afterDelete(&$obj) {
 		
 		include_once ICMS_ROOT_PATH . '/modules/sprockets/include/angry_tree.php';
 		

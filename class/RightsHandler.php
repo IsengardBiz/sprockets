@@ -21,12 +21,17 @@ class SprocketsRightsHandler extends icms_ipf_Handler {
 		parent::__construct($db, 'rights', 'rights_id', 'title', 'description',
 			'sprockets');
 	}
+	
+	////////////////////////////////////////////////////////
+	//////////////////// PUBLIC METHODS ////////////////////
+	////////////////////////////////////////////////////////
 
-	/*
-     * Returns a list of Rights (array)
-	*/
+	/**
+	 * Returns a list of Rights
+	 * @return array
+	 */
 	public function getRights() {
-		return $this->getList();
+		return $this->_getRights();
 	}
 	
 	/**
@@ -38,6 +43,18 @@ class SprocketsRightsHandler extends icms_ipf_Handler {
 	 * @return array 
 	 */
 	public function get_rights_buffer($with_links = FALSE) {
+		return $this->_get_rights_buffer($with_links);
+	}
+	
+	/////////////////////////////////////////////////////////
+	//////////////////// PRIVATE METHODS ////////////////////
+	/////////////////////////////////////////////////////////
+
+	private function _getRights() {
+		return $this->getList();
+	}
+	
+	private function _get_rights_buffer($with_links = FALSE) {
 		
 		$rights_object_array = $rights_buffer = array();
 		

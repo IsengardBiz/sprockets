@@ -13,6 +13,11 @@
 
 class SprocketsArchiveHandler extends icms_ipf_Handler {
 
+	
+	////////////////////////////////////////////////////////
+	//////////////////// PUBLIC METHODS ////////////////////
+	////////////////////////////////////////////////////////
+	
 	/**
 	 * Constructor
 	 */
@@ -21,8 +26,6 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 			'base_url', 'sprockets');
 	}
 	
-	// INITIALISE DEFAULT ARCHIVE VALUES BECAUSE MOST OF THESE ARE FIXED
-
 	/**
 	 * Returns options to select which module this archive represents
 	 *
@@ -30,6 +33,174 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getModuleOptions() {
+		return $this->_getModuleOptions();
+	}
+	
+	/**
+	 * Returns names of compatible modules installed on the system
+	 * 
+	 * @return array
+	 */
+	
+	public function getModuleNames() {
+		return $this->_getModuleNames();
+	}
+	
+	/**
+	 * Returns the only metadataprefix supported by this repository (oai_dc)
+	 *
+	 * @return string
+	 */
+	
+	public function setMetadataPrefix() {
+		return $this->_setMetadataPrefix();
+	}
+	
+	/**
+	 * One of several functions used to build a unique identifier for each record
+	 *
+	 * @return string
+	 */
+	
+	public function setNamespace() {
+		return $this->_setNamespace();
+	}
+	
+	/**
+	 * Returns the timestamp granularity supported by this repository in OAIPMH datetime format
+	 *
+	 * This implementation supports seconds-level granularity, which is the maximum.
+	 *
+	 * @return string
+	 */
+	public function setGranularity() {
+		return $this->_setGranularity();
+	}
+	
+	/**
+	 * Returns whether this repository supports deleted record tracking (no)
+	 *
+	 * @return string
+	 */
+	public function setDeletedRecord() {
+		return $this->_setDeletedRecord();
+	}
+	
+	/**
+	 * Sets the earliest datestamp attribute for this repository, using the Unix epoch as default
+	 *
+	 * If there are records in the repository, the oldest datestamp will be reported as that of
+	 * the oldest record. For safety reasons, this will include offline and non-federated records
+	 * so if a records online or federation status changes, nothing will be broken. If there are
+	 * no records, the beginning of the Unix epoch will be used as the earliest datestamp value.
+	 *
+	 * @return string
+	 */
+	public function setEarliestDatestamp() {
+		return $this->_setEarliestDatestamp();
+	}
+	
+	/**
+	 * Returns the repository's admin email address, as per the OAIPMH spec requirements
+	 *
+	 * @global mixed $icmsConfig
+	 *
+	 * @return string
+	 */
+	public function setAdminEmail() {
+		return $this->_setAdminEmail();
+	}
+	
+	/**
+	 * Returns the OAIPMH version in use by this repository (2.0, the current version)
+	 *
+	 * @return string
+	 */
+	public function setProtocolVersion() {
+		return $this->_setProtocolVersion();
+	}
+	
+	/**
+	 * Returns the name of the repository, default value is the site name in global preferences.
+	 *
+	 * A different respository name can be set within the Archive object.
+	 *
+	 * @global mixed $icmsConfig
+	 *
+	 * @return string
+	 */
+	public function setRepositoryName() {
+		return $this->_setRepositoryName();
+	}
+	
+	/**
+	 * Returns the base URL, which is the URL against which OAIPMH requests should be sent
+	 *
+	 * @param string $directory
+	 *
+	 * @return string
+	 */
+	public function setBaseUrl($directory = FALSE) {
+		return $this->_setBaseUrl($directory);
+	}
+	
+	/**
+	 * Returns the compression scheme(s) supported by this repository (only gzip)
+	 *
+	 * @return string
+	 */
+	public function setCompression() {
+		return $this->_setCompression();
+	}
+	
+	/**
+	 * Converts a timestamp to the OAIPMH datetime format as per the spec
+	 * 
+	 * @param string $timestamp
+	 * @return string
+	 */
+	public function timestamp_to_oaipmh_time($timestamp) {
+		return $this->_timestamp_to_oaipmh_time($timestamp);
+	}
+	
+	/**
+	 * Toggles a yes/no field on or offline
+	 *
+	 * @param int $id
+	 * @param str $field
+	 * @return int $status
+	 */
+	public function toggleStatus($id, $field) {
+		return $this->_toggleStatus($id, $field);
+	}
+	
+	/**
+	 * Returns a mimetypes but using the ICMS include but NOT using the core mimetype handler
+	 *
+	 * @param string $format_extension - the filetype extension of a publication object
+	 * @return string $mimetype
+	 */
+	public function get_mimetype($format_extension) {
+		return $this->_get_mimetype($format_extension);
+	}
+	
+	/**
+	 * Prevents more than one archive object being created per client module (only one is needed)
+	 *
+	 * @param object $obj
+	 * @return boolean
+	 */
+	public function beforeSave(&$obj) {
+		return $this->_beforeSave($obj);
+	}
+	
+	/////////////////////////////////////////////////////////
+	//////////////////// PRIVATE METHODS ////////////////////
+	/////////////////////////////////////////////////////////
+	
+	// INITIALISE DEFAULT ARCHIVE VALUES BECAUSE MOST OF THESE ARE FIXED
+	
+	private function _getModuleOptions() {
 		
 		$module_options = array();
 		$module_handler = icms::handler("icms_module");
@@ -54,13 +225,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		return $module_options;
 	}
 	
-	/**
-	 * Returns names of compatible modules installed on the system
-	 * 
-	 * @return int
-	 */
-	
-	public function getModuleNames() {
+	private function _getModuleNames() {
 		
 		$module_names = array();
 		$module_handler = icms::handler("icms_module");
@@ -106,21 +271,11 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		return $module_names;
 	}
 	
-	/**
-	 * Returns the only metadataprefix supported by this repository (oai_dc)
-	 *
-	 * @return string
-	 */
-	public function setMetadataPrefix() {
+	private function _setMetadataPrefix() {
 		return 'oai_dc';
 	}
 
-	/**
-	 * One of several functions used to build a unique identifier for each record
-	 *
-	 * @return string
-	 */
-	public function setNamespace() {
+	private function _setNamespace() {
 		$namespace = ICMS_URL;
 		$namespace = str_replace('http://', '', $namespace);
 		$namespace = str_replace('https://', '', $namespace);
@@ -128,84 +283,34 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		return $namespace;
 	}
 
-	/**
-	 * Returns the timestamp granularity supported by this repository in OAIPMH datetime format
-	 *
-	 * This implementation supports seconds-level granularity, which is the maximum.
-	 *
-	 * @return string
-	 */
-	public function setGranularity() {
+	private function _setGranularity() {
 		return 'YYYY-MM-DDThh:mm:ssZ';
 	}
 
-	/**
-	 * Returns whether this repository supports deleted record tracking (no)
-	 *
-	 * @return string
-	 */
-	public function setDeletedRecord() {
-		return 'no';
+	private function _setDeletedRecord() {
+		return 'no'; // Do not move this into a language file, this is a specification response
 	}
 
-	/**
-	 * Sets the earliest datestamp attribute for this repository, using the Unix epoch as default
-	 *
-	 * If there are records in the repository, the oldest datestamp will be reported as that of
-	 * the oldest record. For safety reasons, this will include offline and non-federated records
-	 * so if a records online or federation status changes, nothing will be broken. If there are
-	 * no records, the beginning of the Unix epoch will be used as the earliest datestamp value.
-	 *
-	 * @return string
-	 */
-	public function setEarliestDatestamp() {
+	private function _setEarliestDatestamp() {
 		return '1970-01-01T00:00:00Z';
 	}
 
-	/**
-	 * Returns the repository's admin email address, as per the OAIPMH spec requirements
-	 *
-	 * @global mixed $icmsConfig
-	 *
-	 * @return string
-	 */
-	public function setAdminEmail() {
+	private function _setAdminEmail() {
 		global $icmsConfig;
 		return $icmsConfig['adminmail'];
 	}
 
-	/**
-	 * Returns the OAIPMH version in use by this repository (2.0, the current version)
-	 *
-	 * @return string
-	 */
-	public function setProtocolVersion() {
-		return '2.0';
+	private function _setProtocolVersion() {
+		return '2.0'; // Do not move this into a language file, this is a specification response
 	}
 
-	/**
-	 * Returns the name of the repository, default value is the site name in global preferences.
-	 *
-	 * A different respository name can be set within the Archive object.
-	 *
-	 * @global mixed $icmsConfig
-	 *
-	 * @return string
-	 */
-	public function setRepositoryName() {
+	private function _setRepositoryName() {
 		global $icmsConfig;
 		$repository_name = $icmsConfig['sitename'] . ' - ' . $icmsConfig['slogan'];
 		return $repository_name;
 	}
 
-	/**
-	 * Returns the base URL, which is the URL against which OAIPMH requests should be sent
-	 *
-	 * @param string $directory
-	 *
-	 * @return string
-	 */
-	public function setBaseUrl($directory = FALSE) {
+	private function _setBaseUrl($directory) {
 
 		$base_url = '';
 
@@ -220,35 +325,17 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		return $base_url;
 	}
 
-	/**
-	 * Returns the compression scheme(s) supported by this repository (only gzip)
-	 *
-	 * @return string
-	 */
-	public function setCompression() {
+	private function _setCompression() {
 		return 'gzip';
 	}
 
-	/**
-	 * Converts a timestamp to the OAIPMH datetime format as per the spec
-	 * 
-	 * @param string $timestamp
-	 * @return string
-	 */
-	public function timestamp_to_oaipmh_time($timestamp) {
+	private function _timestamp_to_oaipmh_time($timestamp) {
 		$format = 'Y-m-d\TH:i:s\Z';
 		$oai_date_time = date($format, $timestamp);
 		return $oai_date_time;
 	}
 	
-	/**
-	 * Toggles a yes/no field on or offline
-	 *
-	 * @param int $id
-	 * @param str $field
-	 * @return int $status
-	 */
-	public function toggleStatus($id, $field) {
+	private function _toggleStatus($id, $field) {
 		
 		$status = $obj = '';
 		
@@ -265,13 +352,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		return $status;
 	}
 	
-	/**
-	 * Returns a mimetypes but using the ICMS include but NOT using the core mimetype handler
-	 *
-	 * @param string $format_extension - the filetype extension of a publication object
-	 * @return string $mimetype
-	 */
-	public function get_mimetype($format_extension) {
+	private function _get_mimetype($format_extension) {
 		// There is a core file that has a nice list of mimetypes, but some podcast clients don't observe the standard
 		$mimetype_list = icms_Utils::mimetypes();
 
@@ -287,13 +368,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 		}
 	}
 
-	/**
-	 * Prevents more than one archive object being created per client module (only one is needed)
-	 *
-	 * @param object $obj
-	 * @return boolean
-	 */
-	public function beforeSave(& $obj) {
+	private function _beforeSave(&$obj) {
 
 		// check if an archive already exists for this module
 

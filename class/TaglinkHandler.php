@@ -12,6 +12,10 @@
 */
 
 class SprocketsTaglinkHandler extends icms_ipf_Handler {
+	
+	////////////////////////////////////////////////////////
+	//////////////////// PUBLIC METHODS ////////////////////
+	////////////////////////////////////////////////////////
 
 	/**
 	 * Constructor
@@ -31,6 +35,132 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @return array $ret
 	 */
     public function getTagsForObject($iid, &$handler, $label_type = '0') {
+		return $this->_getTagsForObject($iid, &$handler, $label_type);
+	}
+	
+	/**
+	 * Returns a list of module/object pairs that are clients of sprockets
+	 * 
+	 * @return array
+	 */
+	public function getClientObjects() {
+		return $this->_getClientObjects();
+	}
+	
+	/**
+	 * Returns a list of content items (as arrays) associated with a specific tag, module or item type
+	 *
+	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
+	 * feeds and tag pages. Always use this method with a limit and as many parameters as possible
+	 * in order to simplify the results and avoid slow queries (for example, if you neglect to 
+	 * specify a module_id it will run queries on all compatible modules).
+	 * 
+	 * Note: The first element in the returned array is a COUNT of the total number of available
+	 * results, which is used to construct pagination controls. The calling code needs to remove
+	 * this element before attempting to process the content objects
+	 * 
+	 * Note: This method should ONLY be used to retrieve content from multiple modules 
+	 * simultaneously. Individual modules can retrieve / process their own results much more 
+	 * efficiently using their own methods or a standard IPF call.
+	 *
+	 * @param mixed $tag_id // Can be an int (tag ID) or 'untagged' to retrieve untagged content
+	 * @param int $module_id
+	 * @param array $item_type // list of object types as strings
+	 * @param int $start
+	 * @param int $limit
+	 * @param string $sort
+	 * 
+	 * @return array $content_object_array
+	 */
+	
+	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
+			$start = FALSE, $limit = FALSE, $sort = 'DESC') {
+		return $this->_getTaggedItems($tag_id, $module_id, $item_type, $start, $limit, $sort);
+	}
+	
+	/**
+	 * Returns a list of content items (as arrays) that has been marked as untagged, and that are
+	 * optionally associated with a specific tag, module or item type
+	 *
+	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
+	 * feeds and content pages. Always use this method with a limit and as many parameters as possible
+	 * in order to simplify the results and avoid slow queries (for example, if you neglect to 
+	 * specify a module_id it will run queries on all compatible modules).
+	 * 
+	 * Note: The first element in the returned array is a COUNT of the total number of available
+	 * results, which is used to construct pagination controls. The calling code needs to remove
+	 * this element before attempting to process the content objects
+	 * 
+	 * Note: This method should ONLY be used to retrieve content from multiple modules 
+	 * simultaneously. Individual modules can retrieve / process their own results much more 
+	 * efficiently using their own methods or a standard IPF call.
+	 *
+	 * @param int $tag_id
+	 * @param int $module_id
+	 * @param array $item_type // list of object types as strings
+	 * @param int $start
+	 * @param int $limit
+	 * @param string $sort
+	 * 
+	 * @return array $content_object_array
+	 */
+	public function getUntaggedContent($module_id = FALSE, $item_type = FALSE, $start = FALSE,
+			$limit = FALSE, $sort = 'DESC') {
+		return $this->_getUntaggedContent($module_id, $item_type, $start, $limit, $sort);
+	}
+	
+	/**
+	 * Saves tags for an object by creating taglinks.
+	 * 
+	 * If you are saving categories, you need to pass in the category key. Also note: If your object 
+	 * has both tags and categories, then you need to call this method TWICE with different 
+	 * label_type (0 = tag, 1 = category) in order to update them both. The 'untagged' option only 
+	 * applies to tags (not available for categories).
+	 *
+	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
+	 * 
+	 * @param object $obj
+	 * @param string $tag_var
+	 */
+
+	public function storeTagsForObject(&$obj, $tag_var = 'tag', $label_type = '0') {
+		$this->_storeTagsForObject(&$obj, $tag_var, $label_type);
+	}
+	
+	/**
+	 * Deletes either the category- or tag-related taglinks of an object prior to updating it.
+	 * 
+	 * When updating an objects tags or categories, it is necessary to delete the old ones before
+	 * saving the new, modified set. This creates a problem: Since tags/categories are managed 
+	 * separately (because some objects may have both), you can't just delete them all because they 
+	 * reside in the same database table. You need to delete EITHER the tags OR the categories.
+	 * Otherwise updating your tags will kill all your categories, and vice-versa. So call this
+	 * method with the appropriate label_type and it will selectively delete them.
+	 * 
+	 * @param obj $obj
+	 * @param int $label_type (0 = tags, 1 = categories)
+	 */
+	public function deleteTagsForObject(&$obj, $label_type) {
+		$this->_deleteTagsForObject(&$obj, $label_type);
+	}
+	
+	/**
+	 * Cleans up taglinks after an object is deleted
+	 * 
+	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
+	 *
+	 * @param object $obj
+	 */
+
+	public function deleteAllForObject(&$obj) {
+		$this->_deleteAllForObject(&$obj);
+	}
+	
+	/////////////////////////////////////////////////////////
+	//////////////////// PRIVATE METHODS ////////////////////
+	/////////////////////////////////////////////////////////
+	
+    private function _getTagsForObject($iid, &$handler, $label_type) {
 		
 		$tagList = $resultList = $ret = array();
 		$moduleObj = icms_getModuleInfo($handler->_moduleName);
@@ -77,12 +207,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
     	return $resultList;
     }
 	
-	/**
-	 * Returns a list of module/object pairs that are clients of sprockets
-	 * 
-	 * @return array
-	 */
-	public function getClientObjects() {
+	private function _getClientObjects() {
 		return array(
 			'article' => 'news',
 			'programme' => 'podcast',
@@ -95,33 +220,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			);
 	}
 	
-	/**
-	 * Returns a list of content items (as arrays) associated with a specific tag, module or item type
-	 *
-	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
-	 * feeds and tag pages. Always use this method with a limit and as many parameters as possible
-	 * in order to simplify the results and avoid slow queries (for example, if you neglect to 
-	 * specify a module_id it will run queries on all compatible modules).
-	 * 
-	 * Note: The first element in the returned array is a COUNT of the total number of available
-	 * results, which is used to construct pagination controls. The calling code needs to remove
-	 * this element before attempting to process the content objects
-	 * 
-	 * Note: This method should ONLY be used to retrieve content from multiple modules 
-	 * simultaneously. Individual modules can retrieve / process their own results much more 
-	 * efficiently using their own methods or a standard IPF call.
-	 *
-	 * @param mixed $tag_id // Can be an int (tag ID) or 'untagged' to retrieve untagged content
-	 * @param int $module_id
-	 * @param array $item_type // list of object types as strings
-	 * @param int $start
-	 * @param int $limit
-	 * @param string $sort
-	 * @return array $content_object_array
-	 */
-	
-	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
-			$start = FALSE, $limit = FALSE, $sort = 'DESC') {
+	private function _getTaggedItems($tag_id, $module_id, $item_type, $start, $limit, $sort) {
 		
 		$sql = $item_list = $items = '';
 		$content_count = 0;
@@ -381,54 +480,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		return $content_array;
 	}
 	
-	/**
-	 * Returns a list of content items (as arrays) that has been marked as untagged, and that are
-	 * optionally associated with a specific tag, module or item type
-	 *
-	 * Can draw content from across compatible modules simultaneously. Used to build unified RSS
-	 * feeds and content pages. Always use this method with a limit and as many parameters as possible
-	 * in order to simplify the results and avoid slow queries (for example, if you neglect to 
-	 * specify a module_id it will run queries on all compatible modules).
-	 * 
-	 * Note: The first element in the returned array is a COUNT of the total number of available
-	 * results, which is used to construct pagination controls. The calling code needs to remove
-	 * this element before attempting to process the content objects
-	 * 
-	 * Note: This method should ONLY be used to retrieve content from multiple modules 
-	 * simultaneously. Individual modules can retrieve / process their own results much more 
-	 * efficiently using their own methods or a standard IPF call.
-	 *
-	 * @param int $tag_id
-	 * @param int $module_id
-	 * @param array $item_type // list of object types as strings
-	 * @param int $start
-	 * @param int $limit
-	 * @param string $sort
-	 * @return array $content_object_array
-	 */
-	public function getUntaggedContent($module_id = FALSE, $item_type = FALSE, $start = FALSE,
-			$limit = FALSE, $sort = 'DESC') {
-			return $this->getTaggedItems('untagged', $module_id, $item_type, $start, $limit, $sort);
+	private function _getUntaggedContent($module_id, $item_type, $start, $limit, $sort) {
+		return $this->getTaggedItems('untagged', $module_id, $item_type, $start, $limit, $sort);
 	}
 	
-	/**
-	 * Saves tags for an object by creating taglinks.
-	 * 
-	 * If you are saving categories, you need to pass in the category key. Also note: If your object 
-	 * has both tags and categories, then you need to call this method TWICE with different 
-	 * label_type (0 = tag, 1 = category) in order to update them both. The 'untagged' option only 
-	 * applies to tags (not available for categories).
-	 *
-	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
-	 * 
-	 * @param object $obj
-	 * @param string $tag_var
-	 */
-
-	public function storeTagsForObject(& $obj, $tag_var = 'tag', $label_type = '0')
-	{		
+	private function _storeTagsForObject(&$obj, $tag_var, $label_type) {		
 		// Remove existing taglinks prior to saving the updated set
-		$this->deleteTagsForObject($obj, $label_type);
+		$this->_deleteTagsForObject($obj, $label_type);
 		
 		// Make sure this is an array (select control returns string, selectmulti returns array)
 		$tag_array = $obj->getVar($tag_var);
@@ -465,21 +523,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		}
     }
 	
-	/**
-	 * Deletes either the category- or tag-related taglinks of an object prior to updating it.
-	 * 
-	 * When updating an objects tags or categories, it is necessary to delete the old ones before
-	 * saving the new, modified set. This creates a problem: Since tags/categories are managed 
-	 * separately (because some objects may have both), you can't just delete them all because they 
-	 * reside in the same database table. You need to delete EITHER the tags OR the categories.
-	 * Otherwise updating your tags will kill all your categories, and vice-versa. So call this
-	 * method with the appropriate label_type and it will selectively delete them.
-	 * 
-	 * @param obj $obj
-	 * @param int $label_type (0 = tags, 1 = categories)
-	 */
-	public function deleteTagsForObject(& $obj, $label_type)
-	{
+	private function _deleteTagsForObject(&$obj, $label_type) {
 		$criteria = $sprockets_tag_handler = $sprockets_taglink_handler = $moduleObj = '';
 		$tagList = $taglinkObjArray = $taglinks_for_deletion = array();
 		
@@ -525,15 +569,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 	// This function based on code from ImTagging
 
-	/**
-	 * Cleans up taglinks after an object is deleted
-	 * 
-	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
-	 *
-	 * @param object $obj
-	 */
-
-	public function deleteAllForObject(&$obj) {
+	private function _deleteAllForObject(&$obj) {
 		/**
 		 * @todo: add $moduleObj as a static var
 		 */
