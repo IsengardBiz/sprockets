@@ -80,3 +80,4 @@ This allows display of a unified cross-module content feed on the home page with
 URL like /sprockets/modules/tag.php
 - Added RSS autodiscovery links to tag.php and the alternative index page
 - Added a preference to enable/disable tag.php and the alternative index page.
+- Added accessors to class methods in preparation for decoupling the data validation.
