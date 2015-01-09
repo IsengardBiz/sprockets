@@ -120,6 +120,20 @@ class SprocketsTag extends icms_ipf_seo_Object {
 		return $this->_rss();
 	}
 	
+	/*
+	 * Performs the same function as toArray(), but does not permit getVar() overrides for specified
+	 * fields (ie. those requiring query lookups), so that they can be *manually* overriden from 
+	 * buffers. This can substantially reduce the number of queries when converting a large number 
+	 * of objects (for example, on an index page).
+	 * 
+	 * @return array
+	 */
+	public function toArrayWithoutOverrides() {
+		return $this->_toArrayWithoutOverrides();
+	}
+	
+	
+	
 	/**
 	 * Returns a html snippet containing an RSS icon and link to the feed URL for a given tag
 	 * 
@@ -169,7 +183,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * 
 	 * @return mixed
 	 */
-	private function delete_category_action() {
+	public function delete_category_action() {
 		return $this->_delete_category_action();
 	}
 	
@@ -250,6 +264,37 @@ class SprocketsTag extends icms_ipf_seo_Object {
 				. _CO_SPROCKETS_TAG_ONLINE . '" title="' . _CO_SPROCKETS_TAG_SWITCH_OFFLINE . '" /></a>';
 		}
 		return $button;
+	}
+	
+	private function _toArrayWithoutOverrides() {
+		$ret = $vars = $blacklisted_vars = array();
+		
+		// These are the properties that we don't want converted, because each one costs a query
+		$blacklisted_vars = array('parent_id', 'mid');
+		
+		$vars = $this->getVars();
+		foreach ($vars as $key=>$var) {
+			if (in_array($key, $blacklisted_vars)) {
+				$value = $this->getVar($key, 'e');
+				$ret[$key] = $value;
+			} else {
+				$value = $this->getVar($key);
+				$ret[$key] = $value;
+			}
+		}
+		if ($this->handler->identifierName != "") {
+			$controller = new icms_ipf_Controller($this->handler);
+			/**
+			 * Addition of some automatic value
+			 */
+			$ret['itemLink'] = $controller->getItemLink($this);
+			$ret['itemUrl'] = $controller->getItemLink($this, TRUE);
+			$ret['editItemLink'] = $controller->getEditItemLink($this, FALSE, TRUE);
+			$ret['deleteItemLink'] = $controller->getDeleteItemLink($this, FALSE, TRUE);
+			$ret['printAndMailLink'] = $controller->getPrintAndMailLink($this);
+		}
+
+		return $ret;
 	}
 	
 	private function _getRssFeedLink() {

@@ -37,7 +37,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Returns a list of tag bnames with tag_id as key and a 0 element for building select boxes
+	 * Returns a list of tag names with tag_id as key and a 0 element for building select boxes
 	 *
 	 * @return array
 	 */
@@ -55,8 +55,19 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * @return array
 	 */
 	
-	public function getTagBuffer() {
-		return $this->_getTagBuffer();
+	public function getTagBuffer($as_objects = FALSE) {
+		return $this->_getTagBuffer($as_objects);
+	}
+	
+	/**
+	 * Returns a list of categories with tag_id as key for use as a buffer
+	 * 
+	 * To do: It might be possible to extract a portion of the category tree, to improve efficiency
+	 * 
+	 * @return array
+	 */
+	public function getCategoryBuffer($module_id) {
+		return $this->_getCategoryBuffer($module_id);
 	}
 	
 	/**
@@ -203,12 +214,27 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		return $tagList;
 	}
 	
-	private function _getTagBuffer() {
+	private function _getTagBuffer($as_objects) {
 		$tag_buffer = array();
-		$tag_buffer = $this->getTags();
-		// Remove the 0 '---' element as we aren't building a select box!
-		unset($tag_buffer[0]);
+		if ($as_objects) {
+			$criteria = icms_buildCriteria(array('label_type' => '0'));
+			$tag_buffer = $this->getObjects($criteria, TRUE, TRUE);
+			$tag_buffer[0] = $this->create();
+			$tag_buffer[0]->setVar('title', _CO_SPROCKETS_TAG_UNTAGGED);
+			$tag_buffer[0]->setVar('tag_id', 'untagged');
+		} else {
+			$tag_buffer = $this->getTags();
+			$tag_buffer[0] = _CO_SPROCKETS_TAG_UNTAGGED;
+		}
+		
 		return $tag_buffer;
+	}
+	
+	private function _getCategoryBuffer($module_id) {
+		$category_buffer = array();
+		$criteria = icms_buildCriteria(array('label_type' => '1', 'mid' => $module_id));
+		$category_buffer = $this->getObjects($criteria, TRUE, TRUE);
+		return $category_buffer;
 	}
 
 	private function _getCategoryOptions($selected = '') {
@@ -306,23 +332,23 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 				} else {
 					// Flip the array so we can use the IDs to check for matching keys in the master $tagList
 					$tagList =  array(0 => $zero_option_message) + array_intersect_key($tagList, array_flip($tag_ids));
+					// Add an extra option for selecting untagged content
+					if ($untagged_content_option) {
+						$tagList['untagged'] = _CO_SPROCKETS_TAG_UNTAGGED;
+					}
 				}
 			}
-		}		
-
+		}
 		if (!empty($tagList)) {
 			$form = '<div><form name="tag_selection_form" action="' . $action . '" method="get">';
 			$form .= '<select name="tag_id" id="tag_id" onchange="this.form.submit()">';
+			echo 'selected: ' . $selected . '<br />';
 			foreach ($tagList as $key => $value) {
-				if ($key == $selected) {
-				$form .= '<option value="' . $key . '" selected="selected">' . $value . '</option>';
+				if ($key === $selected) {
+					$form .= '<option value="' . $key . '" selected="selected">' . $value . '</option>';
 				} else {
 					$form .= '<option value="' . $key . '">' . $value . '</option>';
 				}
-			}
-			// Add an extra option for selecting untagged content
-			if ($untagged_content_option) {
-				$form .= '<option value="untagged" >' . _CO_SPROCKETS_TAG_UNTAGGED . '</option>';
 			}
 			$form .= '</select></form></div>';
 

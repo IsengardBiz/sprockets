@@ -70,7 +70,6 @@ basically content where you didn't bother to select any tags (ie. it happens aut
 - Updated deleteTagsForObject() to correctly delete 'untagged' taglinks when editing an object.
 - Unified RSS feed now supports a generic feed unfiltered by tag.
 - Removed unused method mid() from Tag.php
-- Removed unused method toArrayWithoutOverrides() from Tag.php
 - Removed unused methods getTaglinkModules() and getTaglinkItems() from TaglinkHandler.php
 - Removed misplaced method getTagSelectBox() from RightsHandler.php
 - Removed unused method get_parent_id_buffer() from TagHandler.php
