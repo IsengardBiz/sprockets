@@ -33,7 +33,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTagName($tag_id) {
-		return $this->_getTagName($tag_id);
+		$clean_tag_id = isset($tag_id) ? intval($tag_id) : 0;
+		return $this->_getTagName($clean_tag_id);
 	}
 	
 	/**
@@ -56,7 +57,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTagBuffer($as_objects = FALSE) {
-		return $this->_getTagBuffer($as_objects);
+		$clean_as_objects = isset($as_objects) ? (bool)$as_objects : FALSE;
+		return $this->_getTagBuffer($clean_as_objects);
 	}
 	
 	/**
@@ -67,7 +69,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * @return array
 	 */
 	public function getCategoryBuffer($module_id) {
-		return $this->_getCategoryBuffer($module_id);
+		$clean_module_id = isset($module_id) ? intval($module_id) : 0;
+		return $this->_getCategoryBuffer($clean_module_id);
 	}
 	
 	/**
@@ -78,7 +81,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 
 	public function getCategoryOptions($selected = '') {
-		return $this->_getCategoryOptions();
+		$clean_selected = (string)$selected;
+		return $this->_getCategoryOptions($clean_selected);
 	}
 	
 	/**
@@ -93,8 +97,21 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	public function getTagSelectBox($action, $selected = null, $zero_option_message = '---',
 			$navigation_elements_only = TRUE, $module_id = null, $item = null,
 			$untagged_content_option = FALSE) {
-		return $this->_getTagSelectBox($action, $selected, $zero_option_message, 
-				$navigation_elements_only, $module_id, $item , $untagged_content_option);
+		
+		// Sanitise parameters used to build query in case a client module passes in bad data
+		$clean_action = (string)$action;
+		$clean_selected = (string)$selected;
+		$clean_zero_option_message = (string)$zero_option_message;
+		$clean_navigation_elements_only = isset($navigation_elements_only) 
+			? (bool)$navigation_elements_only : TRUE;
+		$clean_module_id = isset($module_id) ? intval($module_id): null ;
+		$clean_item = isset($item) ? mysql_real_escape_string($item) : null;	
+		$clean_untagged_content_option = isset($untagged_content_option) 
+			? (bool)$untagged_content_option : FALSE;
+		
+		return $this->_getTagSelectBox($clean_action, $clean_selected, $clean_zero_option_message, 
+				$clean_navigation_elements_only, $clean_module_id, $clean_item , 
+				$clean_untagged_content_option);
 	}
 	
 	/**
@@ -108,17 +125,23 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	
 	public function getCategorySelectBox($action, $selected = null, $zero_option_message = '---',
 			$module_id = null, $item = null) {
-		return $this->_getCategorySelectBox($action, $selected, $zero_option_message, $module_id,
-				$item);
+		$clean_action = (string)$action;
+		$clean_selected = isset($selected) ? (string)$selected : null;
+		$clean_zero_option_message = (string)$zero_option_message;
+		$clean_module_id = isset($module_id) ? intval($module_id): null ;
+		$clean_item = isset($item) ? mysql_real_escape_string($item) : null;		
+		return $this->_getCategorySelectBox($clean_action, $clean_selected, 
+				$clean_zero_option_message, $clean_module_id, $clean_item);
 	}
 	
 	/**
 	 * Checks if the given tag (category) is a parent
 	 * @param int $id
-	 * @return bool 
+	 * @return bool
 	 */
 	public function check_is_parent($id) {
-		return $this->_check_is_parent($id);
+		$clean_id = isset($id) ? intval($id) : 0;
+		return $this->_check_is_parent($clean_id);
 	}
 	
 	/**
@@ -166,7 +189,9 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * @return int $status
 	 */
 	public function toggleStatus($id, $field) {
-		return $this->_toggleStatus($id, $field);
+		$clean_id = isset($id) ? intval($id) : 0;
+		$clean_field = mysql_real_escape_string((string)$field);
+		return $this->_toggleStatus($clean_id, $clean_field);
 	}
 	
 	/**
@@ -179,7 +204,13 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * 
 	 */
 	public function prepareClientItemsForDisplay($mixedClientItems) {
-		return $this->_prepareClientItemsForDisplay($mixedClientItems);
+		$cleanMixedClientItems = array();
+		foreach ($mixedClientItems as $item) {
+			if (is_array($item) && array_key_exists('item', $item)) {
+				$cleanMixedClientItems[] = $item;
+			}
+		}
+		return $this->_prepareClientItemsForDisplay($cleanMixedClientItems);
 	}
 	
 	/**
@@ -190,7 +221,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 
 	public function afterDelete(&$obj) {
-		return $this->_afterDelete(&$obj);
+		$clean_object = is_object($obj) ? $obj : FALSE;
+		return $this->_afterDelete(&$clean_obj);
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -216,6 +248,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	
 	private function _getTagBuffer($as_objects) {
 		$tag_buffer = array();
+		icms_loadLanguageFile("sprockets", "common");
 		if ($as_objects) {
 			$criteria = icms_buildCriteria(array('label_type' => '0'));
 			$tag_buffer = $this->getObjects($criteria, TRUE, TRUE);
@@ -289,10 +322,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$form = $criteria = '';
 		$tagList = $tag_ids = array();
 		
-		// Sanitise parameters used to build query in case a client module passes in bad data
-		$clean_module_id = isset($module_id) ? intval($module_id): 0 ;
-		$clean_item = mysql_real_escape_string($item);
-		
 		if ($navigation_elements_only) {
 			$criteria = icms_buildCriteria(array('label_type' => '0', 'navigation_element' => '1'));
 		} else {
@@ -311,9 +340,9 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			
 			$query = $rows = $tag_ids = '';
 			$query = "SELECT DISTINCT `tid` FROM " . $sprockets_taglink_handler->table
-					. " WHERE `mid` = '" . $clean_module_id . "'";
-			if ($clean_item) {
-					$query .= " AND `item` = '" . $clean_item . "'";
+					. " WHERE `mid` = '" . $module_id . "'";
+			if ($item) {
+					$query .= " AND `item` = '" . $item . "'";
 			}
 			
 			$result = icms::$xoopsDB->query($query);
@@ -342,7 +371,6 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		if (!empty($tagList)) {
 			$form = '<div><form name="tag_selection_form" action="' . $action . '" method="get">';
 			$form .= '<select name="tag_id" id="tag_id" onchange="this.form.submit()">';
-			echo 'selected: ' . $selected . '<br />';
 			foreach ($tagList as $key => $value) {
 				if ($key === $selected) {
 					$form .= '<option value="' . $key . '" selected="selected">' . $value . '</option>';
@@ -360,12 +388,9 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		}
 	}
 	
-	private function _getCategorySelectBox($action, $selected, $zero_option_message, $module_id,
-			$item) 
-	{	
-		$clean_module_id = isset($module_id) ? intval($module_id): null ;
-		$clean_item = mysql_real_escape_string($item);
-		
+	private function _getCategorySelectBox($action, $selected, $zero_option_message, $clean_module_id,
+			$clean_item) 
+	{		
 		$categoryList = $this->getCategoryOptions();
 		if (!empty($categoryList)) {
 			$form = '<div><form name="tag_selection_form" action="' . $action . '" method="get">';

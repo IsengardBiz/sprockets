@@ -43,7 +43,8 @@ class SprocketsRightsHandler extends icms_ipf_Handler {
 	 * @return array 
 	 */
 	public function get_rights_buffer($with_links = FALSE) {
-		return $this->_get_rights_buffer($with_links);
+		$clean_with_links = bool($with_links);
+		return $this->_get_rights_buffer($clean_with_links);
 	}
 	
 	/////////////////////////////////////////////////////////

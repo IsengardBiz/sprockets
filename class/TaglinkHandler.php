@@ -25,7 +25,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 	
 	/**
-	 * Retrieve tag_ids for an object (either tag or category label_type, but not both)
+	 * Retrieve tag_ids for a SINGLE object (either tag or category label_type, but not both)
 	 *
 	 * Based on code from ImTagging: author marcan aka Marc-Andre Lanciault <marcan@smartfactory.ca>
 	 *
@@ -35,7 +35,33 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @return array $ret
 	 */
     public function getTagsForObject($iid, &$handler, $label_type = '0') {
-		return $this->_getTagsForObject($iid, &$handler, $label_type);
+		$clean_iid = isset($iid) ? intval($iid) : 0;
+		$clean_moduleName = mysql_real_escape_string((string)$handler->_moduleName);
+		$clean_itemname = mysql_real_escape_string((string)$handler->_itemname);
+		if ($label_type == '1') {
+			$clean_label_type = 1;
+		} else {
+			$clean_label_type = 0;
+		}
+		return $this->_getTagsForObject($clean_iid, $clean_moduleName, $clean_itemname, $clean_label_type);
+	}
+	
+	/**
+	 * Retrieve tag IDs for MULTIPLE objects sorted into a multidimensional array
+	 *  
+	 * @param array $iids
+	 * @param string $item
+	 * @param id $module
+	 * @return array
+	 */
+	public function getTagsForObjects($iids, $item, $module_id = FALSE) {
+		$clean_iids = array();
+		foreach ($iids as $iid) {
+			$clean_iids[] = intval($iid);
+		}
+		$clean_item = mysql_real_escape_string((string)$item);
+		$clean_module_id = isset($module_id) ? intval($module_id) : 0;
+		return $this->_getTagsForObjects($clean_iids, $clean_item, $clean_module_id);
 	}
 	
 	/**
@@ -75,7 +101,20 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	
 	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
 			$start = FALSE, $limit = FALSE, $sort = 'DESC') {
-		return $this->_getTaggedItems($tag_id, $module_id, $item_type, $start, $limit, $sort);
+		
+		$clean_tag_id = isset($tag_id) ? intval($tag_id) : 0;
+		$clean_module_id = isset($module_id) ? intval($module_id) : 0;
+		$clean_item_type = !empty($item_type) ? mysql_real_escape_string((string)$item_type) : FALSE;
+		$clean_start = isset($start) ? intval($start) : 0;
+		$clean_limit = isset($limit) ? intval($limit) : 0;
+		if ($sort == 'DESC') {
+			$clean_sort = 'DESC';
+		} else {
+			$clean_sort = 'ASC';
+		}
+		
+		return $this->_getTaggedItems($clean_tag_id, $clean_module_id, $clean_item_type,
+				$clean_start, $clean_limit, $clean_sort);
 	}
 	
 	/**
@@ -106,7 +145,19 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 */
 	public function getUntaggedContent($module_id = FALSE, $item_type = FALSE, $start = FALSE,
 			$limit = FALSE, $sort = 'DESC') {
-		return $this->_getUntaggedContent($module_id, $item_type, $start, $limit, $sort);
+		
+		$clean_module_id = isset($module_id) ? intval($module_id) : 0;
+		$clean_item_type = !empty($item_type) ? mysql_real_escape_string((string)$item_type) : FALSE;
+		$clean_start = isset($start) ? intval($start) : 0;
+		$clean_limit = isset($limit) ? intval($limit) : 0;
+		if ($sort == 'DESC') {
+			$clean_sort = 'DESC';
+		} else {
+			$clean_sort = 'ASC';
+		}
+		
+		return $this->_getUntaggedContent($clean_module_id, $clean_item_type, $clean_start, 
+				$clean_limit, $clean_sort);
 	}
 	
 	/**
@@ -117,14 +168,21 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * label_type (0 = tag, 1 = category) in order to update them both. The 'untagged' option only 
 	 * applies to tags (not available for categories).
 	 *
-	 * Based on code from ImTagging: author marcan aka Marc-AndrÃ© Lanciault <marcan@smartfactory.ca>
+	 * Based on code from ImTagging: author marcan aka Marc-Andre Lanciault <marcan@smartfactory.ca>
 	 * 
 	 * @param object $obj
 	 * @param string $tag_var
 	 */
 
 	public function storeTagsForObject(&$obj, $tag_var = 'tag', $label_type = '0') {
-		$this->_storeTagsForObject(&$obj, $tag_var, $label_type);
+		$clean_obj = is_object($obj) ? $obj : FALSE;
+		$clean_tag_var = !empty($tag_var) ? mysql_real_escape_string((string)($tag_var)) : 'tag';
+		if ($label_type == '0') {
+			$clean_label_type = 0;
+		} else {
+			$clean_label_type = 1;
+		}
+		$this->_storeTagsForObject(&$clean_obj, $clean_tag_var, $clean_label_type);
 	}
 	
 	/**
@@ -141,7 +199,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @param int $label_type (0 = tags, 1 = categories)
 	 */
 	public function deleteTagsForObject(&$obj, $label_type) {
-		$this->_deleteTagsForObject(&$obj, $label_type);
+		$clean_obj = is_object($obj) ? $obj : FALSE;
+		if ($label_type == '1') {
+			$clean_label_type = 1;
+		} else {
+			$clean_label_type = 0;
+		}
+		$this->_deleteTagsForObject(&$clean_obj, $clean_label_type);
 	}
 	
 	/**
@@ -153,17 +217,18 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 */
 
 	public function deleteAllForObject(&$obj) {
-		$this->_deleteAllForObject(&$obj);
+		$clean_obj = is_object($obj) ? $obj : FALSE;
+		$this->_deleteAllForObject(&$clean_obj);
 	}
 	
 	/////////////////////////////////////////////////////////
 	//////////////////// PRIVATE METHODS ////////////////////
 	/////////////////////////////////////////////////////////
 	
-    private function _getTagsForObject($iid, &$handler, $label_type) {
+    private function _getTagsForObject($iid, $moduleName, $itemname, $label_type) {
 		
 		$tagList = $resultList = $ret = array();
-		$moduleObj = icms_getModuleInfo($handler->_moduleName);
+		$moduleObj = icms_getModuleInfo($moduleName);
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		
 		// Sanitise parameters used in queries
@@ -172,9 +237,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
     	$criteria = new icms_db_criteria_Compo();
     	$criteria->add(new icms_db_criteria_Item('mid', $moduleObj->getVar('mid')));
-    	$criteria->add(new icms_db_criteria_Item('item', $handler->_itemname));
+    	$criteria->add(new icms_db_criteria_Item('item', $itemname));
     	$criteria->add(new icms_db_criteria_Item('iid', $clean_iid));
-		$criteria->add(new icms_db_criteria_Item('tid', '0', '!='));
     	$sql = 'SELECT DISTINCT `tid` FROM ' . $this->table;
 		$sql = mysql_real_escape_string($sql);
     	$rows = $this->query($sql, $criteria);
@@ -190,6 +254,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				'sprockets');
 		$criteria = icms_buildCriteria(array('label_type' => $clean_label_type));
 		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);
+		if (!$label_type) {
+			$tagList[0] = 0;
+		}
 		
 		// For each of the object's tags, check if the array_key_exists in the reference $tagList.
 		// If so, then it is the right kind of tag and can be appended to the results. However, if
@@ -206,6 +273,34 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
     	return $resultList;
     }
+	
+	private function _getTagsForObjects($iids, $item, $module_id) {
+		
+		$sql = $rows = '';
+		$tag_ids = array();
+		$iids = implode(',', $iids);
+		
+		$sql = "SELECT `iid`, `tid` FROM " . $this->table . " WHERE "
+				. "`item` = '" . $item . "' AND "
+				. "`iid` IN (" . $iids . ")";
+		if ($module_id) {
+			$sql .= " AND `mid` = '" . $module_id . "'";
+		}
+		$result = icms::$xoopsDB->query($sql);
+		if (!$result) {
+				echo 'Error';
+				exit;
+		} else {
+			$rows = $this->convertResultSet($result, FALSE, FALSE);
+			foreach ($rows as $row) {
+				if (!isset($tag_ids[$row['iid']])) {
+					$tag_ids[$row['iid']] = array();
+				}
+				$tag_ids[$row['iid']][] = $row['tid'];
+			}
+		}
+		return $tag_ids;
+	}
 	
 	private function _getClientObjects() {
 		return array(
@@ -316,6 +411,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$clientObjects = $this->getClientObjects();
 			foreach ($items as $key => &$itm) {
 				if (icms_get_module_status($clientObjects[$itm])) {
+					// NOTE: The next line causes a white screen when trying to re-enable a 
+					// disabled module in the module admin page. Not sure why, since this code 
+					// should not run if the module is inactive. Looks like the module status is 
+					// evaluating as TRUE before it is fully operational. The bug does not seem 
+					// to have any consequences however, page loads normally on refresh.
 					$handlers[$itm] = icms_getModuleHandler($itm, $clientObjects[$itm], 
 						$clientObjects[$itm]);
 				} else {
