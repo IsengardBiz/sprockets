@@ -155,6 +155,16 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 		//////////////////// END TAG ASSEMBLY ////////////////////
 		//////////////////////////////////////////////////////////
 
+		// Prepare a tag navigation select box
+		if ($untagged_content) {
+			$selected_tag_id = 'untagged';
+		} else {
+			$selected_tag_id = $clean_tag_id;
+		}
+		$tag_select_box = $sprockets_tag_handler->getTagSelectBox('index.php', $selected_tag_id, 
+				_CO_SPROCKETS_TAG_ALL_TAGS, TRUE, null, null, TRUE);
+		$icmsTpl->assign('sprockets_tag_select_box', $tag_select_box);
+		
 		// Prepare RSS feed (only for tags with RSS enabled)
 		$icmsTpl->assign('sprockets_rss_image', SPROCKETS_IMAGES_URL . 'rss.png');
 		if (isset($tagObj) && !$tagObj->isNew()) {
@@ -169,14 +179,21 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 				$icmsTpl->assign('sprockets_tag_name', $tagObj->getVar('title'));
 			}
 		} else { // display latest content across all tags
-			$rss_link = 'rss.php';
+			if ($untagged_content) {
+				// No RSS feed available for untagged content
+				$icmsTpl->assign('sprockets_tag_name', _CO_SPROCKETS_TAG_UNTAGGED_CONTENT);
+			} else {
+				$rss_link = 'rss.php';
 			$rss_attributes = array('type' => 'application/rss+xml', 'title' => $icmsConfig['sitename'] 
 				. ' - ' .  _CO_SPROCKETS_RSS_LATEST_CONTENT);
 			$icmsTpl->assign('sprockets_rss_link', $rss_link);
 			$icmsTpl->assign('sprockets_rss_title', _CO_SPROCKETS_SUBSCRIBE_RSS);
 			$icmsTpl->assign('sprockets_tag_name', _CO_SPROCKETS_RSS_LATEST_CONTENT);
+			}
 		}
-		$xoTheme->addLink('alternate', $rss_link, $rss_attributes);
+		if (!empty($rss_link) && !empty($rss_attributes)) {
+			$xoTheme->addLink('alternate', $rss_link, $rss_attributes);
+		}
 
 		// Assign content to template, together with relevant module preferences
 		$icmsTpl->assign('sprockets_tagged_content', $combinedContentObjects);
@@ -205,10 +222,18 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 	if (isset($tagObj) && !$tagObj->isNew()) {
 		$icms_metagen = new icms_ipf_Metagen($tagObj->getVar('title'),
 			$tagObj->getVar('meta_keywords','n'), $tagObj->getVar('meta_description', 'n'));
-		$icms_metagen->createMetaTags();
 	} else {
-		// Do something generic for 'all tags'
+		if ($untagged_content) {
+			$icms_metagen = new icms_ipf_Metagen($icmsConfig['sitename']. ' - ' 
+				. _CO_SPROCKETS_TAG_UNTAGGED_CONTENT, _CO_SPROCKETS_TAG_UNTAGGED_CONTENT, 
+				_CO_SPROCKETS_TAG_UNTAGGED_CONTENT_DSC);
+		} else {
+			$icms_metagen = new icms_ipf_Metagen($icmsConfig['sitename']. ' - ' 
+				. _CO_SPROCKETS_RSS_LATEST_CONTENT, _CO_SPROCKETS_ALL_TAGGED_CONTENT_KEYWORDS, 
+				_CO_SPROCKETS_NEW_DSC);
+		}
 	}
+	$icms_metagen->createMetaTags();
 
 	$icmsTpl->assign('sprockets_module_home', sprockets_getModuleName(TRUE, TRUE));
 	$icmsTpl->assign('sprockets_display_breadcrumb', $sprocketsConfig['display_breadcrumb']);
