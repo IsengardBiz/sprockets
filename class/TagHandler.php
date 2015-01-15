@@ -100,7 +100,15 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		
 		// Sanitise parameters used to build query in case a client module passes in bad data
 		$clean_action = (string)$action;
-		$clean_selected = (string)$selected;
+		if (!empty($selected)) {
+			if ($selected == 'untagged') {
+				$clean_selected = 'untagged';
+			} else {
+				$clean_selected = intval($selected);
+			}
+		} else {
+			$clean_selected = 0;
+		}
 		$clean_zero_option_message = (string)$zero_option_message;
 		$clean_navigation_elements_only = isset($navigation_elements_only) 
 			? (bool)$navigation_elements_only : TRUE;
@@ -330,41 +338,42 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		
 		$tagList = $this->getList($criteria);
 		
-		if ($module_id) {
+		// Only display tags that contain content relevant to this module. Note: Tags
+		// containing offline content will still be displayed. This can change later if
+		// there is agreement on standardising existing module fields with Sprockets
+		$sprockets_taglink_handler = icms_getModuleHandler('taglink', 
+				basename(dirname(dirname(__FILE__))), 'sprockets');
 
-			// Only display tags that contain content relevant to this module. Note: Tags
-			// containing offline content will still be displayed. This can change later if
-			// there is agreement on standardising existing module fields with Sprockets
-			$sprockets_taglink_handler = icms_getModuleHandler('taglink', 
-					basename(dirname(dirname(__FILE__))), 'sprockets');
-			
-			$query = $rows = $tag_ids = '';
-			$query = "SELECT DISTINCT `tid` FROM " . $sprockets_taglink_handler->table
-					. " WHERE `mid` = '" . $module_id . "'";
-			if ($item) {
-					$query .= " AND `item` = '" . $item . "'";
+		$query = $rows = $tag_ids = '';
+		$query = "SELECT DISTINCT `tid` FROM " . $sprockets_taglink_handler->table;
+		if ($module_id && $item) {
+			$query .= " WHERE `mid` = '" . $module_id . "' AND `item` = '" . $item . "'";
+		} elseif ($module_id) {
+			$query .= " WHERE `mid` = '" . $module_id . "'";
+		} elseif ($item) {
+			$query .= " WHERE `item` = '" . $item . "'";
+		}
+
+		$result = icms::$xoopsDB->query($query);
+		if (!$result) {
+			echo 'Error';
+			exit;
+
+		} else {
+			$rows = $sprockets_taglink_handler->convertResultSet($result);
+			foreach ($rows as $key => $row) {
+				$tag_ids[] = $row->getVar('tid');
 			}
-			
-			$result = icms::$xoopsDB->query($query);
-			if (!$result) {
-				echo 'Error';
-				exit;
-
+			// remove empty tags
+			if (empty($tag_ids)) {
+				$tagList = '';
 			} else {
-				$rows = $sprockets_taglink_handler->convertResultSet($result);
-				foreach ($rows as $key => $row) {
-					$tag_ids[] = $row->getVar('tid');
-				}
-				// remove empty tags
-				if (empty($tag_ids)) {
-					$tagList = '';
-				} else {
-					// Flip the array so we can use the IDs to check for matching keys in the master $tagList
-					$tagList =  array(0 => $zero_option_message) + array_intersect_key($tagList, array_flip($tag_ids));
-					// Add an extra option for selecting untagged content
-					if ($untagged_content_option) {
-						$tagList['untagged'] = _CO_SPROCKETS_TAG_UNTAGGED;
-					}
+				// Flip the array so we can use the IDs to check for matching keys in the master $tagList
+				$tagList =  array(0 => $zero_option_message) + array_intersect_key($tagList, array_flip($tag_ids));
+				
+				// Add an extra option for selecting untagged content
+				if ($untagged_content_option) {
+					$tagList['untagged'] = _CO_SPROCKETS_TAG_UNTAGGED;
 				}
 			}
 		}

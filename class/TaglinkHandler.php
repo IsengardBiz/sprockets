@@ -42,7 +42,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$clean_label_type = 1;
 		} else {
 			$clean_label_type = 0;
-		}
+		}		
+		
 		return $this->_getTagsForObject($clean_iid, $clean_moduleName, $clean_itemname, $clean_label_type);
 	}
 	
@@ -102,9 +103,23 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
 			$start = FALSE, $limit = FALSE, $sort = 'DESC') {
 		
+		$clean_item_type = array();
+		
 		$clean_tag_id = isset($tag_id) ? intval($tag_id) : 0;
-		$clean_module_id = isset($module_id) ? intval($module_id) : 0;
-		$clean_item_type = !empty($item_type) ? mysql_real_escape_string((string)$item_type) : FALSE;
+		$clean_module_id = !empty($module_id) ? intval($module_id) : 0;
+		if ($item_type) {
+			$item_type_whitelist = array_keys($this->getClientObjects());
+			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
+			foreach ($item_type as &$type) {
+				if (in_array($type, $item_type_whitelist)) {
+					$clean_item_type[] = mysql_real_escape_string((string)$type);
+				} else {
+					unset($type);
+				}
+			}
+		} else {
+			$item_type = icms_getConfig('client_objects', 'sprockets');
+		}
 		$clean_start = isset($start) ? intval($start) : 0;
 		$clean_limit = isset($limit) ? intval($limit) : 0;
 		if ($sort == 'DESC') {
@@ -146,8 +161,22 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	public function getUntaggedContent($module_id = FALSE, $item_type = FALSE, $start = FALSE,
 			$limit = FALSE, $sort = 'DESC') {
 		
-		$clean_module_id = isset($module_id) ? intval($module_id) : 0;
-		$clean_item_type = !empty($item_type) ? mysql_real_escape_string((string)$item_type) : FALSE;
+		$clean_item_type = array();
+		
+		$clean_module_id = !empty($module_id) ? intval($module_id) : 0;
+		if ($item_type) {
+			$item_type_whitelist = array_keys($this->getClientObjects());
+			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
+			foreach ($item_type as &$type) {
+				if (in_array($type, $item_type_whitelist)) {
+					$clean_item_type[] = mysql_real_escape_string((string)$type);
+				} else {
+					unset($type);
+				}
+			}
+		} else {
+			$item_type = icms_getConfig('client_objects', 'sprockets');
+		}
 		$clean_start = isset($start) ? intval($start) : 0;
 		$clean_limit = isset($limit) ? intval($limit) : 0;
 		if ($sort == 'DESC') {
@@ -155,7 +184,20 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$clean_sort = 'ASC';
 		}
-		
+		if ($item_type) {
+			$item_type_whitelist = array_keys($this->getClientObjects());
+			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
+			foreach ($item_type as &$type) {
+				if (in_array($type, $item_type_whitelist)) {
+					$clean_item_type[] = $type;
+				} else {
+					unset($type);
+				}
+			}
+		} else {
+			$item_type = icms_getConfig('client_objects', 'sprockets');
+		}
+				
 		return $this->_getUntaggedContent($clean_module_id, $clean_item_type, $clean_start, 
 				$clean_limit, $clean_sort);
 	}
@@ -229,16 +271,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$tagList = $resultList = $ret = array();
 		$moduleObj = icms_getModuleInfo($moduleName);
-		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
-		
-		// Sanitise parameters used in queries
-		$clean_iid = isset($iid) ? intval($iid) : 0;
-		$clean_label_type = isset($label_type) ? intval($label_type): 0 ;		
-		
+		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');		
     	$criteria = new icms_db_criteria_Compo();
     	$criteria->add(new icms_db_criteria_Item('mid', $moduleObj->getVar('mid')));
     	$criteria->add(new icms_db_criteria_Item('item', $itemname));
-    	$criteria->add(new icms_db_criteria_Item('iid', $clean_iid));
+    	$criteria->add(new icms_db_criteria_Item('iid', $iid));
     	$sql = 'SELECT DISTINCT `tid` FROM ' . $this->table;
 		$sql = mysql_real_escape_string($sql);
     	$rows = $this->query($sql, $criteria);
@@ -252,7 +289,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		// Read a reference buffer of all tags with key as ID
 		$sprockets_tag_handler = icms_getModuleHandler('tag', basename(dirname(dirname(__FILE__))),
 				'sprockets');
-		$criteria = icms_buildCriteria(array('label_type' => $clean_label_type));
+		$criteria = icms_buildCriteria(array('label_type' => $label_type));
 		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);
 		if (!$label_type) {
 			$tagList[0] = 0;
@@ -323,31 +360,10 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$content_id_array = $content_object_array = $content_array = $taglink_object_array 
 			= $module_ids = $item_types = $module_array = $parent_id_buffer = $taglinks_by_module
 			= $object_counts = $handlers = array();
-		
-		// If tag_id = 'untagged' set a flag to retrieve untagged content
+			
+		// If tag_id = 'untagged' set a flag to retrieve untagged content only
 		if ($tag_id === 'untagged') {
 			$untagged_content = TRUE;
-		}
-		
-		// Parameters to public methods should be sanitised
-		$tag_id = isset($tag_id) ? intval($tag_id) : 0;
-		$module_id = isset($module_id) ? intval($module_id) : 0;
-		$item_type_whitelist = array_keys($this->getClientObjects());
-
-		if ($item_type) {
-			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
-			foreach ($item_type as &$type) {
-				if (!in_array($type, $item_type_whitelist)) {
-					unset($type);
-				}
-			}
-		} else {
-			$item_type = icms_getConfig('client_objects', 'sprockets');
-		}
-		$start = isset($start) ? intval($start) : 0;
-		$limit = isset($limit) ? intval($limit) : 0;
-		if ($sort != 'ASC') {
-			$sort = 'DESC';
 		}
 		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
@@ -581,7 +597,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	}
 	
 	private function _getUntaggedContent($module_id, $item_type, $start, $limit, $sort) {
-		return $this->getTaggedItems('untagged', $module_id, $item_type, $start, $limit, $sort);
+		return $this->_getTaggedItems('untagged', $module_id, $item_type, $start, $limit, $sort);
 	}
 	
 	private function _storeTagsForObject(&$obj, $tag_var, $label_type) {		

@@ -188,6 +188,15 @@ $modversion['config'][] = array(
 	'valuetype' => 'int',
 	'default' =>  '400');
 
+// Enable or disable cross-module content pages
+$modversion['config'][] = array(
+	'name' => 'enable_user_side_pages',
+	'title' => '_MI_SPROCKETS_ENABLE_USER_SIDE',
+	'description' => '_MI_SPROCKETS_ENABLE_USER_SIDE_DSC',
+	'formtype' => 'yesno',
+	'valuetype' => 'int',
+	'default' => '0');
+
 // Client OBJECTS to include in the cross-module content on tag.php or in the cross-content block.
 // Need one entry for every object type.
 $client_objects = array(
@@ -201,15 +210,6 @@ $client_objects = array(
 	'_MI_SPROCKETS_PODCAST_SOUNDTRACKS' => 'soundtrack',
 	'_MI_SPROCKETS_PROJECTS' => 'project'
 );
-
-// Enable or disable cross-module content pages
-$modversion['config'][] = array(
-	'name' => 'enable_user_side_pages',
-	'title' => '_MI_SPROCKETS_ENABLE_USER_SIDE',
-	'description' => '_MI_SPROCKETS_ENABLE_USER_SIDE_DSC',
-	'formtype' => 'yesno',
-	'valuetype' => 'int',
-	'default' => '0');
 
 // Objects to include in the cross-module content pages
 $modversion['config'][] = array(
