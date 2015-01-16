@@ -135,13 +135,22 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	
 	/**
 	 * Returns the base URL, which is the URL against which OAIPMH requests should be sent
+	 * 
+	 * Expects an ICMS module directory, so only alphanumeric characters are allowed
 	 *
 	 * @param string $directory
 	 *
 	 * @return string
 	 */
 	public function setBaseUrl($directory = FALSE) {
-		return $this->_setBaseUrl($directory);
+		if ($directory) {
+			if (ctype_alnum($directory)) {
+				$clean_directory = (string)$directory;
+			} else {
+				exit;
+			}
+		}
+		return $this->_setBaseUrl($clean_directory);
 	}
 	
 	/**
@@ -160,18 +169,27 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-		return $this->_timestamp_to_oaipmh_time($timestamp);
+			$clean_timestamp = intval($timestamp);
+		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 	
 	/**
 	 * Toggles a yes/no field on or offline
+	 * 
+	 * Only alphabetical characters permitted
 	 *
 	 * @param int $id
 	 * @param str $field
 	 * @return int $status
 	 */
 	public function toggleStatus($id, $field) {
-		return $this->_toggleStatus($id, $field);
+		$clean_id = intval($id);
+		if (ctype_alpha($field)) {
+			$clean_field = (string)$field;
+		} else {
+			exit;
+		}		
+		return $this->_toggleStatus($clean_id, $clean_field);
 	}
 	
 	/**
@@ -181,6 +199,16 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return string $mimetype
 	 */
 	public function get_mimetype($format_extension) {
+		
+		// Need to trim the damn dot off, if present
+		$format_extension = ltrim($format_extension, '.');
+		
+		if (ctype_alpha($format_extension)) {
+			$clean_format_extension = (string)$format_extension;
+		} else {
+			exit;
+		}
+		
 		return $this->_get_mimetype($format_extension);
 	}
 	
@@ -191,7 +219,10 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return boolean
 	 */
 	public function beforeSave(&$obj) {
-		return $this->_beforeSave($obj);
+		if (is_object($obj)) {
+			$clean_object = $obj;
+		}
+		return $this->_beforeSave($clean_obj);
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -355,9 +386,6 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	private function _get_mimetype($format_extension) {
 		// There is a core file that has a nice list of mimetypes, but some podcast clients don't observe the standard
 		$mimetype_list = icms_Utils::mimetypes();
-
-		// Need to trim the damn dot off, if present
-		$format_extension = ltrim($format_extension, '.');
 
 		// Should probably handle exception where the mimetype isn't in the list, should be a rare event though
 		$mimetype = $mimetype_list[$format_extension];

@@ -174,7 +174,15 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function listMetadataFormats($content_handler, $identifier = null) {
-		return $this->_listMetadataFormats($content_handler, $identifier);
+		if (is_object($content_handler)) {
+			$clean_handler = $content_handler;
+		} else {
+			exit;
+		}
+		if ($identifier) {
+			$clean_identifier = (string)$identifier;
+		}
+		return $this->_listMetadataFormats($clean_handler, $clean_identifier);
 	}
 	
 	/**
@@ -190,8 +198,45 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 */
 	public function listIdentifiers($content_handler, $metadataPrefix = null, $from = null,
 			$until = null, $set = null, $resumptionToken = null, $cursor = null) {
-		return $this->_listIdentifiers($content_handler, $metadataPrefix, $from, $until, $set,
-				$resumptionToken, $cursor);
+		
+		if (is_object($content_handler)) {
+			$clean_handler = $content_handler;
+		} else {
+			exit;
+		}
+		
+		if ($metadataPrefix) {
+			$clean_metadataPrefix = (string)$metadataPrefix;
+		} else {
+			$clean_metadataPrefix = null;
+		}
+		if ($from) {
+			$clean_from = (string)$from;
+		} else {
+			$clean_from = null;
+		}
+		if ($until) {
+			$clean_until = (string)$until;
+		} else {
+			$clean_until = null;
+		}
+		if ($set) {
+			$clean_set = (string)$set;
+		} else {
+			$clean_set = null;
+		}
+		if ($resumptionToken) {
+			$clean_resumptionToken = (string)$resumptionToken;
+		} else {
+			$clean_resumptionToken = null;
+		}
+		if ($cursor) {
+			$cursor = intval($cursor);
+			$clean_cursor = abs($cursor);
+		}		
+		
+		return $this->_listIdentifiers($clean_handler, $clean_metadataPrefix, $clean_from, 
+				$clean_until, $clean_set, $clean_resumptionToken, $clean_cursor);
 	}
 	
 	/**
@@ -201,7 +246,18 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function listSets($resumptionToken = null, $cursor = null) {
-		return $this->_listSets($resumptionToken, $cursor);
+		if ($resumptionToken) {
+			$clean_resumptionToken = (string)$resumptionToken;
+		} else {
+			$clean_resumptionToken = null;
+		}
+		if ($cursor) {
+			$clean_cursor = intval($cursor);
+		} else {
+			$clean_cursor = null;
+		}
+		
+		return $this->_listSets($clean_resumptionToken, $clean_cursor);
 	}
 	
 	/**
@@ -213,7 +269,18 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function getRecord($content_handler, $identifier = null, $metadataPrefix = null) {
-		return $this->_getRecord($content_handler, $identifier, $metadataPrefix);
+			if (isset($content_handler) && is_object($content_handler)) {
+				$clean_content_handler = $content_handler;
+			} else {
+				exit;
+			}
+			if ($identifier) {
+				$clean_identifier = (string)$identifier;
+			}
+			if ($metadataPrefix) {
+				$clean_metadataPrefix = (string)$metadataPrefix;
+			}
+		return $this->_getRecord($clean_content_handler, $clean_identifier, $clean_metadataPrefix);
 	}
 	
 	/**
@@ -230,8 +297,41 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 	public function listRecords($content_handler, $metadataPrefix = null, $from = null,
 		$until = null, $set = null, $resumptionToken = null, $cursor = null) {
-		return $this->_listRecords($content_handler, $metadataPrefix, $from, $until, $set,
-				$resumptionToken, $cursor);
+		
+		if (isset($content_handler) && is_object($content_handler)) {
+			$clean_content_handler = $content_handler;
+		} else {
+			exit;
+		}
+		if ($metadataPrefix) {
+			$clean_metadataPrefix = (string)$metadataPrefix;
+		} else {
+			$clean_metadataPrefix = null;
+		}
+		if ($from) {
+			$clean_from = (string)$from;
+		} else {
+			$clean_from = null;
+		}
+		if ($until) {
+			$clean_until = (string)$until;
+		} else {
+			$clean_until = null;
+		}
+		if ($set) {
+			$clean_set = (string)$set;
+		} else {
+			$clean_set = null;
+		}
+		if ($resumptionToken) {
+			$clean_resumptionToken = (string)$resumptionToken;
+		} else {
+			$clean_resumptionToken = null;
+		}
+		$clean_cursor = intval($cursor);
+		
+		return $this->_listRecords($clean_content_handler, $clean_metadataPrefix, $clean_from,
+				$clean_until, $clean_set, $clean_resumptionToken, $clean_cursor);
 	}
 	
 	/**
@@ -260,6 +360,39 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 */
 	public function lookupRecords($content_handler, $requestVerb, &$response, $metadataPrefix = null,
 			$from = null, $until = null, $set = null, $resumptionToken = null, $cursor = null) {
+		
+		if (isset($content_handler) && is_object($content_handler)) {
+			$clean_content_handler = $content_handler;
+		} else {
+			exit;
+		}
+		if (isset($requestVerb)) {
+			$clean_requestVerb = (string)$requestVerb;
+		} else {
+			$clean_requestVerb = FALSE;
+		}
+		if (isset($response)) {
+			$clean_response = (string)$response;
+		}
+		if ($metadataPrefix) {
+			$clean_metadataPrefix = (string)$metadataPrefix;
+		} else {
+			$clean_metadataPrefix = null;
+		}
+		$clean_from = ctype_digit($from) ? $from : null;
+		$clean_until = ctype_digit($until) ? $until : null;	
+		if ($set) {
+			$clean_set = (string)$set;
+		} else {
+			$clean_set = null;
+		}
+		if ($resumptionToken) {
+			$clean_resumptionToken = (string)$resumptionToken;
+		} else {
+			$clean_resumptionToken = null;
+		}	
+		$clean_cursor = isset($cursor) ? intval($cursor) : null;
+		
 		return $this->_lookupRecords($content_handler, $requestVerb, &$response, $metadataPrefix,
 			$from, $until, $set, $resumptionToken, $cursor);
 	}
@@ -283,6 +416,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function throw_error($error, $message) {
+		$clean_error = isset($error) ? (string)$error : FALSE;
+		$clean_message = isset($message) ? (string)$message : FALSE;
 		return $this->_throw_error($error, $message);
 	}
 	
@@ -302,9 +437,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @param string $time
 	 * @return bool
 	 */
-
 	public function not_before_earliest_datestamp($time) {
-		return $this->_not_before_earliest_datestamp($time);
+		$clean_time = isset($time) ? (string)$time : FALSE;
+		return $this->_not_before_earliest_datestamp($clean_time);
 	}
 	
 	/**
@@ -323,7 +458,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function validate_datetime($time) {
-		return $this->_validate_datetime($time);
+		$clean_time = isset($time) ? (string)$time : FALSE;
+		return $this->_validate_datetime($clean_time);
 	}
 	
 	/**
@@ -336,7 +472,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return boolean
 	 */
 	public function from_precedes_until ($from, $until) {
-		return $this->_from_precedes_until($from, $until);
+		$clean_from = isset($from) ? (string)$from : FALSE;
+		$clean_until = isset($until) ? (string)$until : FALSE;
+		return $this->_from_precedes_until($clean_from, $clean_until);
 	}
 	
 	/**
@@ -356,7 +494,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-		return $this->_timestamp_to_oaipmh_time($timestamp);
+		$clean_timestamp = intval($timestamp);
+		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 
 	/////////////////////////////////////////////////////////
@@ -785,11 +924,6 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 	private function _lookupRecords($content_handler, $requestVerb, &$response, $metadataPrefix,
 			$from, $until, $set, $resumptionToken, $cursor) {
-			
-		// Sanitise parameters used to build query strings
-		$clean_from = ctype_digit($from) ? $from : null;
-		$clean_until = ctype_digit($until) ? $until : null;		
-		$clean_cursor = isset($cursor) ? intval($cursor) : null;
 			
 		$sprocketsConfig = icms_getModuleConfig(basename(dirname(dirname(__FILE__))));
 
