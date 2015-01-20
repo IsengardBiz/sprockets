@@ -181,6 +181,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		}
 		if ($identifier) {
 			$clean_identifier = (string)$identifier;
+		} else {
+			$clean_identifier = null;
 		}
 		return $this->_listMetadataFormats($clean_handler, $clean_identifier);
 	}
@@ -276,9 +278,13 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			}
 			if ($identifier) {
 				$clean_identifier = (string)$identifier;
+			} else {
+				$clean_identifier = null;
 			}
 			if ($metadataPrefix) {
 				$clean_metadataPrefix = (string)$metadataPrefix;
+			} else {
+				$clean_metadataPrefix = null;
 			}
 		return $this->_getRecord($clean_content_handler, $clean_identifier, $clean_metadataPrefix);
 	}
@@ -369,10 +375,12 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		if (isset($requestVerb)) {
 			$clean_requestVerb = (string)$requestVerb;
 		} else {
-			$clean_requestVerb = FALSE;
+			exit;
 		}
 		if (isset($response)) {
 			$clean_response = (string)$response;
+		} else {
+			exit;
 		}
 		if ($metadataPrefix) {
 			$clean_metadataPrefix = (string)$metadataPrefix;
