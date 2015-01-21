@@ -128,6 +128,7 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 
 			// Retrieve the results and sort by i) item and ii) iid for easy retrieval
 			$tag_info = array();
+			$sql = icms::$xoopsDB->escape($sql);
 			$result = icms::$xoopsDB->query($sql);
 			if (!$result) {
 					echo 'Error';

@@ -138,6 +138,7 @@ function sprockets_content_teasers_show($options) {
 
 			// Retrieve the results and sort by i) item and ii) iid for easy retrieval
 			$tag_info = array();
+			$sql = icms::$xoopsDB->escape($sql);
 			$result = icms::$xoopsDB->query($sql);
 			if (!$result) {
 					echo 'Error in block';

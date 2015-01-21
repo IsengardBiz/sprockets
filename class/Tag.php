@@ -126,6 +126,8 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * buffers. This can substantially reduce the number of queries when converting a large number 
 	 * of objects (for example, on an index page).
 	 * 
+	 * Todo: Change this to an override of the parent toArray() method
+	 * 
 	 * @return array
 	 */
 	public function toArrayWithoutOverrides() {
@@ -148,7 +150,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * Alters the category object admin links to point at the category admin page
 	 */
 	public function category_admin_titles($moduleDirectory = "sprockets") {
-		$cleanModuleDirectory = (string)$moduleDirectory;
+		$cleanModuleDirectory = icms_core_DataFilter::checkVar($moduleDirectory, 'str');
 		return $this->_category_admin_titles($cleanModuleDirectory);
 	}
 	
@@ -158,7 +160,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function category_admin_navigation_element($moduleDirectory = "sprockets") {
-		$cleanModuleDirectory = (string)$moduleDirectory;
+		$cleanModuleDirectory = icms_core_DataFilter::checkVar($moduleDirectory, 'str');
 		return $this->_category_admin_navigation_element($cleanModuleDirectory);
 	}
 	
@@ -168,7 +170,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function category_admin_rss($moduleDirectory = "sprockets") {
-		$cleanModuleDirectory = (string)$moduleDirectory;
+		$cleanModuleDirectory = icms_core_DataFilter::checkVar($moduleDirectory, 'str');
 		return $this->_category_admin_rss($cleanModuleDirectory);
 	}
 	

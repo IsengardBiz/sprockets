@@ -35,9 +35,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @return array $ret
 	 */
     public function getTagsForObject($iid, &$handler, $label_type = '0') {
-		$clean_iid = isset($iid) ? intval($iid) : 0;
-		$clean_moduleName = mysql_real_escape_string((string)$handler->_moduleName);
-		$clean_itemname = mysql_real_escape_string((string)$handler->_itemname);
+		$clean_iid = isset($iid) ? icms_core_DataFilter::checkVar($iid, 'int') : 0;
+		$clean_moduleName = icms_core_DataFilter::checkVar($handler->_moduleName, 'str');
+		$clean_itemname = icms_core_DataFilter::checkVar($handler->_itemname, 'str');
 		if ($label_type == '1') {
 			$clean_label_type = 1;
 		} else {
@@ -58,10 +58,10 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	public function getTagsForObjects($iids, $item, $module_id = FALSE) {
 		$clean_iids = array();
 		foreach ($iids as $iid) {
-			$clean_iids[] = intval($iid);
+			$clean_iids[] = icms_core_DataFilter::checkVar($iid, 'int');
 		}
-		$clean_item = mysql_real_escape_string((string)$item);
-		$clean_module_id = isset($module_id) ? intval($module_id) : 0;
+		$clean_item = icms_core_DataFilter::checkVar($item, 'str');
+		$clean_module_id = isset($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : 0;
 		return $this->_getTagsForObjects($clean_iids, $clean_item, $clean_module_id);
 	}
 	
@@ -105,14 +105,14 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$clean_item_type = array();
 		
-		$clean_tag_id = isset($tag_id) ? intval($tag_id) : 0;
-		$clean_module_id = !empty($module_id) ? intval($module_id) : 0;
+		$clean_tag_id = isset($tag_id) ? icms_core_DataFilter::checkVar($tag_id, 'int') : 0;
+		$clean_module_id = isset($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : 0;
 		if ($item_type) {
 			$item_type_whitelist = array_keys($this->getClientObjects());
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
 				if (in_array($type, $item_type_whitelist)) {
-					$clean_item_type[] = mysql_real_escape_string((string)$type);
+					$clean_item_type[] = icms_core_DataFilter::checkVar($type, 'str');
 				} else {
 					unset($type);
 				}
@@ -120,8 +120,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$item_type = icms_getConfig('client_objects', 'sprockets');
 		}
-		$clean_start = isset($start) ? intval($start) : 0;
-		$clean_limit = isset($limit) ? intval($limit) : 0;
+		$clean_start = isset($start) ? icms_core_DataFilter::checkVar($start, 'int') : 0;
+		$clean_limit = isset($limit) ? icms_core_DataFilter::checkVar($limit, 'int') : 0;
 		if ($sort == 'DESC') {
 			$clean_sort = 'DESC';
 		} else {
@@ -163,13 +163,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$clean_item_type = array();
 		
-		$clean_module_id = !empty($module_id) ? intval($module_id) : 0;
+		$clean_module_id = !empty($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : 0;
 		if ($item_type) {
 			$item_type_whitelist = array_keys($this->getClientObjects());
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
 				if (in_array($type, $item_type_whitelist)) {
-					$clean_item_type[] = mysql_real_escape_string((string)$type);
+					$clean_item_type[] = icms_core_Datafilter::checkVar($type, 'str');
 				} else {
 					unset($type);
 				}
@@ -177,8 +177,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$item_type = icms_getConfig('client_objects', 'sprockets');
 		}
-		$clean_start = isset($start) ? intval($start) : 0;
-		$clean_limit = isset($limit) ? intval($limit) : 0;
+		$clean_start = isset($start) ? icms_core_DataFilter::checkVar($start, 'int') : 0;
+		$clean_limit = isset($limit) ? icms_core_DataFilter::checkVar($limit, 'int') : 0;
 		if ($sort == 'DESC') {
 			$clean_sort = 'DESC';
 		} else {
@@ -189,7 +189,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
 				if (in_array($type, $item_type_whitelist)) {
-					$clean_item_type[] = $type;
+					$clean_item_type[] = icms_core_DataFilter::checkVar($type, 'str');
 				} else {
 					unset($type);
 				}
@@ -218,7 +218,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 	public function storeTagsForObject(&$obj, $tag_var = 'tag', $label_type = '0') {
 		$clean_obj = is_object($obj) ? $obj : FALSE;
-		$clean_tag_var = !empty($tag_var) ? mysql_real_escape_string((string)($tag_var)) : 'tag';
+		$clean_tag_var = !empty($tag_var) ? icms_core_DataFilter::checkVar($tag_var, 'str') : 'tag';
 		if ($label_type == '0') {
 			$clean_label_type = 0;
 		} else {
@@ -277,7 +277,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
     	$criteria->add(new icms_db_criteria_Item('item', $itemname));
     	$criteria->add(new icms_db_criteria_Item('iid', $iid));
     	$sql = 'SELECT DISTINCT `tid` FROM ' . $this->table;
-		$sql = mysql_real_escape_string($sql);
+		$sql = icms::$xoopsDB->escape($sql);
     	$rows = $this->query($sql, $criteria);
     	$ret = array();
     	foreach($rows as $row) {
@@ -323,6 +323,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		if ($module_id) {
 			$sql .= " AND `mid` = '" . $module_id . "'";
 		}
+		$query = icms::$xoopsDB->escape($sql);
 		$result = icms::$xoopsDB->query($sql);
 		if (!$result) {
 				echo 'Error';
@@ -409,6 +410,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$sql .= " `tid` != '0'";
 		}
 		$sql .= " GROUP BY `item`";
+		$sql = icms::$xoopsDB->escape($sql);
 		$result = icms::$xoopsDB->query($sql);
 		if (!$result) {
 				echo 'Error';
@@ -489,6 +491,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			/////////////////////////////////////////
 			////////// Run the count query //////////
 			/////////////////////////////////////////
+			$sql = icms::$xoopsDB->escape($sql);
 			$result = icms::$xoopsDB->queryF($sql);
 			if (!$result) {
 					echo 'Error';
@@ -576,6 +579,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			if ($start || $limit) {
 				$sql .= " LIMIT " . $start . "," . $limit . " ";
 			}
+			$sql = icms::$xoopsDB->escape($sql);
 
 			// Run the query
 			$result = icms::$xoopsDB->queryF($sql);

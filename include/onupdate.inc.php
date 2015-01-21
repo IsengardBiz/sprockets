@@ -124,6 +124,7 @@ function icms_module_install_sprockets($module) {
                 'The rights to this work are owned by a third party. Please contact the author/publisher for the terms of distribution, or permission to modify or distribute this work.')";
 		
 	foreach($queries as $query) {
+		$query = icms::$xoopsDB->escape($query);
 		$result = icms::$xoopsDB->query($query);
 	}
 	return TRUE;
