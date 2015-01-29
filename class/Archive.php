@@ -429,7 +429,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string 
 	 */
 	public function record_to_xml($record) {
-		$this->_record_to_xml($record);
+		return $this->_record_to_xml($record);
 	}
 	
 	/**
@@ -889,7 +889,6 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				if (!empty($content['rights'])) {
 					$content['rights'] = strip_tags($content['rights']);
 				}
-	
 				$records .= $this->record_to_xml($content);
 			}
 		}
@@ -1221,7 +1220,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	}
 
 	private function _record_to_xml($record) {
-		
+	
 		// initialise
 		$xml = $datestamp = '';
 		$dublin_core_fields = array(
@@ -1298,6 +1297,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		$xml .= '</oai_dc:dc>';
 		$xml .= '</metadata>';
 		$xml .= '</record>';
+		
 		return $xml;
 	}
 
