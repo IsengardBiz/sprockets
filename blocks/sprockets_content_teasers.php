@@ -121,16 +121,18 @@ function sprockets_content_teasers_show($options) {
 
 			// Build a taglink buffer (use combination of item and iid to identify distinct rows)
 			$sql = $result = '';
-			$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " . $sprockets_taglink_handler->table 
-					. " INNER JOIN " . $sprockets_tag_handler->table . " ON "
-					. $sprockets_taglink_handler->table . ".tid = " 
-					. $sprockets_tag_handler->table . ".tag_id"
-					. " WHERE ";
+			$sql = "SELECT DISTINCT `item`,`iid`, `tid` FROM " 
+					. icms::$xoopsDB->escape($sprockets_taglink_handler->table)
+					. " INNER JOIN " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
+					. " ON " . icms::$xoopsDB->escape($sprockets_taglink_handler->table) 
+					. ".tid = " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
+					. ".tag_id WHERE ";
 			foreach ($content_objects as $item) {
 				$count--;
-				$sql .= " (`item` = '" . $item['item'] 
-						. "' AND `iid` = '" . $item['iid']
-						. "' AND " . $sprockets_tag_handler->table . ".label_type = '0')";
+				$sql .= " (`item` = '" . icms::$xoopsDB->escape($item['item']) 
+						. "' AND `iid` = '" . icms_core_DataFilter::checkVar($item['iid'], 'int')
+						. "' AND " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
+						. ".label_type = '0')";
 				if ($count > 0) {
 					$sql .= " OR ";
 				}
@@ -138,7 +140,6 @@ function sprockets_content_teasers_show($options) {
 
 			// Retrieve the results and sort by i) item and ii) iid for easy retrieval
 			$tag_info = array();
-			$sql = icms::$xoopsDB->escape($sql);
 			$result = icms::$xoopsDB->query($sql);
 			if (!$result) {
 					echo 'Error in block';

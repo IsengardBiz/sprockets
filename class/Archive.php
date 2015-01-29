@@ -180,7 +180,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			exit;
 		}
 		if ($identifier) {
-			$clean_identifier = (string)$identifier;
+			$clean_identifier = icms_core_DataFilter::checkVar($identifier, 'str');
 		} else {
 			$clean_identifier = null;
 		}
@@ -206,35 +206,33 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			exit;
 		}
-		
 		if ($metadataPrefix) {
-			$clean_metadataPrefix = (string)$metadataPrefix;
+			$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
 		} else {
 			$clean_metadataPrefix = null;
 		}
 		if ($from) {
-			$clean_from = (string)$from;
+			$clean_from = icms_core_DataFilter::checkVar($from, 'str');
 		} else {
 			$clean_from = null;
 		}
 		if ($until) {
-			$clean_until = (string)$until;
+			$clean_until = icms_core_DataFilter::checkVar($until, 'str');
 		} else {
 			$clean_until = null;
 		}
 		if ($set) {
-			$clean_set = (string)$set;
+			$clean_set = icms_core_DataFilter::checkVar($set, 'str');
 		} else {
 			$clean_set = null;
 		}
 		if ($resumptionToken) {
-			$clean_resumptionToken = (string)$resumptionToken;
+			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
 		} else {
 			$clean_resumptionToken = null;
 		}
 		if ($cursor) {
-			$cursor = intval($cursor);
-			$clean_cursor = abs($cursor);
+			$cursor = icms_core_DataFilter::checkVar($cursor, 'int');
 		}		
 		
 		return $this->_listIdentifiers($clean_handler, $clean_metadataPrefix, $clean_from, 
@@ -249,12 +247,12 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 */
 	public function listSets($resumptionToken = null, $cursor = null) {
 		if ($resumptionToken) {
-			$clean_resumptionToken = (string)$resumptionToken;
+			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
 		} else {
 			$clean_resumptionToken = null;
 		}
 		if ($cursor) {
-			$clean_cursor = intval($cursor);
+			$clean_cursor = icms_core_DataFilter::checkVar($cursor, 'int');
 		} else {
 			$clean_cursor = null;
 		}
@@ -277,12 +275,12 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				exit;
 			}
 			if ($identifier) {
-				$clean_identifier = (string)$identifier;
+				$clean_identifier = icms_core_DataFilter::checkVar($identifier, 'str');
 			} else {
 				$clean_identifier = null;
 			}
 			if ($metadataPrefix) {
-				$clean_metadataPrefix = (string)$metadataPrefix;
+				$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
 			} else {
 				$clean_metadataPrefix = null;
 			}
@@ -310,31 +308,35 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			exit;
 		}
 		if ($metadataPrefix) {
-			$clean_metadataPrefix = (string)$metadataPrefix;
+			$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
 		} else {
 			$clean_metadataPrefix = null;
 		}
 		if ($from) {
-			$clean_from = (string)$from;
+			$clean_from = icms_core_DataFilter::checkVar($from, 'str');
 		} else {
 			$clean_from = null;
 		}
 		if ($until) {
-			$clean_until = (string)$until;
+			$clean_until = icms_core_DataFilter::checkVar($until, 'str');
 		} else {
 			$clean_until = null;
 		}
 		if ($set) {
-			$clean_set = (string)$set;
+			$clean_set = icms_core_DataFilter::checkVar($set, 'str');
 		} else {
 			$clean_set = null;
 		}
 		if ($resumptionToken) {
-			$clean_resumptionToken = (string)$resumptionToken;
+			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
 		} else {
 			$clean_resumptionToken = null;
 		}
-		$clean_cursor = intval($cursor);
+		if ($cursor) {
+			$clean_cursor = icms_core_DataFilter::checkVar($cursor, 'int');
+		} else {
+			$clean_cursor = null;
+		}
 		
 		return $this->_listRecords($clean_content_handler, $clean_metadataPrefix, $clean_from,
 				$clean_until, $clean_set, $clean_resumptionToken, $clean_cursor);
@@ -373,36 +375,37 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			exit;
 		}
 		if (isset($requestVerb)) {
-			$clean_requestVerb = (string)$requestVerb;
+			$clean_requestVerb = icms_core_DataFilter::checkVar($requestVerb, 'str');
 		} else {
 			exit;
 		}
 		if (isset($response)) {
-			$clean_response = (string)$response;
+			$clean_response = icms_core_DataFilter::checkVar($response, 'str');
 		} else {
 			exit;
 		}
 		if ($metadataPrefix) {
-			$clean_metadataPrefix = (string)$metadataPrefix;
+			$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
 		} else {
 			$clean_metadataPrefix = null;
 		}
-		$clean_from = ctype_digit($from) ? $from : null;
-		$clean_until = ctype_digit($until) ? $until : null;	
+		$clean_from = !empty($from) ? icms_core_DataFilter::checkVar($from, 'int') : null;
+		$clean_until = !empty($until) ? icms_core_DataFilter::checkVar($until, 'int') : null;	
 		if ($set) {
-			$clean_set = (string)$set;
+			$clean_set = icms_core_DataFilter::checkVar($set, 'str');
 		} else {
 			$clean_set = null;
 		}
 		if ($resumptionToken) {
-			$clean_resumptionToken = (string)$resumptionToken;
+			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
 		} else {
 			$clean_resumptionToken = null;
 		}	
-		$clean_cursor = isset($cursor) ? intval($cursor) : null;
+		$clean_cursor = !empty($cursor) ? icms_core_DataFilter::checkVar($cursor, 'int') : null;
 		
-		return $this->_lookupRecords($content_handler, $requestVerb, &$response, $metadataPrefix,
-			$from, $until, $set, $resumptionToken, $cursor);
+		return $this->_lookupRecords($clean_content_handler, $clean_requestVerb, &$clean_response,
+				$clean_metadataPrefix, $clean_from, $clean_until, $clean_set,
+				$clean_resumptionToken, $clean_cursor);
 	}
 	
 	/**
@@ -424,9 +427,9 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function throw_error($error, $message) {
-		$clean_error = isset($error) ? (string)$error : FALSE;
-		$clean_message = isset($message) ? (string)$message : FALSE;
-		return $this->_throw_error($error, $message);
+		$clean_error = !empty($error) ? icms_core_DataFilter::checkVar($error, 'str') : FALSE;
+		$clean_message = !empty($message) ? icms_core_DataFilter::checkVar($message, 'str') : FALSE;
+		return $this->_throw_error($clean_error, $clean_message);
 	}
 	
 	/**
@@ -446,7 +449,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function not_before_earliest_datestamp($time) {
-		$clean_time = isset($time) ? (string)$time : FALSE;
+		$clean_time = !empty($time) ? icms_core_DataFilter::checkVar($time, 'str') : FALSE;
 		return $this->_not_before_earliest_datestamp($clean_time);
 	}
 	
@@ -466,7 +469,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function validate_datetime($time) {
-		$clean_time = isset($time) ? (string)$time : FALSE;
+		$clean_time = !empty($time) ? icms_core_DataFilter::checkVar($time, 'str') : FALSE;
 		return $this->_validate_datetime($clean_time);
 	}
 	
@@ -480,8 +483,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return boolean
 	 */
 	public function from_precedes_until ($from, $until) {
-		$clean_from = isset($from) ? (string)$from : FALSE;
-		$clean_until = isset($until) ? (string)$until : FALSE;
+		$clean_from = !empty($from) ? icms_core_DataFilter::checkVar($from, 'str') : FALSE;
+		$clean_until = !empty($until) ? icms_core_DataFilter::checkVar($until, 'str') : FALSE;
 		return $this->_from_precedes_until($clean_from, $clean_until);
 	}
 	
@@ -502,7 +505,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-		$clean_timestamp = intval($timestamp);
+		$clean_timestamp = icms_core_DataFilter::checkVar($timestamp, 'int');
 		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 

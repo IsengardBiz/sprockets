@@ -35,7 +35,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @return array $ret
 	 */
     public function getTagsForObject($iid, &$handler, $label_type = '0') {
-		$clean_iid = isset($iid) ? icms_core_DataFilter::checkVar($iid, 'int') : 0;
+		$clean_iid = !empty($iid) ? icms_core_DataFilter::checkVar($iid, 'int') : 0;
 		$clean_moduleName = icms_core_DataFilter::checkVar($handler->_moduleName, 'str');
 		$clean_itemname = icms_core_DataFilter::checkVar($handler->_itemname, 'str');
 		if ($label_type == '1') {
@@ -61,7 +61,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$clean_iids[] = icms_core_DataFilter::checkVar($iid, 'int');
 		}
 		$clean_item = icms_core_DataFilter::checkVar($item, 'str');
-		$clean_module_id = isset($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : 0;
+		$clean_module_id = !empty($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : 0;
 		return $this->_getTagsForObjects($clean_iids, $clean_item, $clean_module_id);
 	}
 	
@@ -101,12 +101,12 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTaggedItems($tag_id = FALSE, $module_id = FALSE, $item_type = FALSE,
-			$start = FALSE, $limit = FALSE, $sort = 'DESC') {
+			$start = 0, $limit = FALSE, $sort = 'DESC') {
 		
 		$clean_item_type = array();
 		
-		$clean_tag_id = isset($tag_id) ? icms_core_DataFilter::checkVar($tag_id, 'int') : 0;
-		$clean_module_id = isset($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : 0;
+		$clean_tag_id = !empty($tag_id) ? icms_core_DataFilter::checkVar($tag_id, 'int') : 0;
+		$clean_module_id = !empty($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : 0;
 		if ($item_type) {
 			$item_type_whitelist = array_keys($this->getClientObjects());
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
@@ -120,8 +120,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$item_type = icms_getConfig('client_objects', 'sprockets');
 		}
-		$clean_start = isset($start) ? icms_core_DataFilter::checkVar($start, 'int') : 0;
-		$clean_limit = isset($limit) ? icms_core_DataFilter::checkVar($limit, 'int') : 0;
+		$clean_start = !empty($start) ? icms_core_DataFilter::checkVar($start, 'int') : 0;
+		$clean_limit = !empty($limit) ? icms_core_DataFilter::checkVar($limit, 'int') : 0;
 		if ($sort == 'DESC') {
 			$clean_sort = 'DESC';
 		} else {
@@ -177,8 +177,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$item_type = icms_getConfig('client_objects', 'sprockets');
 		}
-		$clean_start = isset($start) ? icms_core_DataFilter::checkVar($start, 'int') : 0;
-		$clean_limit = isset($limit) ? icms_core_DataFilter::checkVar($limit, 'int') : 0;
+		$clean_start = !empty($start) ? icms_core_DataFilter::checkVar($start, 'int') : 0;
+		$clean_limit = !empty($limit) ? icms_core_DataFilter::checkVar($limit, 'int') : 0;
 		if ($sort == 'DESC') {
 			$clean_sort = 'DESC';
 		} else {
@@ -276,8 +276,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
     	$criteria->add(new icms_db_criteria_Item('mid', $moduleObj->getVar('mid')));
     	$criteria->add(new icms_db_criteria_Item('item', $itemname));
     	$criteria->add(new icms_db_criteria_Item('iid', $iid));
-    	$sql = 'SELECT DISTINCT `tid` FROM ' . $this->table;
-		$sql = icms::$xoopsDB->escape($sql);
+    	$sql = 'SELECT DISTINCT `tid` FROM ' . icms::$xoopsDB->escape($this->table) . "";
     	$rows = $this->query($sql, $criteria);
     	$ret = array();
     	foreach($rows as $row) {
@@ -317,16 +316,15 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$tag_ids = array();
 		$iids = implode(',', $iids);
 		
-		$sql = "SELECT `iid`, `tid` FROM " . $this->table . " WHERE "
+		$sql = "SELECT `iid`, `tid` FROM " . icms::$xoopsDB->escape($this->table) . " WHERE "
 				. "`item` = '" . $item . "' AND "
 				. "`iid` IN (" . $iids . ")";
 		if ($module_id) {
 			$sql .= " AND `mid` = '" . $module_id . "'";
 		}
-		$query = icms::$xoopsDB->escape($sql);
 		$result = icms::$xoopsDB->query($sql);
 		if (!$result) {
-				echo 'Error';
+				echo 'Error1';
 				exit;
 		} else {
 			$rows = $this->convertResultSet($result, FALSE, FALSE);
@@ -369,17 +367,19 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
-		$sql = "SELECT $this->table.item, COUNT(*) FROM " . $this->table;
+		$sql = "SELECT " . icms::$xoopsDB->escape($this->table) . ".item, COUNT(*) FROM " 
+				. icms::$xoopsDB->escape($this->table);
 		if (!$untagged_content) {
-				$sql .= " INNER JOIN " . $sprockets_tag_handler->table 
-					. " ON " . $this->table . ".tid = " . $sprockets_tag_handler->table . ".tag_id";
+				$sql .= " INNER JOIN " . icms::$xoopsDB->escape($sprockets_tag_handler->table) 
+					. " ON " . icms::$xoopsDB->escape($this->table) . ".tid = " 
+					. icms::$xoopsDB->escape($sprockets_tag_handler->table) . ".tag_id";
 		}
 		$sql .= " WHERE";
 		if ($untagged_content || $tag_id || $module_id || $item_type) {
 			if ($untagged_content) {
 				$sql .= " `tid` = '0'";
 			} elseif ($tag_id) {
-				$sql .= " (`tid` = " . $tag_id . " AND `label_type` = '0')";
+				$sql .= " (`tid` = '" . $tag_id . "' AND `label_type` = '0')";
 			} else {
 				$sql .= " `label_type` = '0'";
 			}
@@ -387,14 +387,14 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				if ($untagged_content || $tag_id) {
 					$sql .= " AND";
 				}
-				$sql .= " `mid` = " . $module_id;
+				$sql .= " `mid` = '" . $module_id . "'";
 			}
 			if ($item_type) {
 					$sql .= " AND";
 				if (count($item_type) == 1) {
 					$sql .= ' `item` = "' . implode('","', $item_type) . '"';
 				} else {
-					$sql .= '`item` IN ("' . implode('","', $item_type) . '")';
+					$sql .= ' `item` IN ("' . implode('","', $item_type) . '")';
 				}
 			}
 		}
@@ -410,10 +410,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$sql .= " `tid` != '0'";
 		}
 		$sql .= " GROUP BY `item`";
-		$sql = icms::$xoopsDB->escape($sql);
 		$result = icms::$xoopsDB->query($sql);
 		if (!$result) {
-				echo 'Error';
+				echo 'Error2';
 				exit;
 		} else {
 			while ($row = icms::$xoopsDB->fetchArray($result)) {
@@ -457,23 +456,27 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			foreach ($items as $itms) {
 				$i--;
 				$sql .= "(SELECT `item`, COUNT(DISTINCT `item`, `iid`)";
-				$sql .= " FROM " . $this->table 
-						. " INNER JOIN " . $handlers[$itms]->table . " ON "
-						. $this->table . ".iid  = " . $handlers[$itms]->table . "." . $itms . "_id";
+				$sql .= " FROM " . icms::$xoopsDB->escape($this->table) 
+						. " INNER JOIN " . icms::$xoopsDB->escape($handlers[$itms]->table) . " ON "
+						. icms::$xoopsDB->escape($this->table) . ".iid  = " 
+						. icms::$xoopsDB->escape($handlers[$itms]->table) . "." . $itms . "_id";
 				if (!$untagged_content) {
-					$sql .= " INNER JOIN " . $sprockets_tag_handler->table 
-						. " ON " . $this->table . ".tid = " . $sprockets_tag_handler->table . ".tag_id";
+					$sql .= " INNER JOIN " . icms::$xoopsDB->escape($sprockets_tag_handler->table) 
+						. " ON " . icms::$xoopsDB->escape($this->table) . ".tid = "
+						. icms::$xoopsDB->escape($sprockets_tag_handler->table) . ".tag_id";
 				}
-				$sql .= " WHERE " . $this->table . ".iid  = " 
-						. $handlers[$itms]->table . "." . $itms . "_id";
-				$sql .= " AND " . $this->table . ".item = '" . $itms . "'";
+				$sql .= " WHERE " . icms::$xoopsDB->escape($this->table) . ".iid  = " 
+						. icms::$xoopsDB->escape($handlers[$itms]->table) . "." . $itms . "_id";
+				$sql .= " AND " . icms::$xoopsDB->escape($this->table) . ".item = '" . $itms . "'";
 				if ($untagged_content) {
-					$sql .= " AND " . $this->table . ".tid = '0'";
+					$sql .= " AND " . icms::$xoopsDB->escape($this->table) . ".tid = '0'";
 				} elseif ($tag_id) {
-					$sql .= " AND (" . $this->table . ".tid = " . "'" . $tag_id . "' AND " 
-						. $sprockets_tag_handler->table . ".label_type = '0')";
+					$sql .= " AND (" . icms::$xoopsDB->escape($this->table) . ".tid = " . "'"
+						. $tag_id . "' AND " 
+						. icms::$xoopsDB->escape($sprockets_tag_handler->table) . ".label_type = '0')";
 				} else {
-					$sql .= " AND " . $sprockets_tag_handler->table . ".label_type = '0'";
+					$sql .= " AND " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
+					. ".label_type = '0'";
 				}
 				if ($module_id) {
 					if ($untagged_content || $tag_id) {
@@ -491,10 +494,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			/////////////////////////////////////////
 			////////// Run the count query //////////
 			/////////////////////////////////////////
-			$sql = icms::$xoopsDB->escape($sql);
 			$result = icms::$xoopsDB->queryF($sql);
 			if (!$result) {
-					echo 'Error';
+					echo 'Error3';
 					exit;
 			} else {
 				while ($row = icms::$xoopsDB->fetchArray($result)) {
@@ -515,11 +517,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				$i--;
 				$sql .= "(SELECT "
 					. "`item`,"
-					. $handlers[$it]->table . ".title,"
-					. $handlers[$it]->table . ".description,"
+					. icms::$xoopsDB->escape($handlers[$it]->table) . ".title,"
+					. icms::$xoopsDB->escape($handlers[$it]->table) . ".description,"
 					. "`creator`," // need to standardise this across modules, some use $user
 					. "`counter`,"
-					. $handlers[$it]->table . ".short_url,"
+					. icms::$xoopsDB->escape($handlers[$it]->table) . ".short_url,"
 					. "`date`,"
 					. "`type`,";
 				// Remap non-standard field names. Need to standardise these across client modules
@@ -541,24 +543,29 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 				}
 				$sql .= "`taglink_id`,"
 					. "`iid`,"
-					. $this->table . ".mid,"
+					. icms::$xoopsDB->escape($this->table) . ".mid,"
 					. "`tid`";
-				$sql .= " FROM " . $this->table . " INNER JOIN " . $handlers[$it]->table . " ON "
-						. $this->table . ".iid  = " . $handlers[$it]->table . "." . $it . "_id";
+				$sql .= " FROM " . icms::$xoopsDB->escape($this->table) . " INNER JOIN " 
+						. icms::$xoopsDB->escape($handlers[$it]->table) . " ON "
+						. icms::$xoopsDB->escape($this->table) . ".iid  = "
+						. icms::$xoopsDB->escape($handlers[$it]->table) . "." . $it . "_id";
 				if (!$untagged_content) {
-					$sql .= " INNER JOIN " . $sprockets_tag_handler->table . " ON " 
-							. $this->table . ".tid = " . $sprockets_tag_handler->table . ".tag_id";
+					$sql .= " INNER JOIN " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
+					. " ON " . icms::$xoopsDB->escape($this->table) . ".tid = " 
+					. icms::$xoopsDB->escape($sprockets_tag_handler->table) . ".tag_id";
 				}
-				$sql .= " WHERE " . $this->table . ".iid  = " 
-						. $handlers[$it]->table . "." . $it . "_id";
-				$sql .= " AND " . $this->table . ".item = '" . $it . "'";		
+				$sql .= " WHERE " . icms::$xoopsDB->escape($this->table) . ".iid  = " 
+						. icms::$xoopsDB->escape($handlers[$it]->table) . "." . $it . "_id";
+				$sql .= " AND " . icms::$xoopsDB->escape($this->table) . ".item = '" . $it . "'";		
 				if ($untagged_content) {
-					$sql .= " AND " . $this->table . ".tid = '0'";
+					$sql .= " AND " . icms::$xoopsDB->escape($this->table) . ".tid = '0'";
 				} elseif ($tag_id) {
-					$sql .= " AND (" . $this->table . ".tid = " . "'" . $tag_id . "' AND " 
-						. $sprockets_tag_handler->table . ".label_type = '0')";
+					$sql .= " AND (" . icms::$xoopsDB->escape($this->table) . ".tid = " . "'" 
+						. $tag_id . "' AND " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
+						. ".label_type = '0')";
 				} else {
-					$sql .= " AND " . $sprockets_tag_handler->table . ".label_type = '0'";
+					$sql .= " AND " . icms::$xoopsDB->escape($sprockets_tag_handler->table) 
+						. ".label_type = '0'";
 				}
 				if ($module_id) {
 					if ($untagged_content || $tag_id) {
@@ -579,12 +586,11 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			if ($start || $limit) {
 				$sql .= " LIMIT " . $start . "," . $limit . " ";
 			}
-			$sql = icms::$xoopsDB->escape($sql);
 
 			// Run the query
 			$result = icms::$xoopsDB->queryF($sql);
 			if (!$result) {
-					echo 'Error';
+					echo 'Error4';
 					exit;
 			} else {
 				while ($row = icms::$xoopsDB->fetchArray($result)) {

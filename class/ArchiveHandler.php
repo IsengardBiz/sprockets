@@ -136,7 +136,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	/**
 	 * Returns the base URL, which is the URL against which OAIPMH requests should be sent
 	 * 
-	 * Expects an ICMS module directory, so only alphanumeric characters are allowed
+	 * Expects an ICMS module directory
 	 *
 	 * @param string $directory
 	 *
@@ -144,11 +144,9 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 */
 	public function setBaseUrl($directory = FALSE) {
 		if ($directory) {
-			if (ctype_alnum($directory)) {
-				$clean_directory = (string)$directory;
-			} else {
-				exit;
-			}
+				$clean_directory = icms_core_DataFilter::checkVar($directory, 'str');
+		} else {
+			$clean_directory = FALSE;
 		}
 		return $this->_setBaseUrl($clean_directory);
 	}
@@ -169,7 +167,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-			$clean_timestamp = intval($timestamp);
+			$clean_timestamp = icms_core_DataFilter($timestamp, 'int');
 		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 	
@@ -183,12 +181,8 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return int $status
 	 */
 	public function toggleStatus($id, $field) {
-		$clean_id = intval($id);
-		if (ctype_alpha($field)) {
-			$clean_field = (string)$field;
-		} else {
-			exit;
-		}		
+		$clean_id = icms_core_DataFilter::checkVar($id, 'int');
+		$clean_field = icms_core_DataFilter::checkVar($field, 'str');	
 		return $this->_toggleStatus($clean_id, $clean_field);
 	}
 	
@@ -199,17 +193,10 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return string $mimetype
 	 */
 	public function get_mimetype($format_extension) {
-		
 		// Need to trim the damn dot off, if present
 		$format_extension = ltrim($format_extension, '.');
-		
-		if (ctype_alpha($format_extension)) {
-			$clean_format_extension = (string)$format_extension;
-		} else {
-			exit;
-		}
-		
-		return $this->_get_mimetype($format_extension);
+		$clean_format_extension = icms_core_DataFilter::checkVar($format_extension, 'str');
+		return $this->_get_mimetype($clean_format_extension);
 	}
 	
 	/**

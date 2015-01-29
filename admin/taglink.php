@@ -52,11 +52,11 @@ $clean_op = '';
 
 $valid_op = array ('mod','changedField','addtaglink','del','');
 
-if (isset($_GET['op'])) $clean_op = htmlentities($_GET['op']);
-if (isset($_POST['op'])) $clean_op = htmlentities($_POST['op']);
+if (isset($_GET['op'])) $clean_op = icms_core_DataFilter::checkVar($_GET['op'], 'str');
+if (isset($_POST['op'])) $clean_op = icms_core_DataFilter::checkVar($_POST['op'], 'str');
 
 // sanitise the taglink_id
-$clean_taglink_id = isset($_GET['taglink_id']) ? (int) $_GET['taglink_id'] : 0 ;
+$clean_taglink_id = isset($_GET['taglink_id']) ? icms_core_DataFilter::checkVar($_GET['taglink_id'], 'int') : 0 ;
 
 if (in_array($clean_op,$valid_op,TRUE)){
   switch ($clean_op) {

@@ -84,3 +84,4 @@ URL like /sprockets/modules/tag.php
 - Fixed bug in getTagSelectBox() where a module_id was required in order to return results.
 - Removed RSS feed when tag_id = untagged (no feed is intended to be available for untagged content).
 - Added meta info for the 'All content' and 'Untagged' content situations.
+- Adopted icms_core_DataFilter() methods for input sanitisation for both public facing pages and public methods.
