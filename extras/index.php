@@ -29,8 +29,8 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 			$untagged_content = TRUE;
 		}
 	}
-	$clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']): 0 ;
-	$clean_start = isset($_GET['start']) ? intval($_GET['start']) : 0;
+	$clean_tag_id = isset($_GET['tag_id']) ? (int)$_GET['tag_id']: 0 ;
+	$clean_start = isset($_GET['start']) ? (int)$_GET['start'] : 0;
 
 	// Get tag/taglink handlers
 	$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
@@ -120,7 +120,7 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 			foreach ($combinedContentObjects as $item) {
 				$count--;
 				$sql .= " (`item` = '" . icms::$xoopsDB->escape($item['item']) 
-						. "' AND `iid` = '" . intval($item['iid'])
+						. "' AND `iid` = '" . (int)$item['iid']
 						. "' AND " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
 						. ".label_type = '0')";
 				if ($count > 0) {

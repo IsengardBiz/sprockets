@@ -41,7 +41,7 @@ function sprockets_content_teasers_show($options) {
 		// parameter, check the tag actually exists and override the manual filter preference
 		if ($options[6]) {
 			 if (isset($_GET['tag_id'])) {
-				$clean_tag_id = intval($_GET['tag_id']);
+				$clean_tag_id = (int)$_GET['tag_id'];
 				$options[1] = array_key_exists($clean_tag_id, $tagList) ? $clean_tag_id : 0;
 			 } else {
 				 $options[1] = 0;
@@ -130,7 +130,7 @@ function sprockets_content_teasers_show($options) {
 			foreach ($content_objects as $item) {
 				$count--;
 				$sql .= " (`item` = '" . icms::$xoopsDB->escape($item['item']) 
-						. "' AND `iid` = '" . intval($item['iid'])
+						. "' AND `iid` = '" . (int)$item['iid']
 						. "' AND " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
 						. ".label_type = '0')";
 				if ($count > 0) {

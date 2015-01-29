@@ -167,7 +167,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-			$clean_timestamp = intval($timestamp);
+			$clean_timestamp = (int)$timestamp;
 		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 	
@@ -181,7 +181,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return int $status
 	 */
 	public function toggleStatus($id, $field) {
-		$clean_id = intval($id);
+		$clean_id = (int)$id;
 		$clean_field = icms_core_DataFilter::checkVar($field, 'str');	
 		return $this->_toggleStatus($clean_id, $clean_field);
 	}

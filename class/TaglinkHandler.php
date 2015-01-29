@@ -35,7 +35,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 * @return array $ret
 	 */
     public function getTagsForObject($iid, &$handler, $label_type = '0') {
-		$clean_iid = !empty($iid) ? intval($iid) : 0;
+		$clean_iid = !empty($iid) ? (int)$iid : 0;
 		$clean_moduleName = icms_core_DataFilter::checkVar($handler->_moduleName, 'str');
 		$clean_itemname = icms_core_DataFilter::checkVar($handler->_itemname, 'str');
 		if ($label_type == '1') {
@@ -58,10 +58,10 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	public function getTagsForObjects($iids, $item, $module_id = FALSE) {
 		$clean_iids = array();
 		foreach ($iids as $iid) {
-			$clean_iids[] = intval($iid);
+			$clean_iids[] = (int)$iid;
 		}
 		$clean_item = icms_core_DataFilter::checkVar($item, 'str');
-		$clean_module_id = !empty($module_id) ? intval($module_id) : 0;
+		$clean_module_id = !empty($module_id) ? (int)$module_id : 0;
 		return $this->_getTagsForObjects($clean_iids, $clean_item, $clean_module_id);
 	}
 	
@@ -105,8 +105,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$clean_item_type = array();
 		
-		$clean_tag_id = !empty($tag_id) ? intval($tag_id) : 0;
-		$clean_module_id = !empty($module_id) ? intval($module_id) : 0;
+		$clean_tag_id = !empty($tag_id) ? (int)$tag_id : 0;
+		$clean_module_id = !empty($module_id) ? (int)$module_id : 0;
 		if ($item_type) {
 			$item_type_whitelist = array_keys($this->getClientObjects());
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
@@ -120,8 +120,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$item_type = icms_getConfig('client_objects', 'sprockets');
 		}
-		$clean_start = !empty($start) ? intval($start) : 0;
-		$clean_limit = !empty($limit) ? intval($limit) : 0;
+		$clean_start = !empty($start) ? (int)$start : 0;
+		$clean_limit = !empty($limit) ? (int)$limit : 0;
 		if ($sort == 'DESC') {
 			$clean_sort = 'DESC';
 		} else {
@@ -163,7 +163,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		
 		$clean_item_type = array();
 		
-		$clean_module_id = !empty($module_id) ? intval($module_id) : 0;
+		$clean_module_id = !empty($module_id) ? (int)$module_id : 0;
 		if ($item_type) {
 			$item_type_whitelist = array_keys($this->getClientObjects());
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
@@ -177,8 +177,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$item_type = icms_getConfig('client_objects', 'sprockets');
 		}
-		$clean_start = !empty($start) ? intval($start) : 0;
-		$clean_limit = !empty($limit) ? intval($limit) : 0;
+		$clean_start = !empty($start) ? (int)$start : 0;
+		$clean_limit = !empty($limit) ? (int)$limit : 0;
 		if ($sort == 'DESC') {
 			$clean_sort = 'DESC';
 		} else {

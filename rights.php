@@ -18,7 +18,7 @@ include_once ICMS_ROOT_PATH . '/header.php';
 $sprockets_rights_handler = icms_getModuleHandler('rights');
 
 // sanitise rights_id
-$clean_rights_id = isset($_GET['rights_id']) ? intval($_GET['rights_id']): 0 ;
+$clean_rights_id = isset($_GET['rights_id']) ? (int)$_GET['rights_id'] : 0 ;
 
 $rightsObj = $sprockets_rights_handler->get($clean_rights_id);
 

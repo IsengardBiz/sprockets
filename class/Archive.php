@@ -231,7 +231,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_resumptionToken = null;
 		}
-		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
+		$clean_cursor = isset($cursor) ? (int)$cursor : 0;
 
 		return $this->_listIdentifiers($clean_handler, $clean_metadataPrefix, $clean_from, 
 				$clean_until, $clean_set, $clean_resumptionToken, $clean_cursor);
@@ -249,7 +249,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_resumptionToken = null;
 		}
-		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
+		$clean_cursor = isset($cursor) ? (int)$cursor : 0;
 		
 		return $this->_listSets($clean_resumptionToken, $clean_cursor);
 	}
@@ -326,7 +326,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_resumptionToken = null;
 		}
-		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
+		$clean_cursor = isset($cursor) ? (int)$cursor : 0;
 		
 		return $this->_listRecords($clean_content_handler, $clean_metadataPrefix, $clean_from,
 				$clean_until, $clean_set, $clean_resumptionToken, $clean_cursor);
@@ -391,7 +391,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_resumptionToken = null;
 		}	
-		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
+		$clean_cursor = isset($cursor) ? (int)$cursor : 0;
 		
 		return $this->_lookupRecords($clean_content_handler, $clean_requestVerb, &$clean_response,
 				$clean_metadataPrefix, $clean_from, $clean_until, $clean_set,
@@ -495,7 +495,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-		$clean_timestamp = intval($timestamp);
+		$clean_timestamp = (int)$timestamp;
 		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 

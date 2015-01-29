@@ -72,7 +72,7 @@ if (isset($_GET['op'])) $clean_op = icms_core_DataFilter::checkVar($_GET['op'], 
 if (isset($_POST['op'])) $clean_op = icms_core_DataFilter::checkVar($_POST['op'], 'str');
 
 // sanitise archive_id
-$clean_archive_id = isset($_GET['archive_id']) ? intval($_GET['archive_id']) : 0 ;
+$clean_archive_id = isset($_GET['archive_id']) ? (int)$_GET['archive_id'] : 0 ;
 
 if (in_array($clean_op,$valid_op,TRUE)) {
 	switch ($clean_op) {

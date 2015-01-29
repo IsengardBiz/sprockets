@@ -139,7 +139,7 @@ if (icms_get_module_status("sprockets")) {
 7. Check for a tag_id parameter on the page, which you will use as an additional $criteria to filter results
 -------------------------------------------------------------------------------------------------------------
 
-$clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : 0 ;
+$clean_tag_id = isset($_GET['tag_id']) ?(int)$_GET['tag_id'] : 0 ;
 
 ...
 

@@ -30,7 +30,7 @@ global $sprocketsConfig;
 $clean_tag_id = $sort_order = '';
 $tags_with_rss = $content_item_array = array();
 
-$clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : FALSE;
+$clean_tag_id = isset($_GET['tag_id']) ? (int)$_GET['tag_id'] : FALSE;
 
 include_once ICMS_ROOT_PATH . '/modules/' . basename(dirname(__FILE__)) . '/class/icmsfeed.php';
 
