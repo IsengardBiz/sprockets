@@ -207,9 +207,63 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 */
 	public function beforeSave(&$obj) {
 		if (is_object($obj)) {
-			$clean_object = $obj;
+			
+			// check if an archive already exists for this module
+			$module_id = '';
+			$archive_object_array = $module_id_array = array();
+			$valid_target = TRUE;
+
+			$module_id = $obj->getVar('module_id', 'e');
+
+			$archive_object_array = $this->getObjects($criteria = null, TRUE, TRUE);
+
+			foreach ($archive_object_array as $archive) {
+				$module_id_array[$archive->id()] = $archive->getVar('module_id', 'e');
+			}
+
+			if (in_array($module_id, $module_id_array)) {
+
+				if ($obj->isNew()) {
+
+					// a new archive cannot target the same module as an existing one
+
+					$valid_target = FALSE;
+
+				} else {
+
+					// this is an existing archive object, check if current target is already selected
+					if (array_key_exists($obj->id(), $module_id_array)) {
+
+						// unset this archive object from the ID array
+						unset($module_id_array[$obj->id()]);
+
+						// the module ID should not match any of the remaining values
+						if (in_array($module_id, $module_id_array)) {
+
+							$valid_target = FALSE;
+						}
+
+					} else {
+
+						// we cannot change the target module if it is being handled by another archive
+						$valid_target = FALSE;
+					}
+
+				}
+			}
+
+			if ($valid_target) {
+
+				return TRUE;
+
+			} else {
+
+				$obj->setErrors(_CO_SPROCKETS_ONLY_ONE_ARCHIVE);
+				return $valid_target;
+			}
+		} else {
+			return FALSE;
 		}
-		return $this->_beforeSave($clean_obj);
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -380,63 +434,6 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 			return $mimetype;
 		} else {
 			return; // Null
-		}
-	}
-
-	private function _beforeSave(&$obj) {
-
-		// check if an archive already exists for this module
-
-		$module_id = '';
-		$archive_object_array = $module_id_array = array();
-		$valid_target = TRUE;
-
-		$module_id = $obj->getVar('module_id', 'e');
-		$archive_object_array = $this->getObjects($criteria = null, TRUE, TRUE);
-
-		foreach ($archive_object_array as $archive) {
-			$module_id_array[$archive->id()] = $archive->getVar('module_id', 'e');
-		}
-
-		if (in_array($module_id, $module_id_array)) {
-
-			if ($obj->isNew()) {
-
-				// a new archive cannot target the same module as an existing one
-				
-				$valid_target = FALSE;
-
-			} else {
-
-				// this is an existing archive object, check if current target is already selected
-				if (array_key_exists($obj->id(), $module_id_array)) {
-					
-					// unset this archive object from the ID array
-					unset($module_id_array[$obj->id()]);
-
-					// the module ID should not match any of the remaining values
-					if (in_array($module_id, $module_id_array)) {
-
-						$valid_target = FALSE;
-					}
-					
-				} else {
-
-					// we cannot change the target module if it is being handled by another archive
-					$valid_target = FALSE;
-				}
-
-			}
-		}
-
-		if ($valid_target) {
-
-			return TRUE;
-
-		} else {
-
-			$obj->setErrors(_CO_SPROCKETS_ONLY_ONE_ARCHIVE);
-			return $valid_target;
 		}
 	}
 }
