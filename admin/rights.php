@@ -52,7 +52,7 @@ $clean_op = '';
 $valid_op = array ('mod','changedField','addrights','del','');
 
 if (isset($_GET['op'])) $clean_op = icms_core_DataFilter::checkVar($_GET['op'], 'str');
-if (isset($_POST['op'])) $clean_op = icms_core_DataFilter($_POST['op'], 'str');
+if (isset($_POST['op'])) $clean_op = icms_core_DataFilter::checkVar($_POST['op'], 'str');
 
 // sanitise rights_id
 $clean_rights_id = isset($_GET['rights_id']) ? intval($_GET['rights_id']) : 0 ;

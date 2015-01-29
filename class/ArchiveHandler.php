@@ -167,7 +167,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-			$clean_timestamp = icms_core_DataFilter($timestamp, 'int');
+			$clean_timestamp = intval($timestamp);
 		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 	

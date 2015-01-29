@@ -495,7 +495,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-		$clean_timestamp = intval($timestamp, 'int');
+		$clean_timestamp = intval($timestamp);
 		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 

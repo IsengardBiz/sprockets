@@ -112,8 +112,8 @@ if (icms_get_module_status("sprockets"))
 	$valid_op = array ('mod','changedField','addtag', 'toggleStatus', 'del',
 		'');
 
-	if (isset($_GET['op'])) $clean_op = icms_core_DataFilter($_GET['op'], 'str');
-	if (isset($_POST['op'])) $clean_op = icms_core_DataFilter($_POST['op'], 'str');
+	if (isset($_GET['op'])) $clean_op = icms_core_DataFilter::checkVar($_GET['op'], 'str');
+	if (isset($_POST['op'])) $clean_op = icms_core_DataFilter::checkVar($_POST['op'], 'str');
 
 	// Sanitise the tag_id
 	$clean_tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : 0 ;
