@@ -113,7 +113,7 @@ if (icms_getConfig("enable_user_side_pages", "sprockets")) {
 			foreach ($combinedContentObjects as $item) {
 				$count--;
 				$sql .= " (`item` = '" . icms::$xoopsDB->escape($item['item']) 
-						. "' AND `iid` = '" . icms_core_DataFilter::checkVar($item['iid'], 'int')
+						. "' AND `iid` = '" . intval($item['iid'])
 						. "' AND " . icms::$xoopsDB->escape($sprockets_tag_handler->table)
 						. ".label_type = '0')";
 				if ($count > 0) {

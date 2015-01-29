@@ -181,7 +181,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 * @return int $status
 	 */
 	public function toggleStatus($id, $field) {
-		$clean_id = icms_core_DataFilter::checkVar($id, 'int');
+		$clean_id = intval($id);
 		$clean_field = icms_core_DataFilter::checkVar($field, 'str');	
 		return $this->_toggleStatus($clean_id, $clean_field);
 	}

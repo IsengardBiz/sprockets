@@ -56,7 +56,7 @@ if (isset($_GET['op'])) $clean_op = icms_core_DataFilter::checkVar($_GET['op'], 
 if (isset($_POST['op'])) $clean_op = icms_core_DataFilter::checkVar($_POST['op'], 'str');
 
 // sanitise the taglink_id
-$clean_taglink_id = isset($_GET['taglink_id']) ? icms_core_DataFilter::checkVar($_GET['taglink_id'], 'int') : 0 ;
+$clean_taglink_id = isset($_GET['taglink_id']) ? intval($_GET['taglink_id']) : 0 ;
 
 if (in_array($clean_op,$valid_op,TRUE)){
   switch ($clean_op) {

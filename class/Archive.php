@@ -199,7 +199,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function listIdentifiers($content_handler, $metadataPrefix = null, $from = null,
-			$until = null, $set = null, $resumptionToken = null, $cursor = null) {
+			$until = null, $set = null, $resumptionToken = null, $cursor = 0) {
 		
 		if (is_object($content_handler)) {
 			$clean_handler = $content_handler;
@@ -231,10 +231,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_resumptionToken = null;
 		}
-		if ($cursor) {
-			$cursor = icms_core_DataFilter::checkVar($cursor, 'int');
-		}		
-		
+		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
+
 		return $this->_listIdentifiers($clean_handler, $clean_metadataPrefix, $clean_from, 
 				$clean_until, $clean_set, $clean_resumptionToken, $clean_cursor);
 	}
@@ -245,17 +243,13 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @param string $resumptionToken
 	 * @return string
 	 */
-	public function listSets($resumptionToken = null, $cursor = null) {
+	public function listSets($resumptionToken = null, $cursor = 0) {
 		if ($resumptionToken) {
 			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
 		} else {
 			$clean_resumptionToken = null;
 		}
-		if ($cursor) {
-			$clean_cursor = icms_core_DataFilter::checkVar($cursor, 'int');
-		} else {
-			$clean_cursor = null;
-		}
+		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
 		
 		return $this->_listSets($clean_resumptionToken, $clean_cursor);
 	}
@@ -300,7 +294,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 */
 
 	public function listRecords($content_handler, $metadataPrefix = null, $from = null,
-		$until = null, $set = null, $resumptionToken = null, $cursor = null) {
+		$until = null, $set = null, $resumptionToken = null, $cursor = 0) {
 		
 		if (isset($content_handler) && is_object($content_handler)) {
 			$clean_content_handler = $content_handler;
@@ -332,11 +326,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_resumptionToken = null;
 		}
-		if ($cursor) {
-			$clean_cursor = icms_core_DataFilter::checkVar($cursor, 'int');
-		} else {
-			$clean_cursor = null;
-		}
+		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
 		
 		return $this->_listRecords($clean_content_handler, $clean_metadataPrefix, $clean_from,
 				$clean_until, $clean_set, $clean_resumptionToken, $clean_cursor);
@@ -367,7 +357,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return array mixed
 	 */
 	public function lookupRecords($content_handler, $requestVerb, &$response, $metadataPrefix = null,
-			$from = null, $until = null, $set = null, $resumptionToken = null, $cursor = null) {
+			$from = null, $until = null, $set = null, $resumptionToken = null, $cursor = 0) {
 		
 		if (isset($content_handler) && is_object($content_handler)) {
 			$clean_content_handler = $content_handler;
@@ -389,8 +379,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_metadataPrefix = null;
 		}
-		$clean_from = !empty($from) ? icms_core_DataFilter::checkVar($from, 'int') : null;
-		$clean_until = !empty($until) ? icms_core_DataFilter::checkVar($until, 'int') : null;	
+		$clean_from = !empty($from) ? icms_core_DataFilter::checkVar($from, 'str') : null;
+		$clean_until = !empty($until) ? icms_core_DataFilter::checkVar($until, 'str') : null;	
 		if ($set) {
 			$clean_set = icms_core_DataFilter::checkVar($set, 'str');
 		} else {
@@ -401,7 +391,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		} else {
 			$clean_resumptionToken = null;
 		}	
-		$clean_cursor = !empty($cursor) ? icms_core_DataFilter::checkVar($cursor, 'int') : null;
+		$clean_cursor = isset($cursor) ? intval($cursor) : 0;
 		
 		return $this->_lookupRecords($clean_content_handler, $clean_requestVerb, &$clean_response,
 				$clean_metadataPrefix, $clean_from, $clean_until, $clean_set,
@@ -416,7 +406,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return mixed Array $content
 	 */
 	public function convert_shared_fields($content, $contentObj) {
-		return $this->_covert_shared_fields($content, $contentObj);
+		return $this->_convert_shared_fields($content, $contentObj);
 	}
 	
 	/**
@@ -505,7 +495,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function timestamp_to_oaipmh_time($timestamp) {
-		$clean_timestamp = icms_core_DataFilter::checkVar($timestamp, 'int');
+		$clean_timestamp = intval($timestamp, 'int');
 		return $this->_timestamp_to_oaipmh_time($clean_timestamp);
 	}
 
@@ -676,7 +666,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 	private function _listIdentifiers($content_handler, $metadataPrefix, $from, $until, $set,
 			$resumptionToken, $cursor) {
-
+		
 		$haveResults = FALSE; // flag if any records were returned by query
 		$rows = array();
 

@@ -33,7 +33,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 	
 	public function getTagName($tag_id) {
-		$clean_tag_id = icms_core_Datafilter::checkVar($tag_id, 'int');
+		$clean_tag_id = intval($tag_id);
 		return $this->_getTagName($clean_tag_id);
 	}
 	
@@ -69,7 +69,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * @return array
 	 */
 	public function getCategoryBuffer($module_id) {
-		$clean_module_id = icms_core_DataFilter::checkVar($module_id, 'int');
+		$clean_module_id = intval($module_id);
 		return $this->_getCategoryBuffer($clean_module_id);
 	}
 	
@@ -81,7 +81,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 
 	public function getCategoryOptions($selected = '') {
-		$clean_selected = icms_core_DataFilter::checkVar($selected, 'int');
+		$clean_selected = intval($selected);
 		if(!$clean_selected) {
 			$clean_selected = '';
 		}
@@ -107,7 +107,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			if ($selected == 'untagged') {
 				$clean_selected = 'untagged';
 			} else {
-				$clean_selected = icms_core_DataFilter::checkVar($selected, 'int');
+				$clean_selected = intval($selected);
 			}
 		} else {
 			$clean_selected = 0;
@@ -115,7 +115,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		$clean_zero_option_message = icms_core_DataFilter::checkVar($zero_option_message, 'str');
 		$clean_navigation_elements_only = isset($navigation_elements_only)
 			? (bool)$navigation_elements_only : TRUE;
-		$clean_module_id = !empty($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int') : null;
+		$clean_module_id = !empty($module_id) ? intval($module_id) : null;
 		$clean_item = !empty($item) ? icms_core_DataFilter::checkVar($item, 'str') : null;	
 		$clean_untagged_content_option = isset($untagged_content_option) 
 			? (bool)$untagged_content_option : FALSE;
@@ -137,10 +137,10 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	public function getCategorySelectBox($action, $selected = null, $zero_option_message = '---',
 			$module_id = null, $item = null) {
 		$clean_action = icms_core_Datafilter::checkVar($action, 'str');
-		$clean_selected = isset($selected) ? icms_core_DataFilter::checkVar($selected, 'int') : null;
+		$clean_selected = isset($selected) ? intval($selected) : null;
 		$clean_zero_option_message = !empty($zero_option_message) ? 
 			icms_core_DataFilter::checkVar($zero_option_message, 'str') : '';
-		$clean_module_id = !empty($module_id) ? icms_core_DataFilter::checkVar($module_id, 'int'): null ;
+		$clean_module_id = !empty($module_id) ? intval($module_id) : null ;
 		$clean_item = !empty($item) ? icms_core_Datafilter::checkVar($item, 'str') : null;
 		return $this->_getCategorySelectBox($clean_action, $clean_selected, 
 				$clean_zero_option_message, $clean_module_id, $clean_item);
@@ -152,7 +152,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * @return bool
 	 */
 	public function check_is_parent($id) {
-		$clean_id = isset($id) ? icms_core_Datafilter::checkVar($id, 'int') : 0;
+		$clean_id = isset($id) ? intval($id) : 0;
 		return $this->_check_is_parent($clean_id);
 	}
 	
@@ -201,7 +201,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 * @return int $status
 	 */
 	public function toggleStatus($id, $field) {
-		$clean_id = !empty($id) ? icms_core_DataFilter::checkVar($id, 'int') : 0;
+		$clean_id = !empty($id) ? intval($id) : 0;
 		$clean_field = icms_core_DataFilter::checkVar($field, 'str');
 		return $this->_toggleStatus($clean_id, $clean_field);
 	}
