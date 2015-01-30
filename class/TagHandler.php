@@ -102,7 +102,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 			$untagged_content_option = FALSE) {
 		
 		// Sanitise parameters used to build query in case a client module passes in bad data
-		$clean_action = icms_core_DataFilter::checkVar($action, 'str');
+		$clean_action = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($action, 'str', 'noencode'));
 		if (!empty($selected)) {
 			if ($selected == 'untagged') {
 				$clean_selected = 'untagged';
@@ -112,11 +112,11 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 		} else {
 			$clean_selected = 0;
 		}
-		$clean_zero_option_message = icms_core_DataFilter::checkVar($zero_option_message, 'str');
+		$clean_zero_option_message = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($zero_option_message, 'str', 'noencode'));
 		$clean_navigation_elements_only = isset($navigation_elements_only)
 			? (bool)$navigation_elements_only : TRUE;
 		$clean_module_id = !empty($module_id) ? (int)$module_id : null;
-		$clean_item = !empty($item) ? icms_core_DataFilter::checkVar($item, 'str') : null;	
+		$clean_item = !empty($item) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($item, 'str', 'noencode')) : null;	
 		$clean_untagged_content_option = isset($untagged_content_option) 
 			? (bool)$untagged_content_option : FALSE;
 		
@@ -136,12 +136,12 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	
 	public function getCategorySelectBox($action, $selected = null, $zero_option_message = '---',
 			$module_id = null, $item = null) {
-		$clean_action = icms_core_Datafilter::checkVar($action, 'str');
+		$clean_action = icms::$xoopsDB->escape(icms_core_Datafilter::checkVar($action, 'str', 'noencode'));
 		$clean_selected = isset($selected) ? (int)$selected : null;
 		$clean_zero_option_message = !empty($zero_option_message) ? 
-			icms_core_DataFilter::checkVar($zero_option_message, 'str') : '';
+			icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($zero_option_message, 'str', 'noencode')) : '';
 		$clean_module_id = !empty($module_id) ? (int)$module_id : null ;
-		$clean_item = !empty($item) ? icms_core_Datafilter::checkVar($item, 'str') : null;
+		$clean_item = !empty($item) ? icms::$xoopsDB->escape(icms_core_Datafilter::checkVar($item, 'str', 'noencode')) : null;
 		return $this->_getCategorySelectBox($clean_action, $clean_selected, 
 				$clean_zero_option_message, $clean_module_id, $clean_item);
 	}
@@ -202,7 +202,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	 */
 	public function toggleStatus($id, $field) {
 		$clean_id = !empty($id) ? (int)$id : 0;
-		$clean_field = icms_core_DataFilter::checkVar($field, 'str');
+		$clean_field = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($field, 'str', 'noencode'));
 		return $this->_toggleStatus($clean_id, $clean_field);
 	}
 	

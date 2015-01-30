@@ -68,8 +68,8 @@ $clean_op = '';
 
 $valid_op = array ('mod','changedField','addarchive','toggleStatus', 'del','');
 
-if (isset($_GET['op'])) $clean_op = icms_core_DataFilter::checkVar($_GET['op'], 'str');
-if (isset($_POST['op'])) $clean_op = icms_core_DataFilter::checkVar($_POST['op'], 'str');
+if (isset($_GET['op'])) $clean_op = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($_GET['op'], 'str', 'noencode'));
+if (isset($_POST['op'])) $clean_op = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($_POST['op'], 'str', 'noencode'));
 
 // sanitise archive_id
 $clean_archive_id = isset($_GET['archive_id']) ? (int)$_GET['archive_id'] : 0 ;

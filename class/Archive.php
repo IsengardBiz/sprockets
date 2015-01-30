@@ -180,7 +180,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			exit;
 		}
 		if ($identifier) {
-			$clean_identifier = icms_core_DataFilter::checkVar($identifier, 'str');
+			$clean_identifier = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($identifier, 'str', 'noencode'));
 		} else {
 			$clean_identifier = null;
 		}
@@ -207,27 +207,27 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			exit;
 		}
 		if ($metadataPrefix) {
-			$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
+			$clean_metadataPrefix = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($metadataPrefix, 'str', 'noencode'));
 		} else {
 			$clean_metadataPrefix = null;
 		}
 		if ($from) {
-			$clean_from = icms_core_DataFilter::checkVar($from, 'str');
+			$clean_from = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($from, 'str', 'noencode'));
 		} else {
 			$clean_from = null;
 		}
 		if ($until) {
-			$clean_until = icms_core_DataFilter::checkVar($until, 'str');
+			$clean_until = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($until, 'str', 'noencode'));
 		} else {
 			$clean_until = null;
 		}
 		if ($set) {
-			$clean_set = icms_core_DataFilter::checkVar($set, 'str');
+			$clean_set = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($set, 'str', 'noencode'));
 		} else {
 			$clean_set = null;
 		}
 		if ($resumptionToken) {
-			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
+			$clean_resumptionToken = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($resumptionToken, 'str', 'noencode'));
 		} else {
 			$clean_resumptionToken = null;
 		}
@@ -245,7 +245,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 */
 	public function listSets($resumptionToken = null, $cursor = 0) {
 		if ($resumptionToken) {
-			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
+			$clean_resumptionToken = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($resumptionToken, 'str', 'noencode'));
 		} else {
 			$clean_resumptionToken = null;
 		}
@@ -269,12 +269,12 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 				exit;
 			}
 			if ($identifier) {
-				$clean_identifier = icms_core_DataFilter::checkVar($identifier, 'str');
+				$clean_identifier = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($identifier, 'str', 'noencode'));
 			} else {
 				$clean_identifier = null;
 			}
 			if ($metadataPrefix) {
-				$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
+				$clean_metadataPrefix = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($metadataPrefix, 'str', 'noencode'));
 			} else {
 				$clean_metadataPrefix = null;
 			}
@@ -302,27 +302,27 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 			exit;
 		}
 		if ($metadataPrefix) {
-			$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
+			$clean_metadataPrefix = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($metadataPrefix, 'str', 'noencode'));
 		} else {
 			$clean_metadataPrefix = null;
 		}
 		if ($from) {
-			$clean_from = icms_core_DataFilter::checkVar($from, 'str');
+			$clean_from = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($from, 'str', 'noencode'));
 		} else {
 			$clean_from = null;
 		}
 		if ($until) {
-			$clean_until = icms_core_DataFilter::checkVar($until, 'str');
+			$clean_until = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($until, 'str', 'noencode'));
 		} else {
 			$clean_until = null;
 		}
 		if ($set) {
-			$clean_set = icms_core_DataFilter::checkVar($set, 'str');
+			$clean_set = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($set, 'str', 'noencode'));
 		} else {
 			$clean_set = null;
 		}
 		if ($resumptionToken) {
-			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
+			$clean_resumptionToken = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($resumptionToken, 'str', 'noencode'));
 		} else {
 			$clean_resumptionToken = null;
 		}
@@ -344,61 +344,6 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	// UTILITIES
 
 	/**
-	 * Retrieves content objects from the database on behalf of GetRecord() and ListRecords()
-	 *
-	 * @param object $content_handler
-	 * @param string $requestVerb
-	 * @param string $response
-	 * @param string $metadataPrefix
-	 * @param string $from
-	 * @param string $until
-	 * @param string $set
-	 * @param string $resumptionToken
-	 * @return array mixed
-	 */
-	public function lookupRecords($content_handler, $requestVerb, &$response, $metadataPrefix = null,
-			$from = null, $until = null, $set = null, $resumptionToken = null, $cursor = 0) {
-		
-		if (isset($content_handler) && is_object($content_handler)) {
-			$clean_content_handler = $content_handler;
-		} else {
-			exit;
-		}
-		if (isset($requestVerb)) {
-			$clean_requestVerb = icms_core_DataFilter::checkVar($requestVerb, 'str');
-		} else {
-			exit;
-		}
-		if (isset($response)) {
-			$clean_response = icms_core_DataFilter::checkVar($response, 'str');
-		} else {
-			exit;
-		}
-		if ($metadataPrefix) {
-			$clean_metadataPrefix = icms_core_DataFilter::checkVar($metadataPrefix, 'str');
-		} else {
-			$clean_metadataPrefix = null;
-		}
-		$clean_from = !empty($from) ? icms_core_DataFilter::checkVar($from, 'str') : null;
-		$clean_until = !empty($until) ? icms_core_DataFilter::checkVar($until, 'str') : null;	
-		if ($set) {
-			$clean_set = icms_core_DataFilter::checkVar($set, 'str');
-		} else {
-			$clean_set = null;
-		}
-		if ($resumptionToken) {
-			$clean_resumptionToken = icms_core_DataFilter::checkVar($resumptionToken, 'str');
-		} else {
-			$clean_resumptionToken = null;
-		}	
-		$clean_cursor = isset($cursor) ? (int)$cursor : 0;
-		
-		return $this->_lookupRecords($clean_content_handler, $clean_requestVerb, &$clean_response,
-				$clean_metadataPrefix, $clean_from, $clean_until, $clean_set,
-				$clean_resumptionToken, $clean_cursor);
-	}
-	
-	/**
 	 * Converts common fields to human readable
 	 *
 	 * @param mixed array $content
@@ -417,8 +362,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function throw_error($error, $message) {
-		$clean_error = !empty($error) ? icms_core_DataFilter::checkVar($error, 'str') : FALSE;
-		$clean_message = !empty($message) ? icms_core_DataFilter::checkVar($message, 'str') : FALSE;
+		$clean_error = !empty($error) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($error, 'str', 'noencode')) : FALSE;
+		$clean_message = !empty($message) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($message, 'str', 'noencode')) : FALSE;
 		return $this->_throw_error($clean_error, $clean_message);
 	}
 	
@@ -439,7 +384,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function not_before_earliest_datestamp($time) {
-		$clean_time = !empty($time) ? icms_core_DataFilter::checkVar($time, 'str') : FALSE;
+		$clean_time = !empty($time) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($time, 'str', 'noencode')) : FALSE;
 		return $this->_not_before_earliest_datestamp($clean_time);
 	}
 	
@@ -459,7 +404,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function validate_datetime($time) {
-		$clean_time = !empty($time) ? icms_core_DataFilter::checkVar($time, 'str') : FALSE;
+		$clean_time = !empty($time) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($time, 'str', 'noencode')) : FALSE;
 		return $this->_validate_datetime($clean_time);
 	}
 	
@@ -473,8 +418,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return boolean
 	 */
 	public function from_precedes_until ($from, $until) {
-		$clean_from = !empty($from) ? icms_core_DataFilter::checkVar($from, 'str') : FALSE;
-		$clean_until = !empty($until) ? icms_core_DataFilter::checkVar($until, 'str') : FALSE;
+		$clean_from = !empty($from) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($from, 'str', 'noencode')) : FALSE;
+		$clean_until = !empty($until) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($until, 'str', 'noencode')) : FALSE;
 		return $this->_from_precedes_until($clean_from, $clean_until);
 	}
 	
@@ -673,7 +618,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		$response = $this->oai_header();
 		
 		// also modifies adds to $response
-		$rows = $this->lookupRecords($content_handler, 'ListIdentifiers', $response,
+		$rows = $this->_lookupRecords($content_handler, 'ListIdentifiers', $response,
 				$metadataPrefix, $from, $until, $set, $resumptionToken, $cursor);
 
 		// if an object was in fact returned proceed to process
@@ -843,7 +788,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 		
 		$response = $this->oai_header();
 		// also modifies adds to $response
-		$contentArray = $this->lookupRecords($content_handler, 'ListRecords', $response,
+		$contentArray = $this->_lookupRecords($content_handler, 'ListRecords', $response,
 			$metadataPrefix, $from,	$until, $set, $resumptionToken, $cursor);
 
 		// if there are some contents
@@ -922,6 +867,22 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 
 	// UTILITIES
 
+	/**
+	 * Retrieves content objects from the database on behalf of ListIdentifiers() and ListRecords()
+	 *
+	 * Note that ListIdentifiers() and ListRecords() are responsible for sanitising input to this 
+	 * method
+	 * 
+	 * @param object $content_handler
+	 * @param string $requestVerb
+	 * @param string $response
+	 * @param string $metadataPrefix
+	 * @param string $from
+	 * @param string $until
+	 * @param string $set
+	 * @param string $resumptionToken
+	 * @return array mixed
+	 */
 	private function _lookupRecords($content_handler, $requestVerb, &$response, $metadataPrefix,
 			$from, $until, $set, $resumptionToken, $cursor) {
 			

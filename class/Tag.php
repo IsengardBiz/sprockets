@@ -150,7 +150,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * Alters the category object admin links to point at the category admin page
 	 */
 	public function category_admin_titles($moduleDirectory = "sprockets") {
-		$cleanModuleDirectory = icms_core_DataFilter::checkVar($moduleDirectory, 'str');
+		$cleanModuleDirectory = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($moduleDirectory, 'str', 'noencode'));
 		return $this->_category_admin_titles($cleanModuleDirectory);
 	}
 	
@@ -160,7 +160,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function category_admin_navigation_element($moduleDirectory = "sprockets") {
-		$cleanModuleDirectory = icms_core_DataFilter::checkVar($moduleDirectory, 'str');
+		$cleanModuleDirectory = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($moduleDirectory, 'str', 'noencode'));
 		return $this->_category_admin_navigation_element($cleanModuleDirectory);
 	}
 	
@@ -170,7 +170,7 @@ class SprocketsTag extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function category_admin_rss($moduleDirectory = "sprockets") {
-		$cleanModuleDirectory = icms_core_DataFilter::checkVar($moduleDirectory, 'str');
+		$cleanModuleDirectory = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($moduleDirectory, 'str', 'noencode'));
 		return $this->_category_admin_rss($cleanModuleDirectory);
 	}
 	

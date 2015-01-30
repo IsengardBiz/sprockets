@@ -36,8 +36,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 	 */
     public function getTagsForObject($iid, &$handler, $label_type = '0') {
 		$clean_iid = !empty($iid) ? (int)$iid : 0;
-		$clean_moduleName = icms_core_DataFilter::checkVar($handler->_moduleName, 'str');
-		$clean_itemname = icms_core_DataFilter::checkVar($handler->_itemname, 'str');
+		$clean_moduleName = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($handler->_moduleName, 'str', 'noencode'));
+		$clean_itemname = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($handler->_itemname, 'str', 'noencode'));
 		if ($label_type == '1') {
 			$clean_label_type = 1;
 		} else {
@@ -60,7 +60,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		foreach ($iids as $iid) {
 			$clean_iids[] = (int)$iid;
 		}
-		$clean_item = icms_core_DataFilter::checkVar($item, 'str');
+		$clean_item = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($item, 'str', 'noencode'));
 		$clean_module_id = !empty($module_id) ? (int)$module_id : 0;
 		return $this->_getTagsForObjects($clean_iids, $clean_item, $clean_module_id);
 	}
@@ -112,7 +112,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
 				if (in_array($type, $item_type_whitelist)) {
-					$clean_item_type[] = icms_core_DataFilter::checkVar($type, 'str');
+					$clean_item_type[] = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($type, 'str', 'noencode'));
 				} else {
 					unset($type);
 				}
@@ -169,7 +169,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
 				if (in_array($type, $item_type_whitelist)) {
-					$clean_item_type[] = icms_core_Datafilter::checkVar($type, 'str');
+					$clean_item_type[] = icms::$xoopsDB->escape(icms_core_Datafilter::checkVar($type, 'str', 'noencode'));
 				} else {
 					unset($type);
 				}
@@ -189,7 +189,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			$item_type = is_array($item_type) ? $item_type : array(0 => $item_type);
 			foreach ($item_type as &$type) {
 				if (in_array($type, $item_type_whitelist)) {
-					$clean_item_type[] = icms_core_DataFilter::checkVar($type, 'str');
+					$clean_item_type[] = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($type, 'str', 'noencode'));
 				} else {
 					unset($type);
 				}
@@ -218,7 +218,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 	public function storeTagsForObject(&$obj, $tag_var = 'tag', $label_type = '0') {
 		$clean_obj = is_object($obj) ? $obj : FALSE;
-		$clean_tag_var = !empty($tag_var) ? icms_core_DataFilter::checkVar($tag_var, 'str') : 'tag';
+		$clean_tag_var = !empty($tag_var) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($tag_var, 'str', 'noencode')) : 'tag';
 		if ($label_type == '0') {
 			$clean_label_type = 0;
 		} else {
