@@ -182,7 +182,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	 */
 	public function toggleStatus($id, $field) {
 		$clean_id = (int)$id;
-		$clean_field = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($field, 'str', 'noencode'));	
+		$clean_field = icms_core_DataFilter::checkVar($field, 'str');	
 		return $this->_toggleStatus($clean_id, $clean_field);
 	}
 	
@@ -195,7 +195,7 @@ class SprocketsArchiveHandler extends icms_ipf_Handler {
 	public function get_mimetype($format_extension) {
 		// Need to trim the damn dot off, if present
 		$format_extension = ltrim($format_extension, '.');
-		$clean_format_extension = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($format_extension, 'str', 'noencode'));
+		$clean_format_extension = icms_core_DataFilter::checkVar($format_extension, 'str');
 		return $this->_get_mimetype($clean_format_extension);
 	}
 	

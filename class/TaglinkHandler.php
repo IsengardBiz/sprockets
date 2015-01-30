@@ -218,7 +218,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 	public function storeTagsForObject(&$obj, $tag_var = 'tag', $label_type = '0') {
 		$clean_obj = is_object($obj) ? $obj : FALSE;
-		$clean_tag_var = !empty($tag_var) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($tag_var, 'str', 'noencode')) : 'tag';
+		$clean_tag_var = !empty($tag_var) ? icms_core_DataFilter::checkVar($tag_var, 'str') : 'tag';
 		if ($label_type == '0') {
 			$clean_label_type = 0;
 		} else {

@@ -362,8 +362,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return string
 	 */
 	public function throw_error($error, $message) {
-		$clean_error = !empty($error) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($error, 'str', 'noencode')) : FALSE;
-		$clean_message = !empty($message) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($message, 'str', 'noencode')) : FALSE;
+		$clean_error = !empty($error) ? icms_core_DataFilter::checkVar($error, 'str') : FALSE;
+		$clean_message = !empty($message) ? icms_core_DataFilter::checkVar($message, 'str') : FALSE;
 		return $this->_throw_error($clean_error, $clean_message);
 	}
 	
@@ -384,7 +384,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function not_before_earliest_datestamp($time) {
-		$clean_time = !empty($time) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($time, 'str', 'noencode')) : FALSE;
+		$clean_time = !empty($time) ? icms_core_DataFilter::checkVar($time, 'str') : FALSE;
 		return $this->_not_before_earliest_datestamp($clean_time);
 	}
 	
@@ -404,7 +404,7 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return bool
 	 */
 	public function validate_datetime($time) {
-		$clean_time = !empty($time) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($time, 'str', 'noencode')) : FALSE;
+		$clean_time = !empty($time) ? icms_core_DataFilter::checkVar($time, 'str', 'noencode') : FALSE;
 		return $this->_validate_datetime($clean_time);
 	}
 	
@@ -418,8 +418,8 @@ class SprocketsArchive extends icms_ipf_seo_Object {
 	 * @return boolean
 	 */
 	public function from_precedes_until ($from, $until) {
-		$clean_from = !empty($from) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($from, 'str', 'noencode')) : FALSE;
-		$clean_until = !empty($until) ? icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($until, 'str', 'noencode')) : FALSE;
+		$clean_from = !empty($from) ? icms_core_DataFilter::checkVar($from, 'str') : FALSE;
+		$clean_until = !empty($until) ? icms_core_DataFilter::checkVar($until, 'str') : FALSE;
 		return $this->_from_precedes_until($clean_from, $clean_until);
 	}
 	

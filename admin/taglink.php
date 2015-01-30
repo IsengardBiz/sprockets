@@ -52,8 +52,8 @@ $clean_op = '';
 
 $valid_op = array ('mod','changedField','addtaglink','del','');
 
-if (isset($_GET['op'])) $clean_op = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($_GET['op'], 'str', 'noencode'));
-if (isset($_POST['op'])) $clean_op = icms::$xoopsDB->escape(icms_core_DataFilter::checkVar($_POST['op'], 'str', 'noencode'));
+if (isset($_GET['op'])) $clean_op = icms_core_DataFilter::checkVar($_GET['op'], 'str');
+if (isset($_POST['op'])) $clean_op = icms_core_DataFilter::checkVar($_POST['op'], 'str');
 
 // sanitise the taglink_id
 $clean_taglink_id = isset($_GET['taglink_id']) ? (int)$_GET['taglink_id'] : 0 ;
