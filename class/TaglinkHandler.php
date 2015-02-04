@@ -347,7 +347,8 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			'item' => 'catalogue',
 			'partner' => 'partners',
 			'project' => 'projects',
-			'start' => 'cms'
+			'start' => 'cms',
+			'slide' => 'billboard'
 			);
 	}
 	

@@ -377,6 +377,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 				
 				// Add an extra option for selecting untagged content
 				if ($untagged_content_option) {
+					icms_loadLanguageFile("sprockets", "common");
 					$tagList['untagged'] = _CO_SPROCKETS_TAG_UNTAGGED;
 				}
 			}

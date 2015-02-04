@@ -99,7 +99,7 @@ protected function afterSave(& $obj)
           }
      }
 
-5. Call loadTags() in your /admin/object.php class:
+5. Call loadTags() in your /admin/object.php file:
 ---------------------------------------------------
 
 /**
