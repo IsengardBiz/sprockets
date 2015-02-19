@@ -27,26 +27,25 @@ function sprockets_content_teasers_show($options) {
 	if (icms_get_module_status("sprockets"))
 	{		
 		// Initialise
-		$tag_id = $clean_tag_id = $sql = '';
+		$tag_id = $sql = '';
 		$block = $content_objects = $content_array = array();
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
 		$sprockets_taglink_handler = icms_getModuleHandler('taglink', 'sprockets', 'sprockets');
 		$script_name = getenv("SCRIPT_NAME");
-		$untagged_content = FALSE;
 		
 		// Get a tag buffer to minimise queries
 		$criteria = icms_buildCriteria(array('label_type' => 0));
 		$tagList = $sprockets_tag_handler->getList($criteria);
 		
-		// Check for dynamic tagging and calls for untagged content
-		if (isset($_GET['tag_id'])) {
-			if ($_GET['tag_id'] == 'untagged') {
-				$untagged_content = TRUE;
-			}
-			$clean_tag_id = (int)trim($_GET['tag_id']);
-			if ($options[6] && !$untagged_content) {
-				$options[1] = isset($clean_tag_id) ? $clean_tag_id : 0;
-			}
+		// Check if the block is set for dynamic tag filtering. If so, sanitise the tag_id 
+		// parameter, check the tag actually exists and override the manual filter preference
+		if ($options[6]) {
+			 if (isset($_GET['tag_id'])) {
+				$clean_tag_id = (int)$_GET['tag_id'];
+				$options[1] = array_key_exists($clean_tag_id, $tagList) ? $clean_tag_id : 0;
+			 } else {
+				 $options[1] = 0;
+			 }
 		}
 		
 		/*
@@ -99,13 +98,8 @@ function sprockets_content_teasers_show($options) {
 		 * Throws error when a permitted objects preference is set for an object type that doesn't
 		 * exist on the system (eg. module not installed).
 		 */
-		if ($untagged_content) {
-			$content_objects = $sprockets_taglink_handler->getUntaggedContent(FALSE, $options[2], 0,
-					$options[0], $sort = 'DESC');
-		} else {
-			$content_objects = $sprockets_taglink_handler->getTaggedItems($options[1], FALSE, 
+		$content_objects = $sprockets_taglink_handler->getTaggedItems($options[1], FALSE, 
 				$options[2], 0, $options[0], $sort = 'DESC');
-		}
 		
 		// Remove the first item in $content_objects (count of results, which is not required)
 		unset($content_objects[0]);
@@ -183,19 +177,15 @@ function sprockets_content_teasers_show($options) {
 		// Assign to template - and yes there is some hardcoded CSS, that's because the stylesheet
 		// info gets killed off in cached blocks due to some very ancient bug
 		$block['content_array'] = $content_objects;
-		if (!empty($block['content_array'])) {
-			if ($options[3] == 1) {
-				$block['sprockets_teaser_image_position'] = 'float:left;margin:0em 1em 1em 0em;';
-			} elseif ($options[3] == 2) {
-				$block['sprockets_teaser_image_position'] = 'float:right;margin:0em 0em 1em 1em;';
-			}
-			$block['sprockets_teaser_image_size'] = $options[4];
-			$block['sprockets_teaser_display_mode'] = $options[5]; // 0 = simple list, 1 = teasers
-		} else {
-			$block = array();
-		}		
+		if ($options[3] == 1) {
+			$block['sprockets_teaser_image_position'] = 'float:left;margin:0em 1em 1em 0em;';
+		} elseif ($options[3] == 2) {
+			$block['sprockets_teaser_image_position'] = 'float:right;margin:0em 0em 1em 1em;';
+		}
+		$block['sprockets_teaser_image_size'] = $options[4];
+		$block['sprockets_teaser_display_mode'] = $options[5]; // 0 = simple list, 1 = teasers
 	}
-		
+	
 	return $block;
 }
 

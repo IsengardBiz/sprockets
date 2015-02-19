@@ -459,6 +459,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 	private function _getTagsWithRss() {
 		
 		$criteria = new icms_db_criteria_Compo();
+		//$criteria->add(new icms_db_criteria_Item('label_type', '1', '!='));
 		$criteria->add(new icms_db_criteria_Item('rss', '1'));
 		
 		$tag_object_array = $this->getObjects($criteria, TRUE, TRUE);

@@ -1,0 +1,14 @@
+<{if $sprockets_tag_title}>
+	<h1><{$sprockets_tag_title}></h1>
+<{/if}>
+<{if $sprockets_tag_info}>
+	<p><{$sprockets_tag_info}></p>
+<{/if}>
+
+<{if $sprockets_tag_table}>
+	<{$sprockets_tag_table}>
+<{/if}>
+
+<{if $addtag}>
+	<{includeq file='db:system_common_form.html' form=$addtag}>
+<{/if}>
