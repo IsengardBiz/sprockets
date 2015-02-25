@@ -234,7 +234,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 
 	public function afterDelete(&$obj) {
 		$clean_object = is_object($obj) ? $obj : FALSE;
-		return $this->_afterDelete(&$clean_obj);
+		return $this->_afterDelete($clean_obj);
 	}
 	
 	/////////////////////////////////////////////////////////

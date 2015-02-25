@@ -224,7 +224,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$clean_label_type = 1;
 		}
-		$this->_storeTagsForObject(&$clean_obj, $clean_tag_var, $clean_label_type);
+		$this->_storeTagsForObject($clean_obj, $clean_tag_var, $clean_label_type);
 	}
 	
 	/**
@@ -247,7 +247,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$clean_label_type = 0;
 		}
-		$this->_deleteTagsForObject(&$clean_obj, $clean_label_type);
+		$this->_deleteTagsForObject($clean_obj, $clean_label_type);
 	}
 	
 	/**
@@ -260,7 +260,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 
 	public function deleteAllForObject(&$obj) {
 		$clean_obj = is_object($obj) ? $obj : FALSE;
-		$this->_deleteAllForObject(&$clean_obj);
+		$this->_deleteAllForObject($clean_obj);
 	}
 	
 	/////////////////////////////////////////////////////////
