@@ -66,7 +66,7 @@ function sprockets_get_object_options() {
 	$options = array(
 		0 => _MB_SPROCKETS_CONTENT_TEASERS_ALL, // All modules
 		'article' => _MB_SPROCKETS_CONTENT_TEASERS_ARTICLE, // News module
-		'event' => _MB_SPROCKETS_CONTENT_TEASERS_EVENT, // Events module
+		//'event' => _MB_SPROCKETS_CONTENT_TEASERS_EVENT, // Events module
 		'item' => _MB_SPROCKETS_CONTENT_TEASERS_ITEM, // Catalogue module
 		'partner' => _MB_SPROCKETS_CONTENT_TEASERS_PARTNER, // Partner module
 		'programme' => _MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME, // Podcast module

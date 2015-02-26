@@ -80,9 +80,6 @@ function sprockets_content_teasers_show($options) {
 		// options[5]: Display in teaser or compact (list) mode
 		// options[6]: Allow dynamic tag filtering (overrides manual tag selection)
 		if (empty($options[2])) {
-			//$options[2] = sprockets_get_object_options();
-			//$options[2] = array_keys($options[2]);
-			//array_shift($options[2]); // Get rid of the null option
 			$options[2] = icms_getConfig("client_objects", "sprockets");
 		} else {
 			$options[2] = array(0 => $options[2]);
