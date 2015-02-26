@@ -26,14 +26,14 @@ define("_MB_SPROCKETS_RECENT_CONTENT_TITLE", "Recent content");
 
 // Updated in V2.01
 define("_MB_SPROCKETS_CONTENT_TEASERS_ALL", "--- All ---");
-define("_MB_SPROCKETS_CONTENT_TEASERS_ITEM", "Catalogue items");
+define("_MB_SPROCKETS_CONTENT_TEASERS_ITEM", "Catalogue (items)");
 define("_MB_SPROCKETS_CONTENT_TEASERS_START", "CMS pages");
 define("_MB_SPROCKETS_CONTENT_TEASERS_EVENT", "Events");
-define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION", "Library publications");
+define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION", "Library (publications)");
 define("_MB_SPROCKETS_CONTENT_TEASERS_ARTICLE", "News articles");
 define("_MB_SPROCKETS_CONTENT_TEASERS_PARTNER", "Partners");
 define("_MB_SPROCKETS_CONTENT_TEASERS_PROGRAMME", "Podcasts (programmes)");
-define("_MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK", "Podcasts (soundtracks");
+define("_MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK", "Podcasts (soundtracks)");
 define("_MB_SPROCKETS_CONTENT_TEASERS_PROJECT", "Projects");
 define("_MB_SPROCKETS_CONTENT_TEASERS_PUBLISHED", "Published");
 define("_MB_SPROCKETS_CONTENT_TEASERS_VIEWS", "Views");

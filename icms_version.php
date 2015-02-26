@@ -200,7 +200,7 @@ $modversion['config'][] = array(
 // Client OBJECTS to include in the cross-module content on tag.php or in the cross-content block.
 // Need one entry for every object type.
 $client_objects = array(
-	'_MI_SPROCKETS_CMS_PAGES' => 'start',
+	//'_MI_SPROCKETS_CMS_PAGES' => 'start',
 	'_MI_SPROCKETS_CATALOGUE_ITEMS' => 'item',
 	//'_MI_SPROCKETS_EVENTS' => 'event',
 	'_MI_SPROCKETS_LIBRARY_PUBLICATIONS' => 'publication',

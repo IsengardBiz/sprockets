@@ -73,7 +73,7 @@ function sprockets_get_object_options() {
 		'project' => _MB_SPROCKETS_CONTENT_TEASERS_PROJECT, // Project module
 		'publication' => _MB_SPROCKETS_CONTENT_TEASERS_PUBLICATION, // Library module
 		'soundtrack' => _MB_SPROCKETS_CONTENT_TEASERS_SOUNDTRACK, // Podcast module
-		'start' => _MB_SPROCKETS_CONTENT_TEASERS_START, // CMS module
+		//'start' => _MB_SPROCKETS_CONTENT_TEASERS_START, // CMS module
 	);
 	
 	return $options;
