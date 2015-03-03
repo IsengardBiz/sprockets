@@ -129,7 +129,7 @@ if (icms_get_module_status("sprockets")) {
           'sprockets');
      $sprockets_taglink_handler = icms_getModuleHandler('taglink', $sprocketsModule->getVar('dirname'), 'sprockets');
      $tag_select_box = $sprockets_tag_handler->getTagSelectBox('message.php', 
-          $clean_tag_id,     _AM_CONTACT_MESSAGE_ALL_MESSAGES, icms::$module->getVar('mid'));
+          $clean_tag_id, _AM_CONTACT_MESSAGE_ALL_MESSAGES, icms::$module->getVar('mid'), 'yourobjectname', TRUE);
      if (!empty($tag_select_box)) {
           echo '<h3>' . _AM_CONTACT_MESSAGE_FILTER_BY_TAG . '</h3>';
           echo $tag_select_box;
