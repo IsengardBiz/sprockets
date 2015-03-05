@@ -291,7 +291,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		$criteria = icms_buildCriteria(array('label_type' => $label_type));
 		$tagList = $sprockets_tag_handler->getList($criteria, TRUE);
 		if (!$label_type) {
-			$tagList[0] = 0;
+			$tagList[0] = _CO_SPROCKETS_TAG_UNTAGGED;
 		}
 		
 		// For each of the object's tags, check if the array_key_exists in the reference $tagList.
