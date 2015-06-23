@@ -192,7 +192,7 @@ function sprockets_content_teasers_show($options) {
 			$block = array();
 		}		
 	}
-		
+
 	return $block;
 }
 

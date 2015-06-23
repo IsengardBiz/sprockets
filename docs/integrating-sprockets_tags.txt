@@ -158,3 +158,15 @@ $tagged_message_list = "('" . implode("','", $tagged_message_list) . "')";
 // Use the list as an additional criteria to filter the persistable table or your contents page...
 $criteria = new icms_db_criteria_Compo();
 $criteria->add(new icms_db_criteria_Item('message_id', $tagged_message_list, 'IN'));
+
+...
+
+If there are no criteria, then clear/initialise the $criteria before proceeding
+if (empty($criteria)) {
+	$criteria = null;
+}
+
+...
+
+// The list of object IDs in the criteria will filter the table according to the selected tag
+$objectTable = new icms_ipf_view_Table($contact_message_handler, $criteria);

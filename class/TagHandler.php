@@ -521,7 +521,8 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 				case "programme":
 					$item['image'] = !empty($item['image']) ? '/uploads/podcast/' . $item['item'] 
 						. '/' . $item['image'] : '';
-					$item['itemUrl'] = ICMS_URL . '/modules/podcast/programme.php?programme_id=' . '';
+					$item['itemUrl'] = ICMS_URL . '/modules/podcast/programme.php?programme_id=' 
+							. $item['iid'];
 					$item['subtemplate'] = 'db:sprockets_sound.html';
 					break;
 				case "article":

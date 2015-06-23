@@ -486,7 +486,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					}
 					$sql .= " `mid` = '" . $module_id . "'";
 				}
-				
 				$sql .= " AND `online_status` = '1') ";
 				if ($i >0) {
 					$sql .= " UNION ";
