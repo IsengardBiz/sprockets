@@ -108,3 +108,6 @@ define("_MI_SPROCKETS_ENABLE_USER_SIDE_DSC", "Enables the tag.php and alternativ
 define("_MI_SPROCKETS_CONTENT_TEASERS", "Recent content (tagged)");
 define("_MI_SPROCKETS_CONTENT_TEASERSDSC", "Displays the description (teaser) for content across 
 	compatible modules for a selected tag.");
+define("_MI_SPROCKETS_ENABLE_TAG_SELECT_BOX", "Enable user side tag select box?");
+define("_MI_SPROCKETS_ENABLE_TAG_SELECT_BOX_DSC", "Displays a tag selection box on the cross-module"
+		. " content page.");

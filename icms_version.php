@@ -188,7 +188,7 @@ $modversion['config'][] = array(
 	'valuetype' => 'int',
 	'default' =>  '400');
 
-// Enable or disable cross-module content pages
+// Enable or disable cross-module content page
 $modversion['config'][] = array(
 	'name' => 'enable_user_side_pages',
 	'title' => '_MI_SPROCKETS_ENABLE_USER_SIDE',
@@ -196,6 +196,16 @@ $modversion['config'][] = array(
 	'formtype' => 'yesno',
 	'valuetype' => 'int',
 	'default' => '0');
+
+$modversion['config'][] = array(
+	'name' => 'sprockets_tag_select_box',
+	'title' => '_MI_SPROCKETS_ENABLE_TAG_SELECT_BOX',
+	'description' => '_MI_SPROCKETS_ENABLE_TAG_SELECT_BOX_DSC',
+	'formtype' => 'yesno',
+	'valuetype' => 'int',
+	'default' => '1');
+
+// Display tag select box on cross-module content page
 
 // Client OBJECTS to include in the cross-module content on tag.php or in the cross-content block.
 // Need one entry for every object type.
