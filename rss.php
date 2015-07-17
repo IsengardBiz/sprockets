@@ -44,16 +44,13 @@ $sprockets_tag_handler = icms_getModuleHandler('tag', $sprocketsModule->getVar('
 	'sprockets');
 
 // generate a tag-specific RSS feed, drawing on content from all compatible modules
-$tags_with_rss = $sprockets_tag_handler->getTagsWithRss();
-
-if (key_exists($clean_tag_id, $tags_with_rss)) {
-	// get the tag object
-	$tagObj = $sprockets_tag_handler->get($clean_tag_id);
-} else {
-	$tagObj = $sprockets_tag_handler->create(); // Inflate an empty tag object
-	$tagObj->setVar('title', _CO_SPROCKETS_RSS_LATEST_CONTENT);
-	$tagObj->setVar('description', _CO_SPROCKETS_NEW_DSC);	
+$tagObj = $sprockets_tag_handler->get($clean_tag_id);
+	
+// check that feeds are enabled for this tag, exit if not
+if (!$tagObj->getVar('rss', 'e')) {
+	exit;
 }
+
 // remove html tags and problematic characters to meet RSS spec
 $site_name = encode_entities($icmsConfig['sitename']);
 $tag_title = encode_entities($tagObj->getVar('title'));
@@ -80,6 +77,8 @@ $unified_feed->width = 144;
 $unified_feed->atom_link = '"' . SPROCKETS_URL . 'rss.php';
 if ($clean_tag_id) {
 	$unified_feed->atom_link .= '?tag_id=' . $tagObj->id() . '"';
+} else {
+	$unified_feed->atom_link .= '"';
 }
 
 // get the content objects for this tag's feed
@@ -93,7 +92,6 @@ unset($content_item_array[0]);
 
 // Prepare an array of content items (these are NOT objects, array of required fields only)
 foreach($content_item_array as $contentItem) {
-
 	// encode content fields to ensure feed is compliant with the RSS spec
 	// Isengard convention: Multiple creators are pipe-delimited
 	if ($contentItem['creator']) {
@@ -113,8 +111,11 @@ foreach($content_item_array as $contentItem) {
 	$description = encode_entities($contentItem['description']);
 	$title = encode_entities($contentItem['title']);
 	$link = encode_entities($contentItem['itemUrl']);
-
-	$unified_feed->feeds[] = array (
+	// Unfortunately, could not allow for the possibility of media attachments (eg. MP3s, videos)
+	// due to the way the generic query is structured in getTaggedItems(). Could be solved by 
+	// adding identifier, format and file_size fields to all client modules (could be hidden from 
+	// view if they aren't used), but since its a minor issue will address it in a later version.
+		$unified_feed->feeds[] = array (
 		'title' => $title,
 		'link' => $link,
 		'description' => $description,
@@ -122,8 +123,7 @@ foreach($content_item_array as $contentItem) {
 		// pubdate must be a RFC822-date-time EXCEPT with 4-digit year or won't validate
 		'pubdate' => date(DATE_RSS, $contentItem['date']),
 		'guid' => $link,
-		'category' => $tag_title
-		);
+		'category' => $tag_title);
 }
 
 $unified_feed->render();

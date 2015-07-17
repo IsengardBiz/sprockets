@@ -348,7 +348,6 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 			'partner' => 'partners',
 			'project' => 'projects',
 			'start' => 'cms',
-			'slide' => 'billboard',
 			'event' => 'events'
 			);
 	}
@@ -366,6 +365,9 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		if ($tag_id === 'untagged') {
 			$untagged_content = TRUE;
 		}
+		
+		// Get a list of supported item and module types; this will be used to build the $itemUrl
+		$type_module_list = $this->getClientObjects();
 		
 		// 1. Get a list of distinct item (object) types associated with the search parameters
 		$sprockets_tag_handler = icms_getModuleHandler('tag', 'sprockets', 'sprockets');
@@ -526,6 +528,7 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 					. "`date`,"
 					. "`type`,";
 				// Remap non-standard field names. Need to standardise these across client modules
+				// Also allow for the possibility of attachments in soundtracks and publications
 				switch ($it) {
 					case "programme":
 						$sql .= "`cover` as `image`,";
@@ -601,6 +604,13 @@ class SprocketsTaglinkHandler extends icms_ipf_Handler {
 		} else {
 			$nothing_to_display = TRUE;
 		}
+		
+		// Construct an itemUrl field
+		foreach ($content_array as &$content) {
+			$content['itemUrl'] = ICMS_URL . '/modules/' . $type_module_list[$content['item']]
+					. '/' . $content['item'] . '.php?' . $content['item'] . '_id=' . $content['iid'];
+		}
+		
 		// Prepend the $count of results
 		array_unshift($content_array, $content_count);
 		
