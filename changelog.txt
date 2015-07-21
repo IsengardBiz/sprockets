@@ -86,3 +86,4 @@ URL like /sprockets/modules/tag.php
 - Added meta info for the 'All content' and 'Untagged' content situations.
 - Adopted icms_core_DataFilter() methods for input sanitisation for both public facing pages and public methods.
 - Recent content block no longer displays title if it is empty.
+- Add dates to the recent content block (list view)
