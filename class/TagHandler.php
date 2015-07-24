@@ -562,7 +562,7 @@ class SprocketsTagHandler extends icms_ipf_Handler {
 					}
 					break;
 				case "publication": // May need manual buffers
-					$item['image'] = !empty($item['image']) ? 'uploads/library/' . $item['item'] . '/' 
+					$item['image'] = !empty($item['image']) ? '/uploads/library/' . $item['item'] . '/' 
 						. $item['image'] : '';
 					$item['itemUrl'] = ICMS_URL . '/modules/library/publication.php?publication_id=' 
 							. $item['iid'];				
